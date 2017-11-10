@@ -97,6 +97,8 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 	scm_c_define_gsubr
 		("draw-rect", 5, 0, 0, draw_rect);
 
+	scm_c_eval_string ("(load \"code.scm\")");
+
 	scm_shell (argc, argv);
 }
 
