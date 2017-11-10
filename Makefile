@@ -8,7 +8,6 @@ DFLAGS = -ggdb
 	gcc -c ${CFLAGS} ${DFLAGS} -o $@ $<
 
 main : main.o
-	#gcc ${LFLAGS} ${CFLAGS} -o $@ $^
 	gcc ${LFLAGS} -o $@ $^
 
 all : main
