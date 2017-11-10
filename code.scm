@@ -7,13 +7,27 @@
               (x #:init-value 0)
               (y #:init-value 0)
               (w #:init-value 10)
-              (h #:init-value 10))
+              (h #:init-value 10)
+              (c #:init-value 0 #:getter counter))
 
+(define-method (inc-counter! (box <box>))
+  (slot-set! box 'c (1+ (counter box))))
+
+(define-method (slide! (box <box>))
+  (slot-set! box 'x (1+ (slot-ref box 'x)))
+  (slot-set! box 'y (1+ (slot-ref box 'y))))
 
 (define-generic obj-disp)
 (define-method (obj-disp (box <box>))
-  (describe box)
-  (newline))
+  (inc-counter! box)
+  (when (zero? (remainder (counter box)
+                          1000))
+    (slide! box))
+  (draw-rect #f
+    (slot-ref box 'x)
+    (slot-ref box 'y)
+    (slot-ref box 'w)
+    (slot-ref box 'h)))
 
 (define box (make <box>))
 

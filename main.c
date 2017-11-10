@@ -3,6 +3,9 @@
 #include <pthread.h>
 #include <stdbool.h>
 
+#define D1 printf("%i before\n", __LINE__)
+#define D2 printf("%i after\n", __LINE__)
+
 bool ready = false;
 SCM objects = SCM_EOL;
 SCM func = SCM_UNDEFINED;
@@ -44,10 +47,22 @@ static void my_for_each (SCM func, SCM list) {
 	}
 }
 
+SDL_Renderer* renderer;
+
 static void* draw_objects(void* args) {
 	if (ready)
 		my_for_each (func, objects);
 	return NULL;
+}
+
+static SCM draw_rect (SCM fill_p, SCM x, SCM y, SCM w, SCM h) {
+	SDL_Rect rect = {.x = scm_to_int (x),
+	                 .y = scm_to_int (y),
+					 .w = scm_to_int (w),
+					 .h = scm_to_int (w) };
+	(scm_is_true (fill_p) ? SDL_RenderFillRect : SDL_RenderDrawRect)
+		(renderer, &rect);
+	return SCM_UNDEFINED;
 }
 
 /*
@@ -64,6 +79,9 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 		("ready!", 0, 0, 0, set_ready);
 	scm_c_define_gsubr
 		("get-registered-objects", 0, 0, 0, get_registered_objects);
+
+	scm_c_define_gsubr
+		("draw-rect", 5, 0, 0, draw_rect);
 
 	scm_shell (argc, argv);
 }
@@ -102,13 +120,14 @@ int main(int _argc, char* _argv[]) {
         return 1;
     }
 
-	SDL_Renderer* renderer = SDL_CreateRenderer (window, -1, 0);
+	renderer = SDL_CreateRenderer (window, -1, 0);
 
 	SDL_Event event;
 	int hasEvent;
 	while (true) {
-		SDL_SetRenderDrawColor (renderer, 0xFF, 0, 0, 0xFF);
+		SDL_SetRenderDrawColor (renderer, 0, 0, 0, 0xFF);
 		SDL_RenderClear (renderer);
+		SDL_SetRenderDrawColor (renderer, 0xFF, 0, 0, 0xFF);
 
 		hasEvent = SDL_PollEvent(&event);
 		if (hasEvent && event.type == SDL_QUIT)
