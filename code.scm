@@ -17,12 +17,15 @@
   (slot-set! box 'x (1+ (slot-ref box 'x)))
   (slot-set! box 'y (1+ (slot-ref box 'y))))
 
-(define-generic obj-disp)
-(define-method (obj-disp (box <box>))
+(define-generic tick-func)
+(define-method (obj-tick (box <box>))
   (inc-counter! box)
   (when (zero? (remainder (counter box)
                           1000))
-    (slide! box))
+    (slide! box)))
+
+(define-generic obj-disp)
+(define-method (obj-disp (box <box>))
   (draw-rect #f
     (slot-ref box 'x)
     (slot-ref box 'y)

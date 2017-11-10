@@ -8,7 +8,8 @@
 
 bool ready = false;
 SCM objects = SCM_EOL;
-SCM func = SCM_UNDEFINED;
+SCM draw_func = SCM_UNDEFINED;
+SCM tick_func = SCM_UNDEFINED;
 
 /*
  * Run this after creating the obj-disp function in scheme code.
@@ -17,7 +18,8 @@ SCM func = SCM_UNDEFINED;
  * try and draw objects.
  */
 static SCM set_ready() {
-	func = scm_variable_ref(scm_c_lookup ("obj-disp"));
+	draw_func = scm_variable_ref(scm_c_lookup ("obj-disp"));
+	tick_func = scm_variable_ref(scm_c_lookup ("obj-tick"));
 	ready = true;
 	return SCM_UNDEFINED;
 }
@@ -49,9 +51,21 @@ static void my_for_each (SCM func, SCM list) {
 
 SDL_Renderer* renderer;
 
-static void* draw_objects(void* args) {
+static void* tick_objects (void* args) {
 	if (ready)
-		my_for_each (func, objects);
+		my_for_each (tick_func, objects);
+	return NULL;
+}
+
+static void* draw_objects (void* args) {
+	if (ready)
+		my_for_each (draw_func, objects);
+	return NULL;
+}
+
+static void* call_funcs (void* args) {
+	tick_objects (args);
+	draw_objects (args);
 	return NULL;
 }
 
@@ -133,7 +147,7 @@ int main(int _argc, char* _argv[]) {
 		if (hasEvent && event.type == SDL_QUIT)
 			break;
 
-		scm_with_guile (draw_objects, NULL);
+		scm_with_guile (call_funcs, NULL);
 
 		SDL_RenderPresent (renderer);
 	}
