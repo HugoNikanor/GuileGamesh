@@ -3,6 +3,8 @@
 #include <pthread.h>
 #include <stdbool.h>
 
+//#include "override.h"
+
 #define D1 printf("%i before\n", __LINE__)
 #define D2 printf("%i after\n", __LINE__)
 
@@ -41,6 +43,13 @@ void init_sdl_event_type (void) {
 		scm_make_foreign_object_type (name, slots, finalizer);
 }
 
+static SCM arr_to_list (int counter, SCM* arr) {
+	if (counter == 1)
+		return SCM_EOL;
+	else
+		return scm_cons (*arr, arr_to_list (counter - 1, arr + 1));
+}
+
 static SCM bind_keyboard_event (SDL_KeyboardEvent* event) {
 	//return scm_make_foreign_object_1 (keyboard_event, event);
 	printf ("%s, %zu, %i, %s, %i, %i\n",
@@ -50,7 +59,59 @@ static SCM bind_keyboard_event (SDL_KeyboardEvent* event) {
 			event->state == SDL_PRESSED ? "SDL_PRESSED" : "SDL_RELEASED",
 			event->repeat,
 			event->keysym.sym);
-	return scm_make_foreign_object_n (keyboard_event, 6, (void*) event);
+
+	//SCM* items = malloc(sizeof(void*) * 6);
+	SCM items[6];
+	items[0] = scm_from_utf8_symbol(event->type == SDL_KEYUP ? "SDL_KEYUP" : "SDL_KEYDOWN");
+	items[1] = scm_from_uint32 (event->timestamp);
+	items[2] = scm_from_uint32 (event->windowID);
+	items[3] = scm_from_uint8  (event->state);
+	items[4] = scm_from_uint8  (event->repeat);
+
+	items[5] = scm_from_int (0);
+
+	SCM slots = 
+		scm_list_n (
+			scm_from_utf8_symbol ("type"),
+			scm_from_utf8_symbol ("timestamp"),
+			scm_from_utf8_symbol ("windowID"),
+			scm_from_utf8_symbol ("state"),
+			scm_from_utf8_symbol ("repeat"),
+			scm_from_utf8_symbol ("keysym"),
+			SCM_UNDEFINED
+			);
+
+	SCM list = scm_cons (scm_from_utf8_symbol ("<key-event>"), arr_to_list (6, items));
+	return list;
+
+	// (slot-set! obj 'slot val)
+	/*
+	SCM func = scm_variable_ref(scm_c_lookup ("define-class-cont"));
+	scm_call_4 (func,
+		  scm_from_utf8_symbol ("<SDL_KeyEvent>"),
+	      scm_from_utf8_symbol ("make-keyevent"),
+		  SCM_EOL,
+		  slots);
+		  */
+
+	//return scm_apply_0 (scm_variable_ref(scm_c_lookup("make-keyevent")), list);
+	//return my_scm_make_foreign_object_n (keyboard_event, list);
+	//items[5] = (void*) event->keysym;
+	//SCM obj = scm_make_foreign_object_0 (keyboard_event);
+	/*
+	scm_foreign_object_signed_set_x (obj, 0,  scm_from_utf8_symbol(event->type == SDL_KEYUP ? "SDL_KEYUP" : "SDL_KEYDOWN"));
+	scm_foreign_object_signed_set_x (obj, 1, &event->timestamp);
+	scm_foreign_object_signed_set_x (obj, 2, &event->windowID);
+	scm_foreign_object_signed_set_x (obj, 3, &event->state);
+	scm_foreign_object_signed_set_x (obj, 4, &event->repeat);
+	scm_foreign_object_signed_set_x (obj, 5, &event->keysym.sym);
+	*/
+	//scm_foreign_object_[[un]signed]set_x (obj, n, val);
+	//return scm_make_foreign_object_n (keyboard_event, 6, (void*) event);
+	//return scm_make_foreign_object_n_alt (keyboard_event, 6, (void*) event);
+	//return scm_make_foreign_object_n (keyboard_event, 5, (void*) items);
+	//return scm_make_foreign_object_3 (keyboard_event, items[0], items[1], items[2]);
+	//return obj;
 }
 
 bool ready = false;
@@ -149,8 +210,10 @@ static void* event_objects (arg_struct* args) {
 
 	if (event->type == SDL_KEYDOWN
 			|| event->type == SDL_KEYUP) {
-		my_for_each_1 (event_func, bind_keyboard_event (&event->key), event_list);
+		//my_for_each_1 (event_func, bind_keyboard_event (&event->key), event_list);
+		scm_call_1 (event_func, bind_keyboard_event (&event->key));
 	}
+
 
 	return NULL;
 }
@@ -169,7 +232,7 @@ static SCM draw_rect (SCM fill_p, SCM x, SCM y, SCM w, SCM h) {
 	SDL_Rect rect = {.x = scm_to_int (x),
 	                 .y = scm_to_int (y),
 					 .w = scm_to_int (w),
-					 .h = scm_to_int (w) };
+					 .h = scm_to_int (h) };
 	(scm_is_true (fill_p) ? SDL_RenderFillRect : SDL_RenderDrawRect)
 		(renderer, &rect);
 	return SCM_UNDEFINED;
@@ -201,7 +264,8 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 
 	init_sdl_event_type();
 
-	scm_c_eval_string ("(load \"code.scm\")");
+	//scm_c_eval_string ("(load \"code.scm\")");
+	scm_c_primitive_load ("code.scm");
 
 	scm_shell (argc, argv);
 }

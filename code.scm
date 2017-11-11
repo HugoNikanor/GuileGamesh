@@ -26,9 +26,30 @@
 
 (define ev '())
 
-(define-generic event-func)
-(define-method (event-func (box <box>)
-                          event)
+(define-class <event> ())
+(define-class <key-event> (<event>) slots)
+
+(define (event-func event)
+  "Event dispatcher?"
+  (apply (lambda (_ __ event-objs)
+           (let ((e (case (car event)
+                      ((<key-event>)
+                       (let ((obj (make <key-event>)))
+                         (slot-set! obj 'slots (cdr event))
+                         obj))
+                      (else
+                        (make <event>)))))
+             (for-each (lambda (obj)
+                         (event-do obj e))
+                       event-objs)))
+         (get-registered-objects)))
+
+(define-generic event-do)
+(define-method (event-do (obj <game-object>)
+                         (event <event>)))
+
+(define-method (event-do (box <box>)
+                         (event <key-event>))
     (set! ev event))
 
 (define-generic draw-func)
