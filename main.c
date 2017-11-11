@@ -9,22 +9,10 @@
 #include "types.h"
 #include "event.h"
 
-/*
-static SCM make_empty_scene () {
-	scm_list_3 (SCM_EOL, SCM_EOL, SCM_EOL);
-}
-*/
-
 bool ready = false;
-/*
-SCM draw_list = SCM_EOL;
-SCM tick_list = SCM_EOL;
-SCM event_list = SCM_EOL;
-*/
 SCM draw_func = SCM_UNDEFINED;
 SCM tick_func = SCM_UNDEFINED;
 SCM event_func = SCM_UNDEFINED;
-//SCM current_scene = SCM_UNDEFINED;
 
 SCM make_empty_scene = SCM_UNDEFINED;
 SCM get_event_list   = SCM_UNDEFINED;
@@ -32,72 +20,7 @@ SCM get_tick_list    = SCM_UNDEFINED;
 SCM get_draw_list    = SCM_UNDEFINED;
 SCM current_scene    = SCM_UNDEFINED;
 
-
-/*
-static void cons_x(SCM obj, SCM list) {
-	list = scm_cons (obj, list);
-}
-*/
-
-/*
-SCM get_event_list (SCM scene) {
-	return scm_list_ref (scene, scm_from_int (2));
-}
-SCM get_tick_list (SCM scene) {
-	return scm_list_ref (scene, scm_from_int (1));
-}
-SCM get_draw_list (SCM scene) {
-	return scm_list_ref (scene, scm_from_int (0));
-}
-*/
-
-/*
- * TODO ensure uniquness, also, there might be
- * faster constructs rather than linked lists.
- */
-/*
-static SCM add_scm_draw_object (SCM obj, SCM scene) {
-	if (SCM_UNBNDP (scene))
-		scene = current_scene;
-	//objects = scm_cons (obj, objects);
-	cons_x (obj, get_draw_list (scene));
-	return SCM_UNDEFINED;
-}
-
-static SCM add_scm_tick_object (SCM obj, SCM scene) {
-	if (SCM_UNBNDP (scene))
-		scene = current_scene;
-	cons_x (obj, get_tick_list (scene));
-	return SCM_UNDEFINED;
-}
-
-static SCM add_scm_event_object (SCM obj, SCM scene) {
-	if (SCM_UNBNDP (scene))
-		scene = current_scene;
-	cons_x (obj, get_event_list (scene));
-	return SCM_UNDEFINED;
-}
-*/
-
-// TODO bind
-/*
-static SCM get_current_scene() {
-	return current_scene;
-}
-*/
-
-// TODO bind
-/*
- * Sets a new current scene, and returns the old scene
- */
-/*
-static SCM set_current_scene_x (SCM scene) {
-	SCM old_scene = current_scene;
-	current_scene = scene;
-	return old_scene;
-}
-*/
-
+SDL_Renderer* renderer;
 
 /*
  * Run this after creating the obj-draw function in scheme code.
@@ -113,9 +36,6 @@ static SCM set_ready() {
 	ready = true;
 	return SCM_UNDEFINED;
 }
-
-
-SDL_Renderer* renderer;
 
 static void* tick_objects (void* args) {
 	my_for_each (tick_func, scm_call_1(get_tick_list,
@@ -215,25 +135,7 @@ static SCM draw_text (SCM text, SCM _x, SCM _y) {
 int argc;
 char** argv;
 
-
-
 static void inner_guile_main (void* data, int argc, char* argv[]) {
-	/*
-	scm_c_define_gsubr
-		("register-tick-object!", 1, 1, 0, add_scm_tick_object);
-	scm_c_define_gsubr
-		("register-draw-object!", 1, 1, 0, add_scm_draw_object);
-	scm_c_define_gsubr
-		("register-event-object!", 1, 1, 0, add_scm_event_object);
-		*/
-
-	/*
-	scm_c_define_gsubr
-		("current-scene", 0, 0, 0, get_current_scene);
-	scm_c_define_gsubr
-		("set-current-scene!", 1, 0, 0, set_current_scene_x);
-		*/
-
 	scm_c_define_gsubr
 		("ready!", 0, 0, 0, set_ready);
 
@@ -244,8 +146,6 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 	scm_c_define_gsubr
 		("draw-text", 3, 0, 0, draw_text);
 
-	//scm_c_primitive_load ("scene.scm");
-	//scm_c_primitive_load ("scene.scm");
 	scm_c_use_module ("scene");
 
 	get_event_list = scm_variable_ref(scm_c_lookup ("get-event-list"));
@@ -253,9 +153,6 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 	get_draw_list  = scm_variable_ref(scm_c_lookup ("get-draw-list"));
 	current_scene  = scm_variable_ref(scm_c_lookup ("current-scene"));
 
-	//init_sdl_event_type();
-
-	//scm_c_eval_string ("(load \"code.scm\")");
 	scm_c_primitive_load ("scheme/code.scm");
 
 	scm_shell (argc, argv);
