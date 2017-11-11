@@ -1,10 +1,10 @@
 #include "sdl_scm.h"
 
 SCM draw_rect (SCM fill_p, SCM x, SCM y, SCM w, SCM h) {
-	SDL_Rect rect = {.x = scm_to_int (x),
-	                 .y = scm_to_int (y),
-					 .w = scm_to_int (w),
-					 .h = scm_to_int (h) };
+	SDL_Rect rect = {.x = (int) scm_to_double (x),
+	                 .y = (int) scm_to_double (y),
+					 .w = (int) scm_to_double (w),
+					 .h = (int) scm_to_double (h) };
 	(scm_is_true (fill_p) ? SDL_RenderFillRect : SDL_RenderDrawRect)
 		(renderer, &rect);
 	return SCM_UNDEFINED;

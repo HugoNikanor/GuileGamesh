@@ -35,27 +35,26 @@
     (register-tick-object! obj)
     obj))
 
+;; This pushes to far
 (define-method (collide (a <colliding>)
                         (b <colliding>))
-               ;;(format #t "~s and ~s collided\n" (object-name a) (object-name b)))
+               (format #t "~s and ~s collided\n" (object-name a) (object-name b))
                (slot-mod! b 'pos
                           (cut + <> (* (1- (slot-ref b 'friction))
-                                       (- (pos b) (pos a))))))
+                                       (- (+ (* 1/2 (size a))
+                                             (pos a))
+                                          (+ (* 1/2 (size b))
+                                             (pos b)))))))
 
 (define-method (colliding? (a <colliding>)
                            (b <colliding>))
                (let ((v (pos a))
                      (u (pos b)))
-                 (or (and (< (x v) (y v) (+ (x v) (x (size a))))
-                          (< (y v) (y u) (+ (y v) (y (size a)))))
-                     (and (< (x u) (x u) (+ (x u) (x (size b))))
-                          (< (y u) (y u) (+ (y u) (y (size b))))))))
-                 #|
-                 (or (and (< (x v) (y v) (+ (x v) (x (size v))))
-                          (< (y v) (y u) (+ (y v) (y (size v)))))
-                     (and (< (x u) (x a) (+ (x u) (x (size u))))
-                          (< (y u) (y a) (+ (y u) (y (size u))))))))
-|#
+                 (and 
+                   (not (> (x v) (+ (x u) (x (size b)))))
+                   (not (> (x u) (+ (x v) (x (size a)))))
+                   (not (> (y u) (+ (y v) (y (size a)))))
+                   (not (> (y v) (+ (y u) (y (size b))))))))
 
 (define-class <text-obj> (<geo-object>)
               (text #:init-value " ")
@@ -213,7 +212,7 @@
 (define box-pos (make <text-obj> #:pos (make <v2>)))
 (slot-set! box-pos 'update-text
            (lambda (text)
-             (format #f "~d ~d"
+             (format #f "~a ~a"
                      (x (pos player-box))
                      (y (pos player-box)))))
 
@@ -250,7 +249,7 @@
 (slot-set! player-box 'name "[PLAYER]")
 (slot-set! enemy-box  'name "[ENEMY]")
 ;(slot-set! player-box 'pos (make <v2> #:x 20 #:y 20))
-;(slot-set! player-box 'friction 0.5)
+(slot-set! player-box 'friction 0.5)
 
 (register-draw-object! enemy-box)
 (register-draw-object! player-box)
@@ -287,4 +286,4 @@
 ;; Note that objects can be shared between scenes
 ;; (slot-set! other-debug 'text "Hello, World!")
 
-;;(ready!)
+(ready!)
