@@ -1,27 +1,34 @@
 (use-modules (srfi srfi-1)
+             (srfi srfi-26)
              (oop goops)
              (oop goops describe)
              (scene)
+             (vector)
              )
              ;;(scheme scene))
 
 (define (r)
   (system "reset"))
 
+(define-macro (slot-mod! obj slot func)
+  `(slot-set! ,obj ,slot (,func (slot-ref ,obj ,slot))))
+
 (define-class <game-object> ()
               (name #:init-keyword #:name #:getter object-name #:init-value "[NAMELESS]")
               (c #:init-value 0 #:getter counter))
 
 (define-class <geo-object> (<game-object>)
-              (x #:init-keyword #:x #:accessor obj-x #:init-value 0)
-              (y #:init-keyword #:y #:accessor obj-y #:init-value 0))
+              (pos #:accessor pos #:init-keyword #:pos))
+              ;;(x #:init-keyword #:x #:accessor obj-x #:init-value 0)
+              ;;(y #:init-keyword #:y #:accessor obj-y #:init-value 0))
 
 (define-class <box> (<geo-object>)
-              (w #:getter obj-w #:init-keyword #:w #:init-value 10)
-              (h #:getter obj-h #:init-keyword #:h #:init-value 10)
+              (size #:accessor size #:init-keyword #:size)
               (color #:init-keyword #:color #:init-value '(#xFF 0 0)))
 
-(define-class <colliding> (<box>))
+(define-class <colliding> (<box>)
+              (friction #:init-value 1))
+
 (define (make-colliding)
   (let ((obj (make <colliding>)))
     (register-collider! obj)
@@ -30,27 +37,41 @@
 
 (define-method (collide (a <colliding>)
                         (b <colliding>))
-               (format #t "~s and ~s collided\n" (object-name a) (object-name b)))
+               ;;(format #t "~s and ~s collided\n" (object-name a) (object-name b)))
+               (slot-mod! b 'pos
+                          (cut + <> (* (1- (slot-ref b 'friction))
+                                       (- (pos b) (pos a))))))
 
 (define-method (colliding? (a <colliding>)
                            (b <colliding>))
-               (or (and (< (obj-x a) (obj-x b) (+ (obj-x a) (obj-w a)))
-                        (< (obj-y a) (obj-y b) (+ (obj-y a) (obj-h a))))
-                   (and (< (obj-x b) (obj-x a) (+ (obj-x b) (obj-w b)))
-                        (< (obj-y b) (obj-y a) (+ (obj-y b) (obj-h b))))))
+               (let ((v (pos a))
+                     (u (pos b)))
+                 (or (and (< (x v) (y v) (+ (x v) (x (size a))))
+                          (< (y v) (y u) (+ (y v) (y (size a)))))
+                     (and (< (x u) (x u) (+ (x u) (x (size b))))
+                          (< (y u) (y u) (+ (y u) (y (size b))))))))
+                 #|
+                 (or (and (< (x v) (y v) (+ (x v) (x (size v))))
+                          (< (y v) (y u) (+ (y v) (y (size v)))))
+                     (and (< (x u) (x a) (+ (x u) (x (size u))))
+                          (< (y u) (y a) (+ (y u) (y (size u))))))))
+|#
 
 (define-class <text-obj> (<geo-object>)
               (text #:init-value " ")
               (update-text #:init-value #f))
 
 (define-method (slide! (box <box>))
-               (slot-set! box 'x (1+ (slot-ref box 'x)))
-               (slot-set! box 'y (1+ (slot-ref box 'y))))
+               (slot-mod! (pos box) 'x 1+)
+               (slot-mod! (pos box) 'y 1+))
+               ;;(slot-set! box 'x (1+ (slot-ref box 'x)))
+               ;;(slot-set! box 'y (1+ (slot-ref box 'y))))
 
 (define-generic tick-func)
 
 (define-method (tick-func (obj <game-object>))
-               (slot-set! obj 'c (1+ (slot-ref obj 'c))))
+               ;;(slot-set! obj 'c (1+ (slot-ref obj 'c))))
+               (slot-mod! obj 'c 1+))
 
 (define-method (tick-func (box <box>))
                (when (zero? (remainder (counter box)
@@ -163,23 +184,25 @@
 
 (define-method (event-do (box <box>)
                          (event <mouse-btn-event>))
-               (slot-set! box 'x (mouse-x event))
-               (slot-set! box 'y (mouse-y event))
+               (slot-set! (pos box) 'x (mouse-x event))
+               (slot-set! (pos box) 'y (mouse-y event))
                (next-method))
 
 (define-generic draw-func)
 (define-method (draw-func (box <box>))
                (apply set-color (slot-ref box 'color))
+               (let ((pos (pos box))
+                     (size (size box)))
                (draw-rect #f
-                          (slot-ref box 'x)
-                          (slot-ref box 'y)
-                          (slot-ref box 'w)
-                          (slot-ref box 'h)))
+                          (x pos)
+                          (y pos)
+                          (x size)
+                          (y size))))
 
 (define-method (draw-func (text <text-obj>))
                (draw-text (slot-ref text 'text)
-                          (obj-x text)
-                          (obj-y text)))
+                          (x (pos text))
+                          (y (pos text))))
 
 (define-method (tick-func (text <text-obj>))
                (let ((func (slot-ref text 'update-text)))
@@ -187,14 +210,14 @@
                    (slot-set! text 'text (func text)))))
 
 (define box (make <box> #:name "[MAIN BOX]"))
-(define box-pos (make <text-obj>))
+(define box-pos (make <text-obj> #:pos (make <v2>)))
 (slot-set! box-pos 'update-text
            (lambda (text)
              (format #f "~d ~d"
-                     (obj-x player-box)
-                     (obj-y player-box))))
+                     (x (pos player-box))
+                     (y (pos player-box)))))
 
-(define other-debug (make <text-obj> #:y 12))
+(define other-debug (make <text-obj> #:pos (make <v2> #:y 12)))
 
 (register-draw-object! box)
 (register-tick-object! box)
@@ -219,11 +242,15 @@
 ;;(define player-box (make <box> #:x 100 #:y 100 #:color '(0 0 #xFF)))
 (define enemy-box (make-colliding))
 (define player-box (make-colliding))
+(slot-set! enemy-box 'pos (make <v2> #:x 10 #:y 100))
+(slot-set! enemy-box 'size (make <v2> #:x 10 #:y 10))
+(slot-set! player-box 'pos (make <v2> #:x 100 #:y 10))
+(slot-set! player-box 'size (make <v2> #:x 10 #:y 10))
 (slot-set! player-box 'color '(0 0 #xFF))
 (slot-set! player-box 'name "[PLAYER]")
-(slot-set! enemy-box  'name "[PLAYER]")
-(slot-set! player-box 'x 20)
-(slot-set! player-box 'y 20)
+(slot-set! enemy-box  'name "[ENEMY]")
+;(slot-set! player-box 'pos (make <v2> #:x 20 #:y 20))
+;(slot-set! player-box 'friction 0.5)
 
 (register-draw-object! enemy-box)
 (register-draw-object! player-box)
@@ -233,9 +260,6 @@
 (define arrow-down 79)
 (define arrow-left 81)
 (define arrow-right 80)
-
-(define-macro (slot-mod! obj slot func)
-  `(slot-set! ,obj ,slot (,func (slot-ref ,obj ,slot))))
 
 (define-method (tick-func (box <box>)))
 (define-method (tick-func (obj <colliding>))
@@ -250,10 +274,10 @@
                          (event <key-event>))
                ;;;;(display (slot-ref event 'scancode))
                (case (slot-ref event 'scancode)
-                 ((82)  (slot-mod! obj 'y 1- )) ;;
-                 ((81)  (slot-mod! obj 'y 1+ ))
-                 ((79)  (slot-mod! obj 'x 1+ )) ;;
-                 ((80)  (slot-mod! obj 'x 1- ))
+                 ((82)  (slot-mod! (pos obj) 'y 1- )) ;;
+                 ((81)  (slot-mod! (pos obj) 'y 1+ ))
+                 ((79)  (slot-mod! (pos obj) 'x 1+ )) ;;
+                 ((80)  (slot-mod! (pos obj) 'x 1- ))
                  (else #f))
                (next-method))
 
@@ -263,4 +287,4 @@
 ;; Note that objects can be shared between scenes
 ;; (slot-set! other-debug 'text "Hello, World!")
 
-(ready!)
+;;(ready!)

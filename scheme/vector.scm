@@ -1,10 +1,10 @@
-;;(define-module (vector))
-
-(use-modules (oop goops))
+(define-module (vector)
+               #:use-module (oop goops)
+               #:export (<v2> x y))
 
 (define-class <v2> ()
-              (x #:accessor x #:init-keyword #:x)
-              (y #:accessor y #:init-keyword #:y))
+              (x #:init-value 0 #:accessor x #:init-keyword #:x)
+              (y #:init-value 0 #:accessor y #:init-keyword #:y))
 
 (define-method (+ (u <v2>)
                   (v <v2>))
@@ -15,7 +15,7 @@
                             (y v))))
 
 (define-method (* (n <number>)
-                  (v v2>))
+                  (v <v2>))
                (make <v2>
                      #:x (* n (x v))
                      #:y (* n (y v))))
