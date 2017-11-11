@@ -17,8 +17,28 @@
               (y #:init-keyword #:y #:accessor obj-y #:init-value 0))
 
 (define-class <box> (<geo-object>)
-              (w #:init-keyword #:w #:init-value 10)
-              (h #:init-keyword #:h #:init-value 10))
+              (w #:getter obj-w #:init-keyword #:w #:init-value 10)
+              (h #:getter obj-h #:init-keyword #:h #:init-value 10)
+              (color #:init-keyword #:color #:init-value '(#xFF 0 0)))
+
+(define-class <colliding> (<box>))
+(define (make-colliding)
+  (let ((obj (make <colliding>)))
+    (register-collider! obj)
+    (register-tick-object! obj)
+    obj))
+
+(define-method (collide (a <colliding>)
+                        (b <colliding>))
+               (format #t "~s and ~s collided\n" (object-name a) (object-name b)))
+
+(define-method (colliding? (a <colliding>)
+                           (b <colliding>))
+               (or (and (< (obj-x a) (obj-x b) (+ (obj-x a) (obj-w a)))
+                        (< (obj-y a) (obj-y b) (+ (obj-y a) (obj-h a))))
+                   (and (< (obj-x b) (obj-x a) (+ (obj-x b) (obj-w b)))
+                        (< (obj-y b) (obj-y a) (+ (obj-y b) (obj-h b))))))
+
 (define-class <text-obj> (<geo-object>)
               (text #:init-value " ")
               (update-text #:init-value #f))
@@ -94,14 +114,24 @@
                 (event-do obj e))
               (get-event-list (current-scene)))))
 
+#|
+(define* (collision-check #:optional (scene (current-scene)))
+         (define (inner rem)
+           (let ((item (car rem)))
+             (for-each (lambda (other)
+                         (when (colliding? item other)
+                           (collide a b)
+                           (collide b a)))
+                       (cdr rem)))
+           (inner (cdr rem)))
+         (inner (get-colliders scene)))
+|#
 
 (define-method (box-reset! (box <box>))
                (slot-set! box 'x 0)
                (slot-set! box 'y 0))
 
-
 (define-generic event-do)
-
 
 (define-method (event-do (obj <game-object>)
                          (event <event>))
@@ -139,7 +169,7 @@
 
 (define-generic draw-func)
 (define-method (draw-func (box <box>))
-               (set-color 0 0 #xFF)
+               (apply set-color (slot-ref box 'color))
                (draw-rect #f
                           (slot-ref box 'x)
                           (slot-ref box 'y)
@@ -161,8 +191,8 @@
 (slot-set! box-pos 'update-text
            (lambda (text)
              (format #f "~d ~d"
-                     (obj-x box)
-                     (obj-y box))))
+                     (obj-x player-box)
+                     (obj-y player-box))))
 
 (define other-debug (make <text-obj> #:y 12))
 
@@ -182,9 +212,54 @@
 (slot-set! (current-scene) 'name "SCENE 1")
 (define scene1 (current-scene))
 (define scene2 (make <scene> #:name "SCENE 2"))
+
 (set-current-scene! scene2)
 
-(register-draw-object! other-debug)
+;;(define enemy-box (make <box> #:x 10 #:y 10 #:color '(#xFF 0 0)))
+;;(define player-box (make <box> #:x 100 #:y 100 #:color '(0 0 #xFF)))
+(define enemy-box (make-colliding))
+(define player-box (make-colliding))
+(slot-set! player-box 'color '(0 0 #xFF))
+(slot-set! player-box 'name "[PLAYER]")
+(slot-set! enemy-box  'name "[PLAYER]")
+(slot-set! player-box 'x 20)
+(slot-set! player-box 'y 20)
+
+(register-draw-object! enemy-box)
+(register-draw-object! player-box)
+(register-event-object! player-box)
+
+(define arrow-up 82)
+(define arrow-down 79)
+(define arrow-left 81)
+(define arrow-right 80)
+
+(define-macro (slot-mod! obj slot func)
+  `(slot-set! ,obj ,slot (,func (slot-ref ,obj ,slot))))
+
+(define-method (tick-func (box <box>)))
+(define-method (tick-func (obj <colliding>))
+  (for-each (lambda (other)
+              (when (and (not (eq? obj other))
+                         (colliding? obj other))
+                (collide obj other)
+                (collide other obj)))
+            (get-colliders (current-scene)))
+  (next-method))
+(define-method (event-do (obj <box>)
+                         (event <key-event>))
+               ;;;;(display (slot-ref event 'scancode))
+               (case (slot-ref event 'scancode)
+                 ((82)  (slot-mod! obj 'y 1- )) ;;
+                 ((81)  (slot-mod! obj 'y 1+ ))
+                 ((79)  (slot-mod! obj 'x 1+ )) ;;
+                 ((80)  (slot-mod! obj 'x 1- ))
+                 (else #f))
+               (next-method))
+
+;;(register-draw-object! other-debug)
+(register-draw-object! box-pos)
+(register-tick-object! box-pos)
 ;; Note that objects can be shared between scenes
 ;; (slot-set! other-debug 'text "Hello, World!")
 
