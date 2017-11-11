@@ -9,7 +9,7 @@
               (x #:accessor obj-x #:init-value 0)
               (y #:accessor obj-y #:init-value 0))
 
-(define-class <box> (<game-object>)
+(define-class <box> (<geo-object>)
               (w #:init-value 10)
               (h #:init-value 10))
 
