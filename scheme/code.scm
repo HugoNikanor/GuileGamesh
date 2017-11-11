@@ -4,6 +4,7 @@
              (oop goops describe)
              (scene)
              (vector)
+             (util)
              )
              ;;(scheme scene))
 
@@ -295,10 +296,93 @@
                  (else #f))
                (next-method))
 
+(define-class <tile-set> (<game-object>)
+              tile-sheet ; SDL_texture
+              tile-size ; 16
+              board-size ; v2 16 16 (in tiles)
+              )
+
+(define tileset (make <tile-set>))
+(slot-set! tileset 'tile-size 16)
+(slot-set! tileset 'board-size (make <v2> #:x 32 #:y 32))
+
+(define tile-defs
+  (make-array '(0 0) '(0 31) '(0 31)))
+
+(define-method
+  (draw-func (tileset <tile-set>))
+  (apply-for-each
+    (lambda (x y)
+      (render-texture (slot-ref tileset 'tile-sheet)
+                      (slot-ref tileset 'tile-size)
+                      ;'(0 0) ; sprite position in sheet 
+                      (array-ref tile-defs y x)
+                      (list x y)))
+    (cart-prod (iota (x (slot-ref tileset 'board-size)))
+               (iota (y (slot-ref tileset 'board-size))))))
+
+(define (next-tile tile)
+  (let ((a (car tile))
+        (b (cadr tile)))
+    (if (= b 31)
+      (list (1+ a) b)
+      (list a (1+ b)))))
+
+(define mouse-pos #f)
+
+(define tiles-of-interest
+  '((2 0)
+    (2 1)
+    (2 2)
+    (1 0)
+    (1 1)
+    (1 2)
+    (0 0)
+    (0 1)
+    (0 2)))
+
+;; 49 - 57 sym
+;; 89 - 97 u 30 - 39 scancode
+(define-method
+  (event-do (tileset <tile-set>)
+            (event <key-event>))
+  (when mouse-pos
+    (let ((x (floor (/ (x mouse-pos) 16)))
+          (y (floor (/ (y mouse-pos) 16))))
+      (let ((n (slot-ref event 'scancode)))
+        (if (> n 40)
+          (set! n (- n 89))
+          (set! n (- n 30)))
+        (array-set! tile-defs (list-ref tiles-of-interest n)
+                    y x))))
+  (next-method))
+
+
+(define-method
+  (event-do (tileset <tile-set>)
+            (event <mouse-motion-event>))
+  (set! mouse-pos (make <v2> #:x (mouse-x event) #:y (mouse-y event)))
+  (next-method))
+
+(register-event-object! tileset)
+
 ;;(register-draw-object! other-debug)
 (register-draw-object! box-pos)
 (register-tick-object! box-pos)
 ;; Note that objects can be shared between scenes
 ;; (slot-set! other-debug 'text "Hello, World!")
+
+(define fpath "/home/hugo/code/guile/engine/assets/PathAndObjects_0.png")
+(define (init-tile-set)
+  (slot-set! tileset 'tile-sheet
+             (load-image fpath))
+  (register-draw-object! tileset))
+
+(define scene3 (make <scene> #:name "SCENE 3"))
+(set-current-scene! scene3)
+
+(define-class <tileset-grid> (<tileset>))
+
+(define-method (draw-func (obj <tileset-grid>))
 
 (ready!)

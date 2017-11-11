@@ -13,4 +13,7 @@ TTF_Font* sans;
 SCM draw_text (SCM text, SCM _x, SCM _y);
 extern SDL_Renderer* renderer;
 
+SCM init_img (SCM filepath);
+SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos);
+
 #endif // SDL_SCM_H_

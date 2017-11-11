@@ -106,6 +106,12 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 	scm_c_define_gsubr
 		("draw-text", 3, 0, 0, draw_text);
 
+	scm_c_define_gsubr
+		("load-image", 1, 0, 0, init_img);
+
+	scm_c_define_gsubr
+		("render-texture", 4, 0, 0, render_texture);
+
 	scm_c_use_module ("scene");
 
 	get_event_list = scm_variable_ref(scm_c_lookup ("get-event-list"));
@@ -123,7 +129,12 @@ void* init_guile_thread (void* args) {
 	return 0;
 }
 
-SDL_Texture* img = NULL;
+void* f(void* args) {
+	SCM func = scm_variable_ref(scm_c_lookup ("init-tile-set"));
+	scm_call_0 (func);
+}
+
+//SDL_Texture* img = NULL;
 
 int main(int _argc, char* _argv[]) {
 	setenv("GUILE_LOAD_PATH", "scheme", 1);
@@ -169,11 +180,16 @@ int main(int _argc, char* _argv[]) {
 
 	renderer = SDL_CreateRenderer (window, -1, 0);
 
+	scm_with_guile (f, NULL);
+
+
+	/*
 	img = IMG_LoadTexture (renderer, "assets/PathAndObjects_0.png");
 	if (img == NULL) {
 		puts("couldn't load image");
 		return 1;
 	}
+	*/
 
 	int arg_len = 1;
 	arg_struct arg[arg_len];
@@ -197,9 +213,7 @@ int main(int _argc, char* _argv[]) {
 				SDL_RenderCopy (renderer, img, &sprite_rect, &screen_part);
 			}
 		}
-		*/
 
-		/*
 		for (int i = 0; i < 512; i += 16) {
 			SDL_RenderDrawLine (renderer, i, 0, i, 512);
 			SDL_RenderDrawLine (renderer, 0, i, 512, i);
@@ -225,7 +239,7 @@ int main(int _argc, char* _argv[]) {
 	TTF_Quit();
 
     // Close and destroy the window
-	SDL_DestroyTexture (img);
+	//SDL_DestroyTexture (img);
 	SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 

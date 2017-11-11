@@ -41,3 +41,39 @@ SCM draw_text (SCM text, SCM _x, SCM _y) {
 
 	return SCM_UNDEFINED;
 }
+
+SDL_Texture* img;
+SCM init_img (SCM filepath) {
+	char* path = scm_to_utf8_string (filepath);
+	img = IMG_LoadTexture (renderer, path);
+	if (img == NULL) {
+		puts ("_____couldn't load image______");
+		puts (SDL_GetError());
+	}
+	return scm_from_long((long) img);
+}
+
+SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) {
+	img = (SDL_Texture*) scm_to_long (img_ptr);
+	int sx = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(0)));
+	int sy = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(1)));
+	int tile_size = scm_to_int (_tile_size);
+
+	int board_pos_x = scm_to_int (scm_list_ref (board_pos, scm_from_int (0)));
+	int board_pos_y = scm_to_int (scm_list_ref (board_pos, scm_from_int (1)));
+
+	SDL_Rect sprite_tile = {
+		.x = sx * tile_size,
+		.y = sy * tile_size,
+		.w = tile_size,
+		.h = tile_size };
+	SDL_Rect board_space = {
+		.x = board_pos_x * tile_size,
+		.y = board_pos_y * tile_size,
+		.w = tile_size,
+		.h = tile_size };
+
+	SDL_RenderCopy (renderer, img, &sprite_tile, &board_space);
+
+	return SCM_UNSPECIFIED;
+}
