@@ -12,13 +12,18 @@
 (define-class <box> (<geo-object>)
               (w #:init-value 10)
               (h #:init-value 10))
+(define-class <text-obj> (<geo-object>)
+              text)
 
-(define-method (inc-counter! (box <box>))
+(define-method (inc-counter! (obj <game-object>))
   (slot-set! box 'c (1+ (counter box))))
 
 (define-method (slide! (box <box>))
+               #|
                (set! (obj-x box) (1+ (obj-x box)))
-               (set! (obj-y box) (1+ (obj-y box))))
+               (set! (obj-y box) (1+ (obj-y box))))|#
+(slot-set! box 'x (1+ (slot-ref box 'x)))
+(slot-set! box 'y (1+ (slot-ref box 'y))))
 
 (define-generic tick-func)
 (define-method (tick-func (box <box>))
@@ -83,6 +88,7 @@
                          (event <event>))
                (set! ev event))
 
+#|
 (define-method (event-do (box <box>)
                          (event <key-event>))
                (when (and (eqv? (slot-ref event 'type)
@@ -92,6 +98,7 @@
                  ;;(box-reset! box))
                  (describe event))
                (next-method))
+|#
 
 (define-method (event-do (box <box>)
                          (event <mouse-btn-event>))
@@ -101,15 +108,32 @@
 
 (define-generic draw-func)
 (define-method (draw-func (box <box>))
-  (draw-rect #f
-    (slot-ref box 'x)
-    (slot-ref box 'y)
-    (slot-ref box 'w)
-    (slot-ref box 'h)))
+               (set-color 0 0 #xFF)
+               (draw-rect #f
+                          (slot-ref box 'x)
+                          (slot-ref box 'y)
+                          (slot-ref box 'w)
+                          (slot-ref box 'h)))
+
+(define-method (draw-func (text <text-obj>))
+               (draw-text (slot-ref text 'text)
+                          (obj-x text)
+                          (obj-y text)))
+
+(define-method (tick-func (text <text-obj>))
+               (slot-set! text 'text
+                          (format #f "~d ~d"
+                                  (obj-x box)
+                                  (obj-y box))))
 
 (define box (make <box>))
+(define text (make <text-obj>))
 
 (register-draw-object! box)
 (register-tick-object! box)
 (register-event-object! box)
+
+(register-draw-object! text)
+(register-tick-object! text)
+
 (ready!)

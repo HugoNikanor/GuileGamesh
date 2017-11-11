@@ -10,5 +10,7 @@
 #define SYMB(s) scm_from_utf8_symbol (s)
 
 SCM arr_to_list (int counter, SCM* arr);
+void my_for_each (SCM func, SCM list);
+void my_for_each_1 (SCM func, SCM item, SCM list);
 
 #endif // UTIL_H

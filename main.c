@@ -1,5 +1,6 @@
 #include <libguile.h>
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <pthread.h>
 #include <stdbool.h>
 
@@ -57,24 +58,6 @@ static SCM get_registered_objects() {
 	return scm_list_3(draw_list, tick_list, event_list);
 }
 
-/*
- * I just don't understand scm_for_each
- */
-static void my_for_each (SCM func, SCM list) {
-	SCM nlist = list;
-	while (! scm_is_null (nlist)) {
-		scm_call_1 (func, scm_car (nlist));
-		nlist = scm_cdr (nlist);
-	}
-}
-
-static void my_for_each_1 (SCM func, SCM item, SCM list) {
-	SCM nlist = list;
-	while (! scm_is_null (nlist)) {
-		scm_call_2 (func, scm_car (nlist), item);
-		nlist = scm_cdr (nlist);
-	}
-}
 
 SDL_Renderer* renderer;
 
@@ -133,6 +116,38 @@ static SCM draw_rect (SCM fill_p, SCM x, SCM y, SCM w, SCM h) {
 	return SCM_UNDEFINED;
 }
 
+static SCM set_color (SCM r, SCM g, SCM b, SCM a) {
+	if (SCM_UNBNDP (a))
+		a = scm_from_int(0xFF);
+
+	SDL_SetRenderDrawColor (renderer,
+			scm_to_int(r),
+			scm_to_int(g),
+			scm_to_int(b),
+			scm_to_int(a));
+
+	return SCM_UNDEFINED;
+}
+
+TTF_Font* sans;
+SDL_Color white = {0xFF, 0xFF, 0xFF};
+static SCM draw_text (SCM text, SCM _x, SCM _y) {
+	int x = scm_to_int (_x);
+	int y = scm_to_int (_y);
+	char* str = scm_to_utf8_string (text);
+	SDL_Surface* surfaceMessage = TTF_RenderText_Blended(sans, str, white);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+	SDL_Rect rect = {.x = x, .y = y, .w = surfaceMessage->w, .h = surfaceMessage->h };
+
+	SDL_RenderCopy(renderer, texture, NULL, &rect);
+
+	SDL_FreeSurface(surfaceMessage);
+	SDL_DestroyTexture(texture);
+
+	return SCM_UNDEFINED;
+}
+
 /*
  * These are defined here to allow for the guile thread
  * to acccess them upon startup.
@@ -156,6 +171,10 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 
 	scm_c_define_gsubr
 		("draw-rect", 5, 0, 0, draw_rect);
+	scm_c_define_gsubr
+		("set-color", 3, 1, 0, set_color);
+	scm_c_define_gsubr
+		("draw-text", 3, 0, 0, draw_text);
 
 	//init_sdl_event_type();
 
@@ -179,6 +198,16 @@ int main(int _argc, char* _argv[]) {
     SDL_Window *window;                    // Declare a pointer
 
     SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
+
+	TTF_Init();
+	char* sans_path = "fonts/FiraMono-Regular.ttf";
+	sans = TTF_OpenFont(sans_path, 12);
+	if (sans == NULL) {
+		printf("Couldn't load font:\n");
+		printf("%s\n", sans_path);
+		printf("Exiting\n");
+		exit (1);
+	}
 
     // Create an application window with the following settings:
     window = SDL_CreateWindow(
@@ -224,6 +253,8 @@ int main(int _argc, char* _argv[]) {
 
 		SDL_RenderPresent (renderer);
 	}
+
+	TTF_Quit();
 
     // Close and destroy the window
 	SDL_DestroyRenderer(renderer);
