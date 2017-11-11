@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "types.h"
 #include "event.h"
@@ -244,8 +245,8 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 		("draw-text", 3, 0, 0, draw_text);
 
 	//scm_c_primitive_load ("scene.scm");
-	scm_c_primitive_load ("scene.scm");
-	//scm_c_use_module ("scheme scene");
+	//scm_c_primitive_load ("scene.scm");
+	scm_c_use_module ("scene");
 
 	get_event_list = scm_variable_ref(scm_c_lookup ("get-event-list"));
 	get_tick_list  = scm_variable_ref(scm_c_lookup ("get-tick-list"));
@@ -255,7 +256,7 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 	//init_sdl_event_type();
 
 	//scm_c_eval_string ("(load \"code.scm\")");
-	scm_c_primitive_load ("code.scm");
+	scm_c_primitive_load ("scheme/code.scm");
 
 	scm_shell (argc, argv);
 }
@@ -268,6 +269,7 @@ void* init_guile_thread (void* args) {
 SDL_Texture* img = NULL;
 
 int main(int _argc, char* _argv[]) {
+	setenv("GUILE_LOAD_PATH", "scheme", 1);
 	argc = _argc;
 	argv = _argv;
 

@@ -1,6 +1,7 @@
 (use-modules (srfi srfi-1)
              (oop goops)
              (oop goops describe)
+             (scene)
              )
              ;;(scheme scene))
 

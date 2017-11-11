@@ -1,14 +1,14 @@
-#|
-(define-module (scheme scene)
+(define-module (scene)
                #:use-module (oop goops)
                #:export (<scene>
                           current-scene
                           set-current-scene!
+                          get-event-list
+                          get-draw-list
+                          get-tick-list
                           register-tick-object!
                           register-draw-object!
                           register-event-object!))
-|#
-(use-modules (oop goops))
 
 
 (define-class <scene> ()
