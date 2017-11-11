@@ -12,10 +12,11 @@ LFLAGS = $$(guile-config link) \
 	     -lm -pthread
 DFLAGS = -ggdb
 
-C_FILES = $(wildcard *.c)
-O_FILES = $(notdir $(C_FILES:.c=.o))
+C_FILES = $(wildcard src/*.c)
+O_FILES = $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 
-%.o : %.c
+obj/%.o : src/%.c
+	-mkdir obj
 	gcc -c ${CFLAGS} ${DFLAGS} -o $@ $<
 
 main : $(O_FILES)
