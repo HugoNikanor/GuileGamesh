@@ -1,6 +1,7 @@
 #include <libguile.h>
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_image.h>
 #include <pthread.h>
 #include <stdbool.h>
 
@@ -190,6 +191,9 @@ void* init_guile_thread (void* args) {
 	scm_boot_guile (argc, argv, inner_guile_main, 0);
 	return 0;
 }
+
+SDL_Texture* img = NULL;
+
 int main(int _argc, char* _argv[]) {
 	argc = _argc;
 	argv = _argv;
@@ -211,13 +215,16 @@ int main(int _argc, char* _argv[]) {
 		exit (1);
 	}
 
+	int width, height;
+	width = height = 512;
+
     // Create an application window with the following settings:
     window = SDL_CreateWindow(
         "Game Engine",                     // window title
         SDL_WINDOWPOS_UNDEFINED,           // initial x position
         SDL_WINDOWPOS_UNDEFINED,           // initial y position
-        600,                               // width, in pixels
-        600,                               // height, in pixels
+        width,                               // width, in pixels
+        height,                               // height, in pixels
         SDL_WINDOW_OPENGL                  // flags - see below
     );
 
@@ -230,15 +237,40 @@ int main(int _argc, char* _argv[]) {
 
 	renderer = SDL_CreateRenderer (window, -1, 0);
 
+	img = IMG_LoadTexture (renderer, "assets/PathAndObjects_0.png");
+	if (img == NULL) {
+		puts("couldn't load image");
+		return 1;
+	}
+
 	int arg_len = 1;
 	arg_struct arg[arg_len];
 
 	SDL_Event event;
 	int has_event = false;
+	SDL_Rect screen_rect = {.x = 0, .y = 0, .w = 512, .h = 512};
+	SDL_Rect sprite_rect = {.x = 0, .y = 0, .w = 16, .h = 16};
+	SDL_Rect screen_part = sprite_rect;
 	while (true) {
 		SDL_SetRenderDrawColor (renderer, 0, 0, 0, 0xFF);
 		SDL_RenderClear (renderer);
 		SDL_SetRenderDrawColor (renderer, 0xFF, 0, 0, 0xFF);
+
+		//SDL_RenderCopy (renderer, img, &screen_rect, &screen_rect);
+		for (int y = 0; y < 32; y++) {
+			for (int x = 0; x < 32; x++) {
+				screen_part.x = x * 16;
+				screen_part.y = y * 16;
+				SDL_RenderCopy (renderer, img, &sprite_rect, &screen_part);
+			}
+		}
+
+		/*
+		for (int i = 0; i < 512; i += 16) {
+			SDL_RenderDrawLine (renderer, i, 0, i, 512);
+			SDL_RenderDrawLine (renderer, 0, i, 512, i);
+		}
+		*/
 
 		has_event = SDL_PollEvent(&event);
 		if (has_event) {
@@ -259,6 +291,7 @@ int main(int _argc, char* _argv[]) {
 	TTF_Quit();
 
     // Close and destroy the window
+	SDL_DestroyTexture (img);
 	SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
