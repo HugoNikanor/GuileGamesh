@@ -105,6 +105,8 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 		("set-color", 3, 1, 0, set_color);
 	scm_c_define_gsubr
 		("draw-text", 3, 0, 0, draw_text);
+	scm_c_define_gsubr
+		("draw-line", 4, 0, 0, draw_line);
 
 	scm_c_define_gsubr
 		("load-image", 1, 0, 0, init_img);
