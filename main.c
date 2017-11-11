@@ -21,7 +21,7 @@ typedef struct {
 	arg_types arg;
 } arg_struct;
 
-static SCM keyboard_event;
+// static SCM keyboard_event;
 
 /*
 void init_sdl_event_type (void) {
@@ -61,9 +61,11 @@ static SCM bind_keysym (SDL_Keysym sym) {
 			scm_from_uint16 (sym.mod));
 }
 
+#define SYMB(s) scm_from_utf8_symbol (s)
+
 static SCM bind_keyboard_event (SDL_KeyboardEvent* event) {
 	return scm_list_n (
-			scm_from_utf8_symbol ("<key-event>"),
+			SYMB ("<key-event>"),
 			scm_from_utf8_symbol(event->type == SDL_KEYUP ? "SDL_KEYUP" : "SDL_KEYDOWN"),
 			scm_from_uint32 (event->timestamp),
 			scm_from_uint32 (event->windowID),
@@ -72,7 +74,22 @@ static SCM bind_keyboard_event (SDL_KeyboardEvent* event) {
 			bind_keysym (event->keysym),
 			SCM_UNDEFINED
 			);
+}
 
+static SCM bind_mouse_btn (SDL_MouseButtonEvent* event) {
+	return scm_list_n (
+			SYMB ("<mouse-btn-event>"),
+			scm_from_utf8_symbol(event->type == SDL_MOUSEBUTTONDOWN ? "SDL_MOUSEBUTTONDOWN" : "SDL_MOUSEBUTTONUP"),
+			scm_from_uint32 (event->timestamp),
+			scm_from_uint32 (event->windowID),
+			scm_from_uint32 (event->which),
+			scm_from_uint8 (event->button),
+			scm_from_uint8 (event->state),
+			scm_from_uint8 (event->clicks),
+			scm_from_int32 (event->x),
+			scm_from_int32 (event->y),
+			SCM_UNDEFINED
+			);
 }
 
 bool ready = false;
@@ -169,10 +186,13 @@ static void* event_objects (arg_struct* args) {
 	if (event == NULL)
 		return NULL;
 
-	if (event->type == SDL_KEYDOWN
-			|| event->type == SDL_KEYUP) {
-		//my_for_each_1 (event_func, bind_keyboard_event (&event->key), event_list);
-		scm_call_1 (event_func, bind_keyboard_event (&event->key));
+	switch (event->type) {
+		case SDL_KEYDOWN:
+		case SDL_KEYUP:
+			scm_call_1 (event_func, bind_keyboard_event (&event->key));
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+			scm_call_1 (event_func, bind_mouse_btn (&event->button));
 	}
 
 
