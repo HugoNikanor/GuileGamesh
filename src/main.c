@@ -71,6 +71,8 @@ static void* event_objects (arg_struct* args) {
 		case SDL_MOUSEBUTTONUP:
 			scm_call_1 (event_func, bind_mouse_btn (&event->button));
 			break;
+		case SDL_MOUSEMOTION:
+			scm_call_1 (event_func, bind_mouse_move (&event->motion));
 	}
 
 

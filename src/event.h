@@ -10,5 +10,7 @@ SCM bind_keyboard_event (SDL_KeyboardEvent* event);
 
 SCM bind_mouse_btn (SDL_MouseButtonEvent* event);
 
+SCM bind_mouse_move (SDL_MouseMotionEvent* event);
+
 #endif // EVENT_H
 

@@ -88,6 +88,13 @@
               (x #:getter mouse-x)
               (y #:getter mouse-y))
 
+(define-class <mouse-motion-event> (<event>)
+              which state
+              (x #:getter mouse-x)
+              (y #:getter mouse-y)
+              (xrel #:getter mouse-dx)
+              (yrel #:getter mouse-dy))
+
 (define-generic fix-event-args)
 (define-method (fix-event-args (_ <event>) rest))
 (define-method (fix-event-args (ev <key-event>) state repeat keysym)
@@ -106,6 +113,14 @@
                (slot-set! ev 'clicks clicks)
                (slot-set! ev 'x x)
                (slot-set! ev 'y y))
+(define-method (fix-event-args (ev <mouse-motion-event>)
+                               which state x y yrel xrel)
+               (slot-set! ev 'which which)
+               (slot-set! ev 'state state)
+               (slot-set! ev 'x x)
+               (slot-set! ev 'y y)
+               (slot-set! ev 'xrel xrel)
+               (slot-set! ev 'yrel yrel))
 
 
 #|
