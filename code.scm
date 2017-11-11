@@ -44,13 +44,27 @@
                        event-objs)))
          (get-registered-objects)))
 
+(define-method (box-reset! (box <box>))
+               (slot-set! box 'x 0)
+               (slot-set! box 'y 0))
+
+
+
 (define-generic event-do)
 (define-method (event-do (obj <game-object>)
                          (event <event>)))
 
 (define-method (event-do (box <box>)
                          (event <key-event>))
-    (set! ev event))
+               (set! ev event)
+               (apply (lambda (type time _ state repeat keysym)
+                        (apply (lambda (scan sym mod)
+                                 (when (= sym #x20)
+                                   (box-reset! box)))
+                               keysym)
+                        (when (eqv? type 'SDL_KEYDOWN)
+                          (describe event)))
+                      (slot-ref event 'slots)))
 
 (define-generic draw-func)
 (define-method (draw-func (box <box>))

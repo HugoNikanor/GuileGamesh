@@ -10,7 +10,7 @@
 
 #define cons_mut(obj,list) list = scm_cons (obj, list)
 
-typedef enum { EVENT } arg_t;
+typedef enum { NOEVENTT, EVENT } arg_t;
 
 typedef union {
 	SDL_Event* event;
@@ -23,6 +23,7 @@ typedef struct {
 
 static SCM keyboard_event;
 
+/*
 void init_sdl_event_type (void) {
 	SCM name, slots;
 	scm_t_struct_finalize finalizer;
@@ -42,6 +43,7 @@ void init_sdl_event_type (void) {
 	keyboard_event =
 		scm_make_foreign_object_type (name, slots, finalizer);
 }
+*/
 
 static SCM arr_to_list (int counter, SCM* arr) {
 	if (counter == 1)
@@ -50,68 +52,27 @@ static SCM arr_to_list (int counter, SCM* arr) {
 		return scm_cons (*arr, arr_to_list (counter - 1, arr + 1));
 }
 
+static SCM bind_keysym (SDL_Keysym sym) {
+	// scancode
+	// keycode sym
+	// uint16 mod
+	return scm_list_3 (scm_from_int (sym.scancode),
+			scm_from_int (sym.sym),
+			scm_from_uint16 (sym.mod));
+}
+
 static SCM bind_keyboard_event (SDL_KeyboardEvent* event) {
-	//return scm_make_foreign_object_1 (keyboard_event, event);
-	printf ("%s, %zu, %i, %s, %i, %i\n",
-		   	event->type == SDL_KEYUP ? "SDL_Keyup" : "SDL_Keydown",
-			event->timestamp,
-			event->windowID,
-			event->state == SDL_PRESSED ? "SDL_PRESSED" : "SDL_RELEASED",
-			event->repeat,
-			event->keysym.sym);
-
-	//SCM* items = malloc(sizeof(void*) * 6);
-	SCM items[6];
-	items[0] = scm_from_utf8_symbol(event->type == SDL_KEYUP ? "SDL_KEYUP" : "SDL_KEYDOWN");
-	items[1] = scm_from_uint32 (event->timestamp);
-	items[2] = scm_from_uint32 (event->windowID);
-	items[3] = scm_from_uint8  (event->state);
-	items[4] = scm_from_uint8  (event->repeat);
-
-	items[5] = scm_from_int (0);
-
-	SCM slots = 
-		scm_list_n (
-			scm_from_utf8_symbol ("type"),
-			scm_from_utf8_symbol ("timestamp"),
-			scm_from_utf8_symbol ("windowID"),
-			scm_from_utf8_symbol ("state"),
-			scm_from_utf8_symbol ("repeat"),
-			scm_from_utf8_symbol ("keysym"),
+	return scm_list_n (
+			scm_from_utf8_symbol ("<key-event>"),
+			scm_from_utf8_symbol(event->type == SDL_KEYUP ? "SDL_KEYUP" : "SDL_KEYDOWN"),
+			scm_from_uint32 (event->timestamp),
+			scm_from_uint32 (event->windowID),
+			scm_from_uint8  (event->state),
+			scm_from_uint8  (event->repeat),
+			bind_keysym (event->keysym),
 			SCM_UNDEFINED
 			);
 
-	SCM list = scm_cons (scm_from_utf8_symbol ("<key-event>"), arr_to_list (6, items));
-	return list;
-
-	// (slot-set! obj 'slot val)
-	/*
-	SCM func = scm_variable_ref(scm_c_lookup ("define-class-cont"));
-	scm_call_4 (func,
-		  scm_from_utf8_symbol ("<SDL_KeyEvent>"),
-	      scm_from_utf8_symbol ("make-keyevent"),
-		  SCM_EOL,
-		  slots);
-		  */
-
-	//return scm_apply_0 (scm_variable_ref(scm_c_lookup("make-keyevent")), list);
-	//return my_scm_make_foreign_object_n (keyboard_event, list);
-	//items[5] = (void*) event->keysym;
-	//SCM obj = scm_make_foreign_object_0 (keyboard_event);
-	/*
-	scm_foreign_object_signed_set_x (obj, 0,  scm_from_utf8_symbol(event->type == SDL_KEYUP ? "SDL_KEYUP" : "SDL_KEYDOWN"));
-	scm_foreign_object_signed_set_x (obj, 1, &event->timestamp);
-	scm_foreign_object_signed_set_x (obj, 2, &event->windowID);
-	scm_foreign_object_signed_set_x (obj, 3, &event->state);
-	scm_foreign_object_signed_set_x (obj, 4, &event->repeat);
-	scm_foreign_object_signed_set_x (obj, 5, &event->keysym.sym);
-	*/
-	//scm_foreign_object_[[un]signed]set_x (obj, n, val);
-	//return scm_make_foreign_object_n (keyboard_event, 6, (void*) event);
-	//return scm_make_foreign_object_n_alt (keyboard_event, 6, (void*) event);
-	//return scm_make_foreign_object_n (keyboard_event, 5, (void*) items);
-	//return scm_make_foreign_object_3 (keyboard_event, items[0], items[1], items[2]);
-	//return obj;
 }
 
 bool ready = false;
@@ -240,7 +201,7 @@ static SCM draw_rect (SCM fill_p, SCM x, SCM y, SCM w, SCM h) {
 
 /*
  * These are defined here to allow for the guile thread
- * to acccess them upon startup.  
+ * to acccess them upon startup.
  */
 int argc;
 char** argv;
@@ -262,7 +223,7 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 	scm_c_define_gsubr
 		("draw-rect", 5, 0, 0, draw_rect);
 
-	init_sdl_event_type();
+	//init_sdl_event_type();
 
 	//scm_c_eval_string ("(load \"code.scm\")");
 	scm_c_primitive_load ("code.scm");
@@ -320,6 +281,9 @@ int main(int _argc, char* _argv[]) {
 				break;
 			arg[0].arg.event = &event;
 			arg[0].type = EVENT;
+		} else {
+			arg[0].arg.event = NULL;
+			//arg[0].type = NOEVENTT;
 		}
 
 		scm_with_guile (call_funcs, arg);
