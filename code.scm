@@ -3,34 +3,34 @@
              (oop goops describe))
 
 (define-class <game-object> ()
+              (name #:init-keyword #:name #:getter object-name #:init-value "[NAMELESS]")
               (c #:init-value 0 #:getter counter))
 
 (define-class <geo-object> (<game-object>)
-              (x #:accessor obj-x #:init-value 0)
-              (y #:accessor obj-y #:init-value 0))
+              (x #:init-keyword #:x #:accessor obj-x #:init-value 0)
+              (y #:init-keyword #:y #:accessor obj-y #:init-value 0))
 
 (define-class <box> (<geo-object>)
-              (w #:init-value 10)
-              (h #:init-value 10))
+              (w #:init-keyword #:w #:init-value 10)
+              (h #:init-keyword #:h #:init-value 10))
 (define-class <text-obj> (<geo-object>)
-              text)
-
-(define-method (inc-counter! (obj <game-object>))
-  (slot-set! box 'c (1+ (counter box))))
+              (text #:init-value " ")
+              (update-text #:init-value #f))
 
 (define-method (slide! (box <box>))
-               #|
-               (set! (obj-x box) (1+ (obj-x box)))
-               (set! (obj-y box) (1+ (obj-y box))))|#
-(slot-set! box 'x (1+ (slot-ref box 'x)))
-(slot-set! box 'y (1+ (slot-ref box 'y))))
+               (slot-set! box 'x (1+ (slot-ref box 'x)))
+               (slot-set! box 'y (1+ (slot-ref box 'y))))
 
 (define-generic tick-func)
+
+(define-method (tick-func (obj <game-object>))
+               (slot-set! obj 'c (1+ (slot-ref obj 'c))))
+
 (define-method (tick-func (box <box>))
-  (inc-counter! box)
-  (when (zero? (remainder (counter box)
-                          1000))
-    (slide! box)))
+               (when (zero? (remainder (counter box)
+                                       1000))
+                 (slide! box))
+               (next-method))
 
 (define ev '())
 
@@ -86,19 +86,31 @@
 
 (define-method (event-do (obj <game-object>)
                          (event <event>))
+               (slot-set! other-debug 'text
+                          (with-output-to-string
+                            (lambda ()
+                              (display (slot-ref event 'type))
+                              (display " | ")
+                              (display (object-name obj)))))
                (set! ev event))
 
 #|
+(define-method (event-do (box <box>)
+                        (event <key-event>))
+               (slot-set! other-debug 'text
+                           "huh?"))
+|#
+
+
 (define-method (event-do (box <box>)
                          (event <key-event>))
                (when (and (eqv? (slot-ref event 'type)
                                 'SDL_KEYDOWN)
                           (= (slot-ref event 'sym)
                              #x20))
-                 ;;(box-reset! box))
-                 (describe event))
+                 (box-reset! box))
+                 ;;(describe event))
                (next-method))
-|#
 
 (define-method (event-do (box <box>)
                          (event <mouse-btn-event>))
@@ -121,19 +133,31 @@
                           (obj-y text)))
 
 (define-method (tick-func (text <text-obj>))
-               (slot-set! text 'text
-                          (format #f "~d ~d"
-                                  (obj-x box)
-                                  (obj-y box))))
+               (let ((func (slot-ref text 'update-text)))
+                 (when func
+                   (slot-set! text 'text (func text)))))
 
-(define box (make <box>))
-(define text (make <text-obj>))
+(define box (make <box> #:name "[MAIN BOX]"))
+(define box-pos (make <text-obj>))
+(slot-set! box-pos 'update-text
+           (lambda (text)
+             (format #f "~d ~d"
+                     (obj-x box)
+                     (obj-y box))))
+
+(define other-debug (make <text-obj> #:y 12))
 
 (register-draw-object! box)
 (register-tick-object! box)
 (register-event-object! box)
 
-(register-draw-object! text)
-(register-tick-object! text)
+(register-draw-object! box-pos)
+(register-tick-object! box-pos)
+
+(register-draw-object! other-debug)
+;;;(register-tick-object! other-debug)
+
+(define input-listener (make <game-object> #:name "[INPUT LISTENER]"))
+(register-event-object! input-listener)
 
 (ready!)

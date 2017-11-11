@@ -87,9 +87,11 @@ static void* event_objects (arg_struct* args) {
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
 			scm_call_1 (event_func, bind_keyboard_event (&event->key));
+			break;
 		case SDL_MOUSEBUTTONDOWN:
 		case SDL_MOUSEBUTTONUP:
 			scm_call_1 (event_func, bind_mouse_btn (&event->button));
+			break;
 	}
 
 
@@ -214,8 +216,8 @@ int main(int _argc, char* _argv[]) {
         "Game Engine",                     // window title
         SDL_WINDOWPOS_UNDEFINED,           // initial x position
         SDL_WINDOWPOS_UNDEFINED,           // initial y position
-        100,                               // width, in pixels
-        100,                               // height, in pixels
+        600,                               // width, in pixels
+        600,                               // height, in pixels
         SDL_WINDOW_OPENGL                  // flags - see below
     );
 
