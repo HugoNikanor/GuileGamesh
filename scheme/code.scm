@@ -51,7 +51,7 @@
                            (b <colliding>))
                (let ((v (pos a))
                      (u (pos b)))
-                 (and 
+                 (and
                    (not (> (x v) (+ (x u) (x (size b)))))
                    (not (> (x u) (+ (x v) (x (size a)))))
                    (not (> (y u) (+ (y v) (y (size a)))))
@@ -315,7 +315,7 @@
     (lambda (x y)
       (render-texture (slot-ref tileset 'tile-sheet)
                       (slot-ref tileset 'tile-size)
-                      ;'(0 0) ; sprite position in sheet 
+                      ;'(0 0) ; sprite position in sheet
                       (array-ref tile-defs y x)
                       (list x y)))
     (cart-prod (iota (x (slot-ref tileset 'board-size)))
@@ -350,11 +350,14 @@
     (let ((x (floor (/ (x mouse-pos) 16)))
           (y (floor (/ (y mouse-pos) 16))))
       (let ((n (slot-ref event 'scancode)))
-        (if (> n 40)
-          (set! n (- n 89))
-          (set! n (- n 30)))
-        (array-set! tile-defs (list-ref tiles-of-interest n)
-                    y x))))
+        (cond
+          ((< 30 n 39)
+           (set! n (- n 30)))
+          ((< 89 n 98)
+           (set! n (- n 89))))
+        (when (<= 1 n 9)
+          (array-set! tile-defs (list-ref tiles-of-interest n)
+                      y x)))))
   (next-method))
 
 
@@ -376,13 +379,27 @@
 (define (init-tile-set)
   (slot-set! tileset 'tile-sheet
              (load-image fpath))
-  (register-draw-object! tileset))
+  (register-draw-object! tileset scene2))
 
 (define scene3 (make <scene> #:name "SCENE 3"))
 (set-current-scene! scene3)
 
-(define-class <tileset-grid> (<tileset>))
+;;(define-class <tileset-grid> (<tile-set>))
+(define-class <tileset-grid> ())
 
 (define-method (draw-func (obj <tileset-grid>))
+  (for-each (lambda (y)
+              (for-each (lambda (x)
+                          (draw-line 0 y 512 y)
+                          (draw-line x 0 x 512))
+                        (map (cut * <> 16) (iota 32))))
+            (map (cut * <> 16) (iota 32)))
+  ;;(next-method))
+  )
+
+(define ts-grid (make <tileset-grid>))
+
+(register-draw-object! ts-grid)
+
 
 (ready!)
