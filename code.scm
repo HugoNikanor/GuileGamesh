@@ -24,11 +24,12 @@
                           1000))
     (slide! box)))
 
+(define ev '())
+
 (define-generic event-func)
 (define-method (event-func (box <box>)
                           event)
-  (display 'event)
-  (newline))
+    (set! ev event))
 
 (define-generic draw-func)
 (define-method (draw-func (box <box>))

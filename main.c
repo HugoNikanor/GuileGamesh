@@ -19,6 +19,39 @@ typedef struct {
 	arg_types arg;
 } arg_struct;
 
+static SCM keyboard_event;
+
+void init_sdl_event_type (void) {
+	SCM name, slots;
+	scm_t_struct_finalize finalizer;
+
+	name = scm_from_utf8_symbol ("SDL_KeyboardEvent");
+	slots = scm_list_n (
+			scm_from_utf8_symbol ("type"),
+			scm_from_utf8_symbol ("timestamp"),
+			scm_from_utf8_symbol ("windowID"),
+			scm_from_utf8_symbol ("state"),
+			scm_from_utf8_symbol ("repeat"),
+			scm_from_utf8_symbol ("keysym"),
+			SCM_UNDEFINED
+			);
+	finalizer = NULL;
+
+	keyboard_event =
+		scm_make_foreign_object_type (name, slots, finalizer);
+}
+
+static SCM bind_keyboard_event (SDL_KeyboardEvent* event) {
+	//return scm_make_foreign_object_1 (keyboard_event, event);
+	printf ("%s, %zu, %i, %s, %i, %i\n",
+		   	event->type == SDL_KEYUP ? "SDL_Keyup" : "SDL_Keydown",
+			event->timestamp,
+			event->windowID,
+			event->state == SDL_PRESSED ? "SDL_PRESSED" : "SDL_RELEASED",
+			event->repeat,
+			event->keysym.sym);
+	return scm_make_foreign_object_n (keyboard_event, 6, (void*) event);
+}
 
 bool ready = false;
 SCM draw_list = SCM_EOL;
@@ -114,9 +147,10 @@ static void* event_objects (arg_struct* args) {
 	if (event == NULL)
 		return NULL;
 
-	//my_for_each_1 (event_func, event, event_list);
-	// TODO actually pass the event
-	my_for_each_1 (event_func, scm_from_int (1), event_list);
+	if (event->type == SDL_KEYDOWN
+			|| event->type == SDL_KEYUP) {
+		my_for_each_1 (event_func, bind_keyboard_event (&event->key), event_list);
+	}
 
 	return NULL;
 }
@@ -164,6 +198,8 @@ static void inner_guile_main (void* data, int argc, char* argv[]) {
 
 	scm_c_define_gsubr
 		("draw-rect", 5, 0, 0, draw_rect);
+
+	init_sdl_event_type();
 
 	scm_c_eval_string ("(load \"code.scm\")");
 
