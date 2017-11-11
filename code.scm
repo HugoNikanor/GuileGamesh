@@ -1,6 +1,11 @@
 (use-modules (srfi srfi-1)
              (oop goops)
-             (oop goops describe))
+             (oop goops describe)
+             )
+             ;;(scheme scene))
+
+(define (r)
+  (system "reset"))
 
 (define-class <game-object> ()
               (name #:init-keyword #:name #:getter object-name #:init-value "[NAMELESS]")
@@ -62,6 +67,7 @@
                (slot-set! ev 'y y))
 
 
+#|
 (define (event-func event)
   "Event dispatcher?"
   (apply (lambda (_ __ event-objs)
@@ -74,7 +80,19 @@
              (for-each (lambda (obj)
                          (event-do obj e))
                        event-objs)))
-         (get-registered-objects)))
+         (current-scene)))
+|#
+(define (event-func event)
+  (let ((e (eval `(make ,(car event))
+                 (current-module))))
+    (slot-set! e 'type (list-ref event 1))
+    (slot-set! e 'timestamp (list-ref event 2))
+    (slot-set! e 'window-id (list-ref event 3))
+    (apply fix-event-args e (drop event 4))
+    (for-each (lambda (obj)
+                (event-do obj e))
+              (get-event-list (current-scene)))))
+
 
 (define-method (box-reset! (box <box>))
                (slot-set! box 'x 0)
@@ -159,5 +177,14 @@
 
 (define input-listener (make <game-object> #:name "[INPUT LISTENER]"))
 (register-event-object! input-listener)
+
+(slot-set! (current-scene) 'name "SCENE 1")
+(define scene1 (current-scene))
+(define scene2 (make <scene> #:name "SCENE 2"))
+(set-current-scene! scene2)
+
+(register-draw-object! other-debug)
+;; Note that objects can be shared between scenes
+;; (slot-set! other-debug 'text "Hello, World!")
 
 (ready!)
