@@ -11,26 +11,30 @@
   `(slot-set! ,obj ,slot (,func (slot-ref ,obj ,slot))))
 
 (define-class <game-object> ()
-              (name #:init-keyword #:name #:getter object-name #:init-value "[NAMELESS]")
-              (c #:init-value 0 #:getter counter))
+              (name #:init-keyword #:name
+                    #:getter object-name
+                    #:init-value "[NAMELESS]")
+              (c #:init-value 0
+                 #:getter counter))
 
 (define-class <geo-object> (<game-object>)
-              (pos #:accessor pos #:init-keyword #:pos))
-              ;;(x #:init-keyword #:x #:accessor obj-x #:init-value 0)
-              ;;(y #:init-keyword #:y #:accessor obj-y #:init-value 0))
+              (pos #:accessor pos
+                   #:init-keyword #:pos))
 
 (define-class <box> (<geo-object>)
-              (size #:accessor size #:init-keyword #:size)
-              (color #:init-keyword #:color #:init-value '(#xFF 0 0)))
+              (size #:accessor size
+                    #:init-keyword #:size)
+              (color #:init-keyword #:color
+                     #:init-value '(#xFF 0 0)))
 
 (define-class <colliding> (<box>)
-              (friction #:init-value 1))
+              (friction #:init-keyword #:friction
+                        #:init-value 1))
 
-(define (make-colliding)
-  (let ((obj (make <colliding>)))
-    (register-collider! obj)
-    (register-tick-object! obj)
-    obj))
+(define-method (initialize (obj <colliding>) initargs)
+               (register-collider! obj)
+               (register-tick-object! obj)
+               (next-method))
 
 ;; This pushes to far
 (define-method (collide (a <colliding>)
@@ -204,7 +208,7 @@
                (apply set-color (slot-ref box 'color))
                (let ((pos (pos box))
                      (size (size box)))
-               (draw-rect #f
+               (draw-rect #t
                           (x pos)
                           (y pos)
                           (x size)
@@ -247,21 +251,24 @@
 (define scene1 (current-scene))
 (define scene2 (make <scene> #:name "SCENE 2"))
 
-(set-current-scene! scene2)
+(set-current-scene! scene1)
 
-;;(define enemy-box (make <box> #:x 10 #:y 10 #:color '(#xFF 0 0)))
-;;(define player-box (make <box> #:x 100 #:y 100 #:color '(0 0 #xFF)))
-(define enemy-box (make-colliding))
-(define player-box (make-colliding))
-(slot-set! enemy-box 'pos (make <v2> #:x 10 #:y 100))
-(slot-set! enemy-box 'size (make <v2> #:x 10 #:y 10))
-(slot-set! player-box 'pos (make <v2> #:x 100 #:y 10))
-(slot-set! player-box 'size (make <v2> #:x 10 #:y 10))
-(slot-set! player-box 'color '(0 0 #xFF))
-(slot-set! player-box 'name "[PLAYER]")
-(slot-set! enemy-box  'name "[ENEMY]")
-;(slot-set! player-box 'pos (make <v2> #:x 20 #:y 20))
-(slot-set! player-box 'friction 0.5)
+(with-scene
+  scene2
+  (define enemy-box
+    (make <colliding>
+          #:name "[ENEMY]"
+          #:pos  (make <v2> #:x 10 #:y 100)
+          #:size (make <v2> #:x 10 #:y 10)))
+  (define player-box
+    (make <colliding>
+          #:name "[PLAYER]"
+          #:pos  (make <v2> #:x 100 #:y 10)
+          #:size (make <v2> #:x 10 #:y 10)
+          #:color '(0 0 #xFF)
+          #:friction 0.5)))
+
+(set-current-scene! scene2)
 
 (register-draw-object! enemy-box)
 (register-draw-object! player-box)
@@ -397,5 +404,6 @@
 
 (register-draw-object! ts-grid)
 
-
 (ready!)
+
+(set-current-scene! scene2)

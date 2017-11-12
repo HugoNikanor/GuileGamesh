@@ -10,15 +10,21 @@
                           register-tick-object!
                           register-draw-object!
                           register-event-object!
-                          register-collider!))
+                          register-collider!
+                          with-scene
+                          ))
 
 
 (define-class <scene> ()
               (name #:init-keyword #:name)
-              (event-list #:init-value '() #:getter get-event-list)
-              (draw-list  #:init-value '() #:getter get-draw-list)
-              (tick-list  #:init-value '() #:getter get-tick-list)
-              (collision-list #:init-value '() #:getter get-colliders))
+              (event-list #:init-value '()
+                          #:getter get-event-list)
+              (draw-list  #:init-value '()
+                          #:getter get-draw-list)
+              (tick-list  #:init-value '()
+                          #:getter get-tick-list)
+              (collision-list #:init-value '()
+                              #:getter get-colliders))
 
 (define-method (add-event! (scene <scene>) item)
   (slot-set! scene 'event-list
@@ -50,3 +56,13 @@
          (add-event! scene obj))
 (define* (register-collider! obj #:optional (scene (current-scene)))
          (add-collider! scene obj))
+
+(define-macro (with-scene scene . exprs)
+  "call <exprs> with (current-scene) set to return <scene>
+   return unspecified"
+  (let ((orig-scene (gensym)))
+    `(begin
+       (define ,orig-scene current-scene)
+       (set! current-scene (lambda () ,scene))
+       ,@exprs
+       (set! current-scene ,orig-scene))))
