@@ -1,7 +1,10 @@
 (define-module (util)
                #:use-module (srfi srfi-1)
                #:use-module (srfi srfi-26)
-               #:export (apply-for-each cart-prod))
+               #:export (apply-for-each cart-prod r))
+
+(define (r)
+  (system "reset"))
 
 (define (apply-for-each func lists)
   (unless (null? lists)

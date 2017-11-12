@@ -6,10 +6,6 @@
              (vector)
              (util)
              )
-             ;;(scheme scene))
-
-(define (r)
-  (system "reset"))
 
 (define-macro (slot-mod! obj slot func)
   `(slot-set! ,obj ,slot (,func (slot-ref ,obj ,slot))))
