@@ -27,35 +27,35 @@
               (color #:init-keyword #:color
                      #:init-value '(#xFF 0 0)))
 
-(define-class <colliding> (<box>)
-              (friction #:init-keyword #:friction
-                        #:init-value 1))
-
-(define-method (initialize (obj <colliding>) initargs)
-               (register-collider! obj)
-               (register-tick-object! obj)
-               (next-method))
-
-;; This pushes to far
-(define-method (collide (a <colliding>)
-                        (b <colliding>))
-               (format #t "~s and ~s collided\n" (object-name a) (object-name b))
-               (slot-mod! b 'pos
-                          (cut + <> (* (1- (slot-ref b 'friction))
-                                       (- (+ (* 1/2 (size a))
-                                             (pos a))
-                                          (+ (* 1/2 (size b))
-                                             (pos b)))))))
-
-(define-method (colliding? (a <colliding>)
-                           (b <colliding>))
-               (let ((v (pos a))
-                     (u (pos b)))
-                 (and
-                   (not (> (x v) (+ (x u) (x (size b)))))
-                   (not (> (x u) (+ (x v) (x (size a)))))
-                   (not (> (y u) (+ (y v) (y (size a)))))
-                   (not (> (y v) (+ (y u) (y (size b))))))))
+;;; (define-class <colliding> (<box>)
+;;;               (friction #:init-keyword #:friction
+;;;                         #:init-value 1))
+;;; 
+;;; (define-method (initialize (obj <colliding>) initargs)
+;;;                (register-collider! obj)
+;;;                (register-tick-object! obj)
+;;;                (next-method))
+;;; 
+;;; ;; This pushes to far
+;;; (define-method (collide (a <colliding>)
+;;;                         (b <colliding>))
+;;;                (format #t "~s and ~s collided\n" (object-name a) (object-name b))
+;;;                (slot-mod! b 'pos
+;;;                           (cut + <> (* (1- (slot-ref b 'friction))
+;;;                                        (- (+ (* 1/2 (size a))
+;;;                                              (pos a))
+;;;                                           (+ (* 1/2 (size b))
+;;;                                              (pos b)))))))
+;;; 
+;;; (define-method (colliding? (a <colliding>)
+;;;                            (b <colliding>))
+;;;                (let ((v (pos a))
+;;;                      (u (pos b)))
+;;;                  (and
+;;;                    (not (> (x v) (+ (x u) (x (size b)))))
+;;;                    (not (> (x u) (+ (x v) (x (size a)))))
+;;;                    (not (> (y u) (+ (y v) (y (size a)))))
+;;;                    (not (> (y v) (+ (y u) (y (size b))))))))
 
 (define-class <text-obj> (<geo-object>)
               (text #:init-value " ")
@@ -253,15 +253,30 @@
 
 (set-current-scene! scene1)
 
+;;; (with-scene
+;;;   scene2
+;;;   (define enemy-box
+;;;     (make <colliding>
+;;;           #:name "[ENEMY]"
+;;;           #:pos  (make <v2> #:x 10 #:y 100)
+;;;           #:size (make <v2> #:x 10 #:y 10)))
+;;;   (define player-box
+;;;     (make <colliding>
+;;;           #:name "[PLAYER]"
+;;;           #:pos  (make <v2> #:x 100 #:y 10)
+;;;           #:size (make <v2> #:x 10 #:y 10)
+;;;           #:color '(0 0 #xFF)
+;;;           #:friction 0.5)))
+
 (with-scene
   scene2
   (define enemy-box
-    (make <colliding>
+    (make <box>
           #:name "[ENEMY]"
           #:pos  (make <v2> #:x 10 #:y 100)
           #:size (make <v2> #:x 10 #:y 10)))
   (define player-box
-    (make <colliding>
+    (make <box>
           #:name "[PLAYER]"
           #:pos  (make <v2> #:x 100 #:y 10)
           #:size (make <v2> #:x 10 #:y 10)
@@ -280,14 +295,16 @@
 (define arrow-right 80)
 
 (define-method (tick-func (box <box>)))
-(define-method (tick-func (obj <colliding>))
-  (for-each (lambda (other)
-              (when (and (not (eq? obj other))
-                         (colliding? obj other))
-                (collide obj other)
-                (collide other obj)))
-            (get-colliders (current-scene)))
-  (next-method))
+
+;;; (define-method (tick-func (obj <colliding>))
+;;;   (for-each (lambda (other)
+;;;               (when (and (not (eq? obj other))
+;;;                          (colliding? obj other))
+;;;                 (collide obj other)
+;;;                 (collide other obj)))
+;;;             (get-colliders (current-scene)))
+;;;   (next-method))
+
 (define-method (event-do (obj <box>)
                          (event <key-event>))
                ;;;;(display (slot-ref event 'scancode))
