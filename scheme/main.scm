@@ -18,10 +18,31 @@
 
              )
 
-(define-method (tick-func (box <box>))
+;; Slide box doesn't work at the moment
+(define-class <slide-box> (<box>))
+(define-class <ctrl-box> (<box>))
+
+
+(define-method (event-do (box <slide-box>)
+                         (event <key-event>))
+               (when (and (eqv? (slot-ref event 'type)
+                                'SDL_KEYDOWN)
+                          (= (slot-ref event 'sym)
+                             #x20))
+                 (box-reset! box))
+                 ;;(describe event))
+               (next-method))
+
+(define-method (tick-func (box <slide-box>))
                (when (zero? (remainder (counter box)
                                        1000))
                  (slide! box))
+               (next-method))
+
+(define-method (event-do (box <ctrl-box>)
+                         (event <mouse-btn-event>))
+               (slot-set! (pos box) 'x (mouseb-x event))
+               (slot-set! (pos box) 'y (mouseb-y event))
                (next-method))
 
 (define-method (event-do (obj <game-object>)
@@ -52,7 +73,7 @@
 
 ;;; ------------------------------------------------------------
 
-(define box (make <box> #:name "[MAIN BOX]"))
+(define box (make <slide-box> #:name "[MAIN BOX]"))
 (define box-pos (make <text-obj> #:pos (make <v2>)))
 (slot-set! box-pos 'update-text
            (lambda (text)
@@ -99,12 +120,12 @@
 (with-scene
   scene2
   (define enemy-box
-    (make <box>
+    (make <ctrl-box>
           #:name "[ENEMY]"
           #:pos  (make <v2> #:x 10 #:y 100)
           #:size (make <v2> #:x 10 #:y 10)))
   (define player-box
-    (make <box>
+    (make <ctrl-box>
           #:name "[PLAYER]"
           #:pos  (make <v2> #:x 100 #:y 10)
           #:size (make <v2> #:x 10 #:y 10)
@@ -134,7 +155,7 @@
 ;;;   (next-method))
 
 ;; TODO this only works in scene2
-(define-method (event-do (obj <box>)
+(define-method (event-do (obj <ctrl-box>)
                          (event <key-event>))
                ;;;;(display (slot-ref event 'scancode))
                (case (slot-ref event 'scancode)
@@ -145,6 +166,9 @@
                  (else #f))
                (next-method))
 
+;;; ------------------------------------------------------------
+
+#|
 (define-class <tile-set> (<game-object>)
               tile-sheet ; SDL_texture
               tile-size ; 16
@@ -249,6 +273,8 @@
 (define ts-grid (make <tileset-grid>))
 
 (register-draw-object! ts-grid)
+
+|#
 
 (ready!)
 

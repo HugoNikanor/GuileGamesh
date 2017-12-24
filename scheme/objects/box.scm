@@ -19,31 +19,10 @@
 (define-method (slide! (box <box>))
                (slot-mod! (pos box) 'x 1+)
                (slot-mod! (pos box) 'y 1+))
-               ;;(slot-set! box 'x (1+ (slot-ref box 'x)))
-               ;;(slot-set! box 'y (1+ (slot-ref box 'y))))
 
 (define-method (box-reset! (box <box>))
                (slot-set! box 'x 0)
                (slot-set! box 'y 0))
-
-#|
-(define-method (event-do (box <box>)
-                         (event <key-event>))
-               (when (and (eqv? (slot-ref event 'type)
-                                'SDL_KEYDOWN)
-                          (= (slot-ref event 'sym)
-                             #x20))
-                 (box-reset! box))
-                 ;;(describe event))
-               (next-method))
-|#
-
-;; TODO this currently does nothing
-(define-method (event-do (box <box>)
-                         (event <mouse-btn-event>))
-               (slot-set! (pos box) 'x (mouseb-x event))
-               (slot-set! (pos box) 'y (mouseb-y event))
-               (next-method))
 
 (define-method (draw-func (box <box>))
                (apply set-color (slot-ref box 'color))
