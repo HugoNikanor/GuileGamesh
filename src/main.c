@@ -95,59 +95,9 @@ static void* call_funcs (void* args) {
 int argc;
 char** argv;
 
-static void inner_guile_main (void* data, int argc, char* argv[]) {
-	scm_c_define_gsubr
-		("ready!", 0, 0, 0, set_ready);
+SDL_Window* window;
 
-	scm_c_define_gsubr
-		("draw-rect", 5, 0, 0, draw_rect);
-	scm_c_define_gsubr
-		("set-color", 3, 1, 0, set_color);
-	scm_c_define_gsubr
-		("draw-text", 3, 0, 0, draw_text);
-	scm_c_define_gsubr
-		("draw-line", 4, 0, 0, draw_line);
-
-	scm_c_define_gsubr
-		("load-image", 1, 0, 0, init_img);
-
-	scm_c_define_gsubr
-		("render-texture", 4, 0, 0, render_texture);
-
-	scm_c_use_module ("scene");
-
-	get_event_list = scm_variable_ref(scm_c_lookup ("get-event-list"));
-	get_tick_list  = scm_variable_ref(scm_c_lookup ("get-tick-list"));
-	get_draw_list  = scm_variable_ref(scm_c_lookup ("get-draw-list"));
-	current_scene  = scm_variable_ref(scm_c_lookup ("current-scene"));
-
-	scm_c_primitive_load ("scheme/code.scm");
-
-	scm_shell (argc, argv);
-}
-
-void* init_guile_thread (void* args) {
-	scm_boot_guile (argc, argv, inner_guile_main, 0);
-	return 0;
-}
-
-void* f(void* args) {
-	SCM func = scm_variable_ref(scm_c_lookup ("init-tile-set"));
-	scm_call_0 (func);
-}
-
-//SDL_Texture* img = NULL;
-
-int main(int _argc, char* _argv[]) {
-	setenv("GUILE_LOAD_PATH", "scheme", 1);
-	argc = _argc;
-	argv = _argv;
-
-	pthread_t guile_thread;
-	pthread_create (&guile_thread, NULL, init_guile_thread, NULL);
-
-    SDL_Window *window;                    // Declare a pointer
-
+static void init_sdl () {
     SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
 
 	TTF_Init();
@@ -177,30 +127,33 @@ int main(int _argc, char* _argv[]) {
     if (window == NULL) {
         // In the case that the window could not be made...
         printf("Could not create window: %s\n", SDL_GetError());
-        return 1;
+        exit (1);
     }
 
 	renderer = SDL_CreateRenderer (window, -1, 0);
+}
 
-	scm_with_guile (f, NULL);
+static void close_sdl () {
+	TTF_Quit();
 
+    // Close and destroy the window
+	//SDL_DestroyTexture (img);
+	SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
 
-	/*
-	img = IMG_LoadTexture (renderer, "assets/PathAndObjects_0.png");
-	if (img == NULL) {
-		puts("couldn't load image");
-		return 1;
-	}
-	*/
+    // Clean up
+    SDL_Quit();
+}
 
+static void* sdl_loop (void* args) {
 	int arg_len = 1;
 	arg_struct arg[arg_len];
 
 	SDL_Event event;
 	int has_event = false;
-	SDL_Rect screen_rect = {.x = 0, .y = 0, .w = 512, .h = 512};
-	SDL_Rect sprite_rect = {.x = 0, .y = 0, .w = 16, .h = 16};
-	SDL_Rect screen_part = sprite_rect;
+	//SDL_Rect screen_rect = {.x = 0, .y = 0, .w = 512, .h = 512};
+	//SDL_Rect sprite_rect = {.x = 0, .y = 0, .w = 16, .h = 16};
+	//SDL_Rect screen_part = sprite_rect;
 	while (true) {
 		SDL_SetRenderDrawColor (renderer, 0, 0, 0, 0xFF);
 		SDL_RenderClear (renderer);
@@ -238,14 +191,87 @@ int main(int _argc, char* _argv[]) {
 		SDL_RenderPresent (renderer);
 	}
 
-	TTF_Quit();
+	return NULL;
+}
 
-    // Close and destroy the window
-	//SDL_DestroyTexture (img);
-	SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+static void start_sdl_loop () {
 
-    // Clean up
-    SDL_Quit();
+
+	//scm_with_guile (f, NULL);
+
+
+	/*
+	img = IMG_LoadTexture (renderer, "assets/PathAndObjects_0.png");
+	if (img == NULL) {
+		puts("couldn't load image");
+		return 1;
+	}
+	*/
+
+}
+
+//static void inner_guile_main (void* data, int argc, char* argv[]) {
+void init_functions () { 
+	//setenv("GUILE_LOAD_PATH", "scheme", 1);
+
+	init_sdl ();
+
+	scm_c_define_gsubr
+		("ready!", 0, 0, 0, set_ready);
+
+	scm_c_define_gsubr
+		("draw-rect", 5, 0, 0, draw_rect);
+	scm_c_define_gsubr
+		("set-color", 3, 1, 0, set_color);
+	scm_c_define_gsubr
+		("draw-text", 3, 0, 0, draw_text);
+	scm_c_define_gsubr
+		("draw-line", 4, 0, 0, draw_line);
+
+	scm_c_define_gsubr
+		("load-image", 1, 0, 0, init_img);
+
+	scm_c_define_gsubr
+		("render-texture", 4, 0, 0, render_texture);
+
+	pthread_t sdl_thread;
+	pthread_create (&sdl_thread, NULL, sdl_loop, NULL);
+
+	scm_c_use_module ("scene");
+
+	get_event_list = scm_variable_ref(scm_c_lookup ("get-event-list"));
+	get_tick_list  = scm_variable_ref(scm_c_lookup ("get-tick-list"));
+	get_draw_list  = scm_variable_ref(scm_c_lookup ("get-draw-list"));
+	current_scene  = scm_variable_ref(scm_c_lookup ("current-scene"));
+
+	//scm_c_primitive_load ("scheme/code.scm");
+
+	//scm_shell (argc, argv);
+}
+
+// void* init_guile_thread (void* args) {
+// 	scm_boot_guile (argc, argv, inner_guile_main, 0);
+// 	return 0;
+// }
+
+/*
+void* f(void* args) {
+	SCM func = scm_variable_ref(scm_c_lookup ("init-tile-set"));
+	scm_call_0 (func);
+}
+*/
+
+//SDL_Texture* img = NULL;
+
+int main(int _argc, char* _argv[]) {
+	//setenv("GUILE_LOAD_PATH", "scheme", 1);
+	argc = _argc;
+	argv = _argv;
+
+	puts("Don't use this any more");
+
+	//pthread_t guile_thread;
+	//pthread_create (&guile_thread, NULL, init_guile_thread, NULL);
+
     return 0;
 }

@@ -1,3 +1,7 @@
+(add-to-load-path ".")
+(add-to-load-path "scheme")
+(load-extension "./main" "init_functions")
+
 (use-modules (srfi srfi-1)
              (srfi srfi-26)
              (oop goops)
