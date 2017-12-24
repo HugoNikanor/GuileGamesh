@@ -1,7 +1,7 @@
 (define-module (util)
                #:use-module (srfi srfi-1)
                #:use-module (srfi srfi-26)
-               #:export (apply-for-each cart-prod r))
+               #:export (apply-for-each cart-prod r slot-mod!))
 
 (define (r)
   (system "reset"))
@@ -19,3 +19,5 @@
                      l2))
               l1)))
 
+(define-macro (slot-mod! obj slot func)
+  `(slot-set! ,obj ,slot (,func (slot-ref ,obj ,slot))))
