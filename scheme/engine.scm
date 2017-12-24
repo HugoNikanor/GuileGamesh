@@ -27,20 +27,16 @@
 
             tick-func
 
+            #|
             <event>
             <key-event>
             <mouse-btn-event> mouse-button mouse-x mouse-y
             <mouse-motion-event> mouse-x mouse-y mouse-dx mouse-dy
+            |#
 
             box-reset!
-            event-do
             draw-func
             tick-func
-
-            last-event
-
-            ;; This needs to be exported for the sdl c code?
-            event-func
             )
   )
 
@@ -121,79 +117,6 @@ in the C part of the program.
                  (slide! box))
                (next-method))
 
-;; Should really be of type Maybe Event
-(define last-event '())
-
-(define-class <event> ()
-              type timestamp window-id)
-(define-class <key-event> (<event>) state repeat scancode sym mod)
-(define-class <mouse-btn-event> (<event>) which state clicks
-              (button #:getter mouse-button)
-              (x #:getter mouse-x)
-              (y #:getter mouse-y))
-
-(define-class <mouse-motion-event> (<event>)
-              which state
-              (x #:getter mouse-x)
-              (y #:getter mouse-y)
-              (xrel #:getter mouse-dx)
-              (yrel #:getter mouse-dy))
-
-(define-generic fix-event-args)
-(define-method (fix-event-args (_ <event>) rest))
-(define-method (fix-event-args (ev <key-event>) state repeat keysym)
-               (apply (lambda (scancode sym mod)
-                        (slot-set! ev 'state state)
-                        (slot-set! ev 'repeat repeat)
-                        (slot-set! ev 'scancode (list-ref keysym 0))
-                        (slot-set! ev 'sym (list-ref keysym 1))
-                        (slot-set! ev 'mod (list-ref keysym 2)))
-                      keysym))
-(define-method (fix-event-args (ev <mouse-btn-event>)
-                               which button state clicks x y)
-               (slot-set! ev 'which which)
-               (slot-set! ev 'button button)
-               (slot-set! ev 'state state)
-               (slot-set! ev 'clicks clicks)
-               (slot-set! ev 'x x)
-               (slot-set! ev 'y y))
-(define-method (fix-event-args (ev <mouse-motion-event>)
-                               which state x y yrel xrel)
-               (slot-set! ev 'which which)
-               (slot-set! ev 'state state)
-               (slot-set! ev 'x x)
-               (slot-set! ev 'y y)
-               (slot-set! ev 'xrel xrel)
-               (slot-set! ev 'yrel yrel))
-
-
-#|
-(define (event-func event)
-  "Event dispatcher?"
-  (apply (lambda (_ __ event-objs)
-           (let ((e (eval `(make ,(car event))
-                          (current-module))))
-             (slot-set! e 'type (list-ref event 1))
-             (slot-set! e 'timestamp (list-ref event 2))
-             (slot-set! e 'window-id (list-ref event 3))
-             (apply fix-event-args e (drop event 4))
-             (for-each (lambda (obj)
-                         (event-do obj e))
-                       event-objs)))
-         (current-scene)))
-|#
-(define (event-func event)
-  (set! last-event event)
-  (let ((e (eval `(make ,(car event))
-                 (current-module))))
-    (slot-set! e 'type (list-ref event 1))
-    (slot-set! e 'timestamp (list-ref event 2))
-    (slot-set! e 'window-id (list-ref event 3))
-    (apply fix-event-args e (drop event 4))
-    (for-each (lambda (obj)
-                (event-do obj e))
-              (get-event-list (current-scene)))))
-
 #|
 (define* (collision-check #:optional (scene (current-scene)))
          (define (inner rem)
@@ -211,5 +134,4 @@ in the C part of the program.
                (slot-set! box 'x 0)
                (slot-set! box 'y 0))
 
-(define-generic event-do)
 (define-generic draw-func)

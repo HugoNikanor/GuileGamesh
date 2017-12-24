@@ -194,20 +194,13 @@ static void* sdl_loop (void* args) {
 	return NULL;
 }
 
-static void start_sdl_loop () {
+SCM get_eventlist_current_scene () {
+	return scm_call_1 (get_event_list, scm_call_0 (current_scene));
+}
 
-
-	//scm_with_guile (f, NULL);
-
-
-	/*
-	img = IMG_LoadTexture (renderer, "assets/PathAndObjects_0.png");
-	if (img == NULL) {
-		puts("couldn't load image");
-		return 1;
-	}
-	*/
-
+void expose_event () {
+	scm_c_define_gsubr
+		("current-eventlist", 0, 0, 0, get_eventlist_current_scene);
 }
 
 //static void inner_guile_main (void* data, int argc, char* argv[]) {

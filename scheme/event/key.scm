@@ -1,0 +1,15 @@
+(define-module
+  (event key)
+  #:use-module (event)
+  #:use-module (oop goops)
+  #:export (<key-event>))
+
+(define-class <key-event> (<event>) state repeat scancode sym mod)
+(define-method (fix-event-args (ev <key-event>) state repeat keysym)
+               (apply (lambda (scancode sym mod)
+                        (slot-set! ev 'state state)
+                        (slot-set! ev 'repeat repeat)
+                        (slot-set! ev 'scancode (list-ref keysym 0))
+                        (slot-set! ev 'sym (list-ref keysym 1))
+                        (slot-set! ev 'mod (list-ref keysym 2)))
+                      keysym))

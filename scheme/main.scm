@@ -8,7 +8,14 @@
              (oop goops describe)
              (scene)
              (vector)
-             (util))
+             (util)
+
+             (event)              
+             (event key)          
+             (event mouse-motion) 
+             (event mouse-btn)    
+
+             )
 
 (define-method (event-do (obj <game-object>)
                          (event <event>))
@@ -39,8 +46,8 @@
 
 (define-method (event-do (box <box>)
                          (event <mouse-btn-event>))
-               (slot-set! (pos box) 'x (mouse-x event))
-               (slot-set! (pos box) 'y (mouse-y event))
+               (slot-set! (pos box) 'x (mouseb-x event))
+               (slot-set! (pos box) 'y (mouseb-y event))
                (next-method))
 
 (define-method (draw-func (box <box>))
@@ -225,7 +232,7 @@
 (define-method
   (event-do (tileset <tile-set>)
             (event <mouse-motion-event>))
-  (set! mouse-pos (make <v2> #:x (mouse-x event) #:y (mouse-y event)))
+  (set! mouse-pos (make <v2> #:x (mousem-x event) #:y (mousem-y event)))
   (next-method))
 
 (register-event-object! tileset)
