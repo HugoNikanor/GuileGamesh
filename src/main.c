@@ -97,6 +97,18 @@ char** argv;
 
 SDL_Window* window;
 
+static void close_sdl () {
+	TTF_Quit();
+
+    // Close and destroy the window
+	//SDL_DestroyTexture (img);
+	SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+
+    // Clean up
+    SDL_Quit();
+}
+
 static void init_sdl () {
     SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
 
@@ -107,6 +119,7 @@ static void init_sdl () {
 		printf("Couldn't load font:\n");
 		printf("%s\n", sans_path);
 		printf("Exiting\n");
+		close_sdl();
 		exit (1);
 	}
 
@@ -127,23 +140,13 @@ static void init_sdl () {
     if (window == NULL) {
         // In the case that the window could not be made...
         printf("Could not create window: %s\n", SDL_GetError());
+		close_sdl();
         exit (1);
     }
 
 	renderer = SDL_CreateRenderer (window, -1, 0);
 }
 
-static void close_sdl () {
-	TTF_Quit();
-
-    // Close and destroy the window
-	//SDL_DestroyTexture (img);
-	SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-
-    // Clean up
-    SDL_Quit();
-}
 
 static void* sdl_loop (void* args) {
 	int arg_len = 1;
@@ -190,6 +193,8 @@ static void* sdl_loop (void* args) {
 
 		SDL_RenderPresent (renderer);
 	}
+
+	close_sdl();
 
 	return NULL;
 }
