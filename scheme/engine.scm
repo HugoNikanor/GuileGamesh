@@ -19,14 +19,8 @@
 
             <game-object> object-name counter
             <geo-object> pos
-            <box> size
             <text-obj>
 
-            slide!
-
-            tick-func
-
-            box-reset!
             draw-func
             tick-func
             )
@@ -45,12 +39,6 @@
 (define-class <geo-object> (<game-object>)
               (pos #:accessor pos
                    #:init-keyword #:pos))
-
-(define-class <box> (<geo-object>)
-              (size #:accessor size
-                    #:init-keyword #:size)
-              (color #:init-keyword #:color
-                     #:init-value '(#xFF 0 0)))
 
 #| Colliding
 
@@ -91,23 +79,12 @@ in the C part of the program.
               (text #:init-value " ")
               (update-text #:init-value #f))
 
-(define-method (slide! (box <box>))
-               (slot-mod! (pos box) 'x 1+)
-               (slot-mod! (pos box) 'y 1+))
-               ;;(slot-set! box 'x (1+ (slot-ref box 'x)))
-               ;;(slot-set! box 'y (1+ (slot-ref box 'y))))
 
 (define-generic tick-func)
 
 (define-method (tick-func (obj <game-object>))
                ;;(slot-set! obj 'c (1+ (slot-ref obj 'c))))
                (slot-mod! obj 'c 1+))
-
-(define-method (tick-func (box <box>))
-               (when (zero? (remainder (counter box)
-                                       1000))
-                 (slide! box))
-               (next-method))
 
 #|
 (define* (collision-check #:optional (scene (current-scene)))
@@ -121,9 +98,5 @@ in the C part of the program.
            (inner (cdr rem)))
          (inner (get-colliders scene)))
 |#
-
-(define-method (box-reset! (box <box>))
-               (slot-set! box 'x 0)
-               (slot-set! box 'y 0))
 
 (define-generic draw-func)

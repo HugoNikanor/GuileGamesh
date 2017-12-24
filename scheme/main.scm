@@ -16,6 +16,29 @@
 
              )
 
+(define-class <box> (<geo-object>)
+              (size #:accessor size
+                    #:init-keyword #:size)
+              (color #:init-keyword #:color
+                     #:init-value '(#xFF 0 0)))
+
+(define-method (slide! (box <box>))
+               (slot-mod! (pos box) 'x 1+)
+               (slot-mod! (pos box) 'y 1+))
+               ;;(slot-set! box 'x (1+ (slot-ref box 'x)))
+               ;;(slot-set! box 'y (1+ (slot-ref box 'y))))
+
+(define-method (tick-func (box <box>))
+               (when (zero? (remainder (counter box)
+                                       1000))
+                 (slide! box))
+               (next-method))
+
+(define-method (box-reset! (box <box>))
+               (slot-set! box 'x 0)
+               (slot-set! box 'y 0))
+
+
 (define-method (event-do (obj <game-object>)
                          (event <event>))
                (slot-set! other-debug 'text
