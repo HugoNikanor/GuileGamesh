@@ -1,6 +1,5 @@
 (define-module
   (engine)
-  ;; TODO check which imports are actually needed
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (oop goops)
@@ -26,13 +25,6 @@
             slide!
 
             tick-func
-
-            #|
-            <event>
-            <key-event>
-            <mouse-btn-event> mouse-button mouse-x mouse-y
-            <mouse-motion-event> mouse-x mouse-y mouse-dx mouse-dy
-            |#
 
             box-reset!
             draw-func

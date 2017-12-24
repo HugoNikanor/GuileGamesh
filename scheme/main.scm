@@ -1,8 +1,7 @@
 (add-to-load-path "scheme")
 
-;; TODO check which imports are actually needed
 (use-modules (engine)
-             (srfi srfi-1)
+             ;;(srfi srfi-1)
              (srfi srfi-26)
              (oop goops)
              (oop goops describe)
