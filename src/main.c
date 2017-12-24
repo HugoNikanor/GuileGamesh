@@ -21,6 +21,7 @@ SCM get_tick_list    = SCM_UNDEFINED;
 SCM get_draw_list    = SCM_UNDEFINED;
 SCM current_scene    = SCM_UNDEFINED;
 
+SDL_Window* window;
 SDL_Renderer* renderer;
 
 /*
@@ -28,6 +29,10 @@ SDL_Renderer* renderer;
  *
  * This binds it and informs the system that it's now safe to
  * try and draw objects.
+ *
+ * TODO
+ * This should be rebranded as init-sdl
+ * It should also slightly change what it does
  */
 static SCM set_ready() {
 	draw_func  = scm_variable_ref(scm_c_lookup ("draw-func"));
@@ -88,24 +93,16 @@ static void* call_funcs (void* args) {
 
 	return NULL;
 }
+
 /*
- * These are defined here to allow for the guile thread
- * to acccess them upon startup.
+ * Destroy and clean up SDL items
  */
-int argc;
-char** argv;
-
-SDL_Window* window;
-
 static void close_sdl () {
 	TTF_Quit();
 
-    // Close and destroy the window
-	//SDL_DestroyTexture (img);
 	SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
-    // Clean up
     SDL_Quit();
 }
 
@@ -209,7 +206,7 @@ void expose_event () {
 }
 
 //static void inner_guile_main (void* data, int argc, char* argv[]) {
-void init_functions () { 
+void init_functions () {
 	//setenv("GUILE_LOAD_PATH", "scheme", 1);
 
 	init_sdl ();
@@ -241,35 +238,4 @@ void init_functions () {
 	get_tick_list  = scm_variable_ref(scm_c_lookup ("get-tick-list"));
 	get_draw_list  = scm_variable_ref(scm_c_lookup ("get-draw-list"));
 	current_scene  = scm_variable_ref(scm_c_lookup ("current-scene"));
-
-	//scm_c_primitive_load ("scheme/code.scm");
-
-	//scm_shell (argc, argv);
-}
-
-// void* init_guile_thread (void* args) {
-// 	scm_boot_guile (argc, argv, inner_guile_main, 0);
-// 	return 0;
-// }
-
-/*
-void* f(void* args) {
-	SCM func = scm_variable_ref(scm_c_lookup ("init-tile-set"));
-	scm_call_0 (func);
-}
-*/
-
-//SDL_Texture* img = NULL;
-
-int main(int _argc, char* _argv[]) {
-	//setenv("GUILE_LOAD_PATH", "scheme", 1);
-	argc = _argc;
-	argv = _argv;
-
-	puts("Don't use this any more");
-
-	//pthread_t guile_thread;
-	//pthread_create (&guile_thread, NULL, init_guile_thread, NULL);
-
-    return 0;
 }

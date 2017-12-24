@@ -19,15 +19,11 @@ obj/%.o : src/%.c
 	-mkdir obj
 	gcc -c ${CFLAGS} ${DFLAGS} -o $@ $<
 
-main : $(O_FILES)
-	gcc ${LFLAGS} -o $@ $^
-
 main.so : $(O_FILES)
 	gcc ${LFLAGS} -shared -o $@ $^
 
-all : main main.so
+all : main.so
 
 clean:
 	-rm obj/*.o
-	-rm main
 	-rm main.so
