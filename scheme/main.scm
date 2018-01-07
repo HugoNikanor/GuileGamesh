@@ -15,6 +15,7 @@
              (event mouse-btn)    
 
              (objects box)
+             (objects ellipse)
 
              )
 
@@ -70,6 +71,17 @@
                (let ((func (slot-ref text 'update-text)))
                  (when func
                    (slot-set! text 'text (func text)))))
+
+;;; ------------------------------------------------------------
+(define coll-text (make <text-obj>
+                        #:pos (make <v2> #:y 5 #:x 5)
+                        #:str "U"
+                        #:update (lambda (_)
+                                   (if (colliding? pel eel)
+                                     "T" "F"))))
+
+(register-draw-object! coll-text)
+(register-tick-object! coll-text)
 
 ;;; ------------------------------------------------------------
 
@@ -134,6 +146,30 @@
 
 (set-current-scene! scene2)
 
+(define-class <ctrl-el> (<ellipse>))
+(define pel
+  (make <ctrl-el>
+        #:name "[ELLIPSE 1]"
+        #:pos (make <v2> #:x 40 #:y 40)
+        #:r 100
+        #:d 30))
+
+(define eel
+  (make <ellipse>
+        #:name "[ELLIPSE 2]"
+        #:pos (make <v2> #:x 120 #:y 120)
+        #:color '(#xFF 0 0)
+        #:r 100
+        #:d 30))
+
+(register-draw-object! pel)
+(register-event-object! pel)
+(register-tick-object! pel)
+
+(register-draw-object! eel)
+;;(register-event-object! eel)
+;;(register-tick-object! eel)
+
 (register-draw-object! enemy-box)
 (register-draw-object! player-box)
 (register-event-object! player-box)
@@ -145,6 +181,129 @@
 
 (define-method (tick-func (box <box>)))
 
+(define (square x)
+  (* x x))
+
+;;; (define (get-largest-by func . items)
+;;;   (map (lambda (item)
+;;;          (cons item (func item)))
+
+(define-method (get-intersection-translation-vector
+                 (el1 <ellipse>)
+                 (el2 <ellipse>))
+               ;; This is either right or wrong 
+               ;; if wrong, add paj ?
+               (let ((s2 (helperfunction el1 el2))
+                     (s1 (helperfunction el2 el1)))
+                 (let ((v (pos el1))
+                       (u (pos el2)))
+                   (* (- v u) 
+                      (- (abs (- v u))
+                         (abs (- v s2))
+                         (abs (- u s1)))
+                      (/ 1 (abs (- v u)))))))
+
+(define pi 3.141592653589793)
+;;; (define pi 42/13.37)
+
+(define-method (helperfunction
+                 (el1 <ellipse>)
+                 (el2 <ellipse>))
+               "Returns point"
+               (let* ((help (x (- (pos el1)
+                                  (pos el2))))
+                      (theta (+ (if (> help 0) 0 pi)
+                                (acos (/ (abs help)
+                                         (abs (- (pos el1)
+                                                 (pos el2)))))))
+                      (r (slot-ref el1 'r))
+                      (rx (/ r 2))
+                      (ry (sqrt (- (square rx)
+                                   (square (slot-ref el1 'd))))))
+                 (+ (pos el1)
+                    (make <v2>
+                          #:x (* rx (cos theta))
+                          #:y (* ry (sin theta))))))
+
+;;(define-method (get-sub-points (el <ellipse>))
+  
+
+(define-method (get-sub-point-helper func (el <ellipse>))
+  (func (pos el)
+        (make <v2> #:x (slot-ref el 'd))))
+
+#| for future use
+(define-macro (swap! a b)
+  (let ((symb (gensym)))
+    `(begin
+       (set! ,symb ,a)
+       (set! 
+         |#
+
+(define-generic colliding?)
+;;(define-method (colliding? <geo-object> <geo-object>))
+(define-method (colliding?
+                 (el1 <ellipse>)
+                 (el2 <ellipse>))
+               (let ((el1_a (get-sub-point-helper + el1))
+                     (el1_b (get-sub-point-helper - el1))
+                     (el2_a (get-sub-point-helper + el2))
+                     (el2_b (get-sub-point-helper - el2)))
+                 (let ((v (- el1_a el2_a))
+                       (u (- el1_b el2_b)))
+                   ;; (‡ 0)
+                   (when (> 1e-30 (abs (real-part (- (* (x v)
+                                                      (y u))
+                                                   (* (y v)
+                                                      (x u))))))
+                     (set! v (- el1_b el2_a))
+                     (set! u (- el1_a el2_b)))
+                   ;; TODO
+                   (not (< (real-part (+ (slot-ref el1 'r)
+                                         (slot-ref el2 'r)))
+                           (real-part (+ (abs v)
+                                         (abs u))))))))
+                     
+
+;;; TODO Actually figure out what can collide
+;;; It will probably only be a rigid tile set
+;;; and actors wich will all be ellipses
+(define-generic collide!)
+;;(define-method (collide <geo-object>))
+(define-method (collide! (el1 <ellipse>)
+                         (el2 <ellipse>))
+               "Mutates el1"
+               (slot-mod! el1 'pos
+                          (lambda (p)
+                            (- p (catch 'numerical-overflow
+                                        (lambda ()
+                                          (get-intersection-translation-vector el1 el2))
+                                        (lambda (symb . msg)
+                                          (make <v2> #:x 1)))))))
+               #|
+               (catch 'numerical-overflow
+                      (lambda ()
+                        (slot-mod! el1 'pos
+                                   (lambda (p)
+                                     (- p (get-intersection-translation-vector el1 el2)))))
+                      (lambda (error . message)
+                        (slot-mod! (pos el1) 'x 1+))))
+|#
+
+;;(define f (lambda (x y) (list x y)))
+(define-method (tick-func (obj <ctrl-el>))
+               (let ((other eel))
+                 (if (and (not (eq? obj other))
+                          (colliding? obj other))
+                   (collide! obj other))))
+                   ;;(collide! obj other)))
+                   ;;(describe #t)
+                   ;;(describe #f))))
+  ;;(for-each (lambda (other)
+  ;;            ;;(if (colliding? obj other)
+  ;;          ;; TODO should this be get-colliders
+  ;;          (get-tick-list (current-scene))))
+
 ;;; (define-method (tick-func (obj <colliding>))
 ;;;   (for-each (lambda (other)
 ;;;               (when (and (not (eq? obj other))
@@ -155,7 +314,8 @@
 ;;;   (next-method))
 
 ;; TODO this only works in scene2
-(define-method (event-do (obj <ctrl-box>)
+;;;(define-method (event-do (obj <ctrl-box>)
+(define-method (event-do (obj <ctrl-el>)
                          (event <key-event>))
                ;;;;(display (slot-ref event 'scancode))
                (case (slot-ref event 'scancode)

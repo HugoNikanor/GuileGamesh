@@ -18,4 +18,6 @@ SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos);
 
 SCM draw_line (SCM _x1, SCM _y1, SCM _x2, SCM _y2);
 
+SCM draw_ellipse (SCM _r, SCM _x0, SCM _y0, SCM _d);
+
 #endif // SDL_SCM_H_

@@ -14,6 +14,7 @@
             set-color
             draw-text
             draw-line
+            draw-ellipse
             load-image
             render-texture
 
@@ -76,8 +77,10 @@ in the C part of the program.
 |#
 
 (define-class <text-obj> (<geo-object>)
-              (text #:init-value " ")
-              (update-text #:init-value #f))
+              (text #:init-value " "
+                    #:init-keyword #:str)
+              (update-text #:init-value #f
+                           #:init-keyword #:update))
 
 
 (define-generic tick-func)

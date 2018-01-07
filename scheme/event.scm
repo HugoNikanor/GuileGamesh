@@ -15,7 +15,7 @@
 #| Provides:
  | - current-eventlist
  |#
-(load-extension "main" "expose_event")
+(load-extension "./main" "expose_event")
 
 #| last-event
  | Last event which was created

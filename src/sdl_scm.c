@@ -1,4 +1,5 @@
 #include "sdl_scm.h"
+#include "util.h"
 
 SCM draw_rect (SCM fill_p, SCM x, SCM y, SCM w, SCM h) {
 	SDL_Rect rect = {.x = (int) scm_to_double (x),
@@ -85,6 +86,45 @@ SCM draw_line (SCM _x1, SCM _y1, SCM _x2, SCM _y2) {
 	int y2 = scm_to_int (_y2);
 
 	SDL_RenderDrawLine (renderer, x1, y1, x2, y2);
+
+	return SCM_UNSPECIFIED;
+}
+
+
+/*
+ * This function most likely has a memory leak
+ * for the points it creates for rendering
+ */
+SCM draw_ellipse (SCM _r, SCM _x0, SCM _y0, SCM _d) {
+	int x_0 = scm_to_int (_x0);
+	int y_0 = scm_to_int (_y0);
+	int r  = scm_to_int (_r);
+	int d  = scm_to_int (_d); // distance from center to either focus
+
+	float r_x = r / 2;
+	float r_y = sqrt (r_x * r_x - d * d);
+
+	int count = 100;
+	SDL_Point* pts = malloc (sizeof(*pts) * count);
+
+	for (int i = 0; i < count; i++) {
+		float theta = (TAU / (count - 1)) * i;
+		float x = r_x * cosf (theta);
+		float y = r_y * sinf (theta);
+
+		SDL_Point* pt = malloc (sizeof (*pt));
+		pt->x = x + x_0;
+		pt->y = y + y_0;
+
+		pts [i] = *pt;
+	}
+
+	SDL_RenderDrawLines (renderer, pts, count);
+
+	for (int i = 0; i < count; i++) {
+		//free (pts + i * sizeof (*pts));
+	}
+	free (pts);
 
 	return SCM_UNSPECIFIED;
 }
