@@ -80,10 +80,10 @@ SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) 
 }
 
 SCM draw_line (SCM _x1, SCM _y1, SCM _x2, SCM _y2) {
-	int x1 = scm_to_int (_x1);
-	int y1 = scm_to_int (_y1);
-	int x2 = scm_to_int (_x2);
-	int y2 = scm_to_int (_y2);
+	int x1 = scm_to_double (_x1);
+	int y1 = scm_to_double (_y1);
+	int x2 = scm_to_double (_x2);
+	int y2 = scm_to_double (_y2);
 
 	SDL_RenderDrawLine (renderer, x1, y1, x2, y2);
 

@@ -245,24 +245,40 @@
 (define-method (colliding?
                  (el1 <ellipse>)
                  (el2 <ellipse>))
-               (let ((el1_a (get-sub-point-helper + el1))
-                     (el1_b (get-sub-point-helper - el1))
-                     (el2_a (get-sub-point-helper + el2))
-                     (el2_b (get-sub-point-helper - el2)))
-                 (let ((v (- el1_a el2_a))
-                       (u (- el1_b el2_b)))
-                   ;; (‡ 0)
-                   (when (> 1e-30 (abs (real-part (- (* (x v)
-                                                      (y u))
-                                                   (* (y v)
-                                                      (x u))))))
-                     (set! v (- el1_b el2_a))
-                     (set! u (- el1_a el2_b)))
-                   ;; TODO
-                   (not (< (real-part (+ (slot-ref el1 'r)
-                                         (slot-ref el2 'r)))
-                           (real-part (+ (abs v)
-                                         (abs u))))))))
+               (let ((togeled? #f))
+                 (let ((el1_a (get-sub-point-helper + el1))
+                       (el1_b (get-sub-point-helper - el1))
+                       (el2_a (get-sub-point-helper + el2))
+                       (el2_b (get-sub-point-helper - el2)))
+                   (let ((v (- el1_a el2_a))
+                         (u (- el1_b el2_b)))
+                     ;; (‡ 0)
+                     (when (> 1e-30 (abs (real-part (- (* (x v)
+                                                          (y u))
+                                                       (* (y v)
+                                                          (x u))))))
+                       (set! togeled? #t)
+                       (set! v (- el1_b el2_a))
+                       (set! u (- el1_a el2_b)))
+
+                     (if togeled?
+                       (begin
+                         (set-color #xFF 0 0) ; RED
+                         (draw-line (x el1_a) (y el1_a)
+                                    (x el2_b) (y el2_b))
+                         (draw-line (x el1_b) (y el1_b)
+                                    (x el2_a) (y el2_a)))
+                       (begin
+                         (set-color 0 #xFF 0) ; GREEN
+                         (draw-line (x el1_a) (y el1_a)
+                                    (x el2_a) (y el2_a))
+                         (draw-line (x el1_b) (y el1_b)
+                                    (x el2_b) (y el2_b))))
+                       ;; TODO
+                       (not (< (real-part (+ (slot-ref el1 'r)
+                                             (slot-ref el2 'r)))
+                               (real-part (+ (abs v)
+                                             (abs u)))))))))
                      
 
 ;;; TODO Actually figure out what can collide
