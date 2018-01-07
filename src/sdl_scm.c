@@ -90,6 +90,14 @@ SCM draw_line (SCM _x1, SCM _y1, SCM _x2, SCM _y2) {
 	return SCM_UNSPECIFIED;
 }
 
+SCM draw_pixel (SCM _x, SCM _y) {
+	int x = scm_to_int (_x);
+	int y = scm_to_int (_y);
+
+	SDL_RenderDrawPoint (renderer, x, y);
+
+	return SCM_UNSPECIFIED;
+}
 
 /*
  * This function most likely has a memory leak

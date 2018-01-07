@@ -224,6 +224,8 @@ void init_functions () {
 		("draw-line", 4, 0, 0, draw_line);
 	scm_c_define_gsubr
 		("draw-ellipse", 4, 0, 0, draw_ellipse);
+	scm_c_define_gsubr
+		("draw-pixel", 2, 0, 0, draw_pixel);
 
 	scm_c_define_gsubr
 		("load-image", 1, 0, 0, init_img);
