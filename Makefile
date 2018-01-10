@@ -22,6 +22,9 @@ obj/%.o : src/%.c
 main.so : $(O_FILES)
 	gcc ${LFLAGS} -shared -o $@ $^
 
+main : $(O_FILES)
+	gcc ${LFLAGS} -o $@ $^
+
 all : main.so
 
 clean:

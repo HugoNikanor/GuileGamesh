@@ -243,3 +243,13 @@ void init_functions () {
 	get_draw_list  = scm_variable_ref(scm_c_lookup ("get-draw-list"));
 	current_scene  = scm_variable_ref(scm_c_lookup ("current-scene"));
 }
+
+static void inner_main (void* closure, int argc, char* argv []) {
+	scm_c_primitive_load ("scheme/main.scm");
+	scm_shell (argc, argv);
+}
+
+int main (int argc, char* argv []) {
+	scm_boot_guile (argc, argv, inner_main, 0);
+	return 0;
+}
