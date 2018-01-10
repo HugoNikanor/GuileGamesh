@@ -115,21 +115,6 @@
 
 (set-current-scene! scene1)
 
-;;; (with-scene
-;;;   scene2
-;;;   (define enemy-box
-;;;     (make <colliding>
-;;;           #:name "[ENEMY]"
-;;;           #:pos  (make <v2> #:x 10 #:y 100)
-;;;           #:size (make <v2> #:x 10 #:y 10)))
-;;;   (define player-box
-;;;     (make <colliding>
-;;;           #:name "[PLAYER]"
-;;;           #:pos  (make <v2> #:x 100 #:y 10)
-;;;           #:size (make <v2> #:x 10 #:y 10)
-;;;           #:color '(0 0 #xFF)
-;;;           #:friction 0.5)))
-
 (with-scene
   scene2
   (define enemy-box
@@ -180,47 +165,10 @@
 (define arrow-left 81)
 (define arrow-right 80)
 
-;;; (define-method (tick-func (box <box>)))
-
-
-;;(define-method (get-sub-points (el <ellipse>))
-
-
-;; (define-generic colliding?)
-;;(define-method (colliding? <geo-object> <geo-object>))
-
-               #|
-               (catch 'numerical-overflow
-                      (lambda ()
-                        (slot-mod! el1 'pos
-                                   (lambda (p)
-                                     (- p (get-intersection-translation-vector el1 el2)))))
-                      (lambda (error . message)
-                        (slot-mod! (pos el1) 'x 1+))))
-|#
-
-;;(define f (lambda (x y) (list x y)))
 (define-method (tick-func (obj <ctrl-el>))
                (let ((other eel))
                  (if (not (eq? obj other))
                    (collide! obj other))))
-                          ;;(colliding? obj other))
-                   ;;(collide! obj other)))
-                   ;;(describe #t)
-                   ;;(describe #f))))
-  ;;(for-each (lambda (other)
-  ;;            ;;(if (colliding? obj other)
-  ;;          ;; TODO should this be get-colliders
-  ;;          (get-tick-list (current-scene))))
-
-;;; (define-method (tick-func (obj <colliding>))
-;;;   (for-each (lambda (other)
-;;;               (when (and (not (eq? obj other))
-;;;                          (colliding? obj other))
-;;;                 (collide obj other)
-;;;                 (collide other obj)))
-;;;             (get-colliders (current-scene)))
-;;;   (next-method))
 
 ;; TODO this only works in scene2
 ;;;(define-method (event-do (obj <ctrl-box>)
