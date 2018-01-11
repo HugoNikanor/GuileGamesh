@@ -10,7 +10,8 @@
 
             ;; exported for c code?
             fix-event-args
-            event-func))
+            event-func
+            ))
 
 #| Provides:
  | - current-eventlist
@@ -51,10 +52,14 @@
  |
  | Then calls all objects registered to access events
  | (from event-list) with the event.
+ |
+ | TODO
+ | This requires (event ...) to be into (current-module)
+ | when called.
  |#
 (define (event-func event)
   (set! last-event event)
-  (let ((e (eval `(make ,(car event))
+  (let ((e (eval `((@ (oop goops) make) ,(car event))
                  (current-module))))
     (slot-set! e 'type (list-ref event 1))
     (slot-set! e 'timestamp (list-ref event 2))

@@ -1,7 +1,7 @@
 (define-module
   (objects ellipse)
   #:use-module (oop goops)
-  #:use-module (engine)
+  #:use-module (engine) ;; <geo-object>
   #:use-module (util)
   #:use-module (vector)
 

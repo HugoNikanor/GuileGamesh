@@ -1,0 +1,7 @@
+Module reloading
+- When reloading a module which creates objects then the old
+  objects should possibly be destroyed
+
+resolve-module
+reload-module
+define-once (defvar)

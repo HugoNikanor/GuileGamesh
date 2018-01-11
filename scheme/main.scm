@@ -1,12 +1,20 @@
+#|
+ | This file is for setting up the repl environment, 
+ | as well as starting the system.
+ | 
+ | ready! ought to be called from the C main code,
+ | but I haven't got that to work yet.
+ |#
 (add-to-load-path "scheme")
 
+#|
 (use-modules (engine)
              ;;(srfi srfi-1)
-             (srfi srfi-26)
+             ;;(srfi srfi-26)
              (oop goops)
              (oop goops describe)
              (scene)
-             (vector)
+             ;;(vector)
              (util)
              (collide)
 
@@ -15,46 +23,22 @@
              (event mouse-motion)
              (event mouse-btn)
 
-             (objects box)
-             (objects ellipse)
+             ;;(objects box)
+             ;;(objects ellipse)
+
+             (scene scene2)
 
              )
+|#
 
-;; Slide box doesn't work at the moment
-(define-class <slide-box> (<box>))
-(define-class <ctrl-box> (<box>))
+(use-modules (scene scene2)
+             (engine)
+             (event) ;; event-func
+             ;; These three are for event-func to work
+             (event key)
+             (event mouse-btn)
+             (event mouse-motion))
 
-
-(define-method (event-do (box <slide-box>)
-                         (event <key-event>))
-               (when (and (eqv? (slot-ref event 'type)
-                                'SDL_KEYDOWN)
-                          (= (slot-ref event 'sym)
-                             #x20))
-                 (box-reset! box))
-                 ;;(describe event))
-               (next-method))
-
-(define-method (tick-func (box <slide-box>))
-               (when (zero? (remainder (counter box)
-                                       1000))
-                 (slide! box))
-               (next-method))
-
-(define-method (event-do (box <ctrl-box>)
-                         (event <mouse-btn-event>))
-               (slot-set! (pos box) 'x (mouseb-x event))
-               (slot-set! (pos box) 'y (mouseb-y event))
-               (next-method))
-
-(define-method (event-do (obj <game-object>)
-                         (event <event>))
-               (slot-set! other-debug 'text
-                          (with-output-to-string
-                            (lambda ()
-                              (display (slot-ref event 'type))
-                              (display " | ")
-                              (display (object-name obj))))))
 
 #|
 (define-method (event-do (box <box>)
@@ -63,6 +47,9 @@
                            "huh?"))
 |#
 
+;;; These should be moved to objects/text.scm
+
+#|
 (define-method (draw-func (text <text-obj>))
                (draw-text (slot-ref text 'text)
                           (x (pos text))
@@ -73,103 +60,28 @@
                  (when func
                    (slot-set! text 'text (func text)))))
 
+|#
 ;;; ------------------------------------------------------------
-(define coll-text (make <text-obj>
-                        #:pos (make <v2> #:y 5 #:x 5)
-                        #:str "U"
-                        #:update (lambda (_)
-                                   (if (colliding? pel eel)
-                                     "T" "F"))))
-
-(register-draw-object! coll-text)
-(register-tick-object! coll-text)
 
 ;;; ------------------------------------------------------------
 
-(define box (make <slide-box> #:name "[MAIN BOX]"))
-(define box-pos (make <text-obj> #:pos (make <v2>)))
-(slot-set! box-pos 'update-text
-           (lambda (text)
-             (format #f "~a ~a"
-                     (x (pos player-box))
-                     (y (pos player-box)))))
 
-(define other-debug (make <text-obj> #:pos (make <v2> #:y 12)))
+;; (define input-listener (make <game-object> #:name "[INPUT LISTENER]"))
+;; (register-event-object! input-listener)
 
-(register-draw-object! box)
-(register-tick-object! box)
-(register-event-object! box)
+;(slot-set! (current-scene) 'name "SCENE 1")
 
-(register-draw-object! box-pos)
-(register-tick-object! box-pos)
+;(define scene1 (current-scene))
+;(define scene2 (make <scene> #:name "SCENE 2"))
 
-(register-draw-object! other-debug)
-;;;(register-tick-object! other-debug)
+;(set-current-scene! scene1)
 
-(define input-listener (make <game-object> #:name "[INPUT LISTENER]"))
-(register-event-object! input-listener)
 
-(slot-set! (current-scene) 'name "SCENE 1")
-(define scene1 (current-scene))
-(define scene2 (make <scene> #:name "SCENE 2"))
+;(set-current-scene! scene2)
 
-(set-current-scene! scene1)
 
-(with-scene
-  scene2
-  (define enemy-box
-    (make <ctrl-box>
-          #:name "[ENEMY]"
-          #:pos  (make <v2> #:x 10 #:y 100)
-          #:size (make <v2> #:x 10 #:y 10)))
-  (define player-box
-    (make <ctrl-box>
-          #:name "[PLAYER]"
-          #:pos  (make <v2> #:x 100 #:y 10)
-          #:size (make <v2> #:x 10 #:y 10)
-          #:color '(0 0 #xFF)
-          #:friction 0.5)))
 
-(set-current-scene! scene2)
-
-(define-class <ctrl-el> (<ellipse>))
-(define pel
-  (make <ctrl-el>
-        #:name "[ELLIPSE 1]"
-        #:pos (make <v2> #:x 40 #:y 40)
-        #:r 100
-        #:d 30))
-
-(define eel
-  (make <ellipse>
-        #:name "[ELLIPSE 2]"
-        #:pos (make <v2> #:x 120 #:y 120)
-        #:color '(#xFF 0 0)
-        #:r 100
-        #:d 30))
-
-(register-draw-object! pel)
-(register-event-object! pel)
-(register-tick-object! pel)
-
-(register-draw-object! eel)
-;;(register-event-object! eel)
-;;(register-tick-object! eel)
-
-(register-draw-object! enemy-box)
-(register-draw-object! player-box)
-(register-event-object! player-box)
-
-(define arrow-up 82)
-(define arrow-down 79)
-(define arrow-left 81)
-(define arrow-right 80)
-
-(define-method (tick-func (obj <ctrl-el>))
-               (let ((other eel))
-                 (if (not (eq? obj other))
-                   (collide! obj other))))
-
+#|
 ;; TODO this only works in scene2
 ;;;(define-method (event-do (obj <ctrl-box>)
 (define-method (event-do (obj <ctrl-el>)
@@ -182,6 +94,7 @@
                  ((80)  (slot-mod! (pos obj) 'x 1- ))
                  (else #f))
                (next-method))
+|#
 
 ;;; ------------------------------------------------------------
 
@@ -293,6 +206,6 @@
 
 |#
 
-;; (ready!)
+(ready!)
 
 ;; (set-current-scene! scene2)

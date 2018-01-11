@@ -7,6 +7,7 @@
   #:use-module (scene)
   #:use-module (vector)
   #:use-module (util)
+  #:use-module (event) ; event-func
 
   #:export (
             ready!
