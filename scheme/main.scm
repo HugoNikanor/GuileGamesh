@@ -293,6 +293,6 @@
 
 |#
 
-(ready!)
+;; (ready!)
 
-(set-current-scene! scene2)
+;; (set-current-scene! scene2)

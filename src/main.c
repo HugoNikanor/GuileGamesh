@@ -244,12 +244,33 @@ void init_functions () {
 	current_scene  = scm_variable_ref(scm_c_lookup ("current-scene"));
 }
 
-static void inner_main (void* closure, int argc, char* argv []) {
+/*
+ * TODO
+ * Possibly move SDL loop creation to here instead of
+ * init_functions
+ */
+static void inner_main (void* data, int argc, char* argv []) {
+	/*
+	 * if (ready!) is called at the end of this file then
+	 * then that works.
+	 *
+	 * Calling it in the spawned shell also work.
+	 *
+	 * Nothing else seems to work.
+	 */
 	scm_c_primitive_load ("scheme/main.scm");
+	// scm_call_0 (set_ready);
+	// set_ready ();
+	// scm_call_0 ( scm_c_public_ref ("ready!"));
+	// scm_c_eval_string ("(set-current-scene! scene2)");
+	// scm_c_primitive_load ("scheme/postmain.scm");
+
+	// This function also doesn't return.
 	scm_shell (argc, argv);
 }
 
 int main (int argc, char* argv []) {
-	scm_boot_guile (argc, argv, inner_main, 0);
+	// This doesn't return, but rather calls exit(0)
+	scm_boot_guile (argc, argv, inner_main, NULL);
 	return 0;
 }
