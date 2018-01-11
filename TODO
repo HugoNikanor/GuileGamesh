@@ -1,7 +1,9 @@
 Module reloading
 - When reloading a module which creates objects then the old
   objects should possibly be destroyed
+- Methods doesn't seem to be reloaded, look into this
 
 resolve-module
 reload-module
 define-once (defvar)
+(reload-module (resolve-module '(engine)))

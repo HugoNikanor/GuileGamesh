@@ -18,6 +18,12 @@
 
 (define-method (draw-func (el <ellipse>))
                (apply set-color (slot-ref el 'color))
+               (let ((xp (inexact->exact (floor (x (pos el)))))
+                     (yp (inexact->exact (floor (y (pos el))))))
+                 (draw-line (- xp (slot-ref el 'd))
+                            yp
+                            (+ xp (slot-ref el 'd))
+                            yp))
                (draw-ellipse
                  (slot-ref el 'r)
                  (inexact->exact (floor (x (pos el))))
