@@ -37,7 +37,14 @@
              ;; These three are for event-func to work
              (event key)
              (event mouse-btn)
-             (event mouse-motion))
+             (event mouse-motion)
+             
+             (oop goops)
+             (oop goops describe)
+             (objects character)
+             (scene))
+
+(define c (create-character (@@ (scene scene2) f)))
 
 
 #|

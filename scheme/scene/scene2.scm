@@ -4,6 +4,7 @@
                #:use-module (scene)
                #:use-module (vector)
                #:use-module (objects ellipse)
+               ;;#:use-module (objects vecloader)
 
                #:use-module (collide)
 
@@ -40,17 +41,22 @@
         #:r 100
         #:d 30))
 
+;; (define-once figure
+;;   (parse (open-input-file "assets/obj.sxml")))
+
+(define f (open-input-file "assets/obj.sxml"))
+
 (define-once *loaded* #f)
 
 ;; TODO create a load-once macro
 (unless *loaded*
   (set! *loaded* #t)
 
-  (register-draw-object! pel)
+  ;(register-draw-object! pel)
   ;;(register-event-object! pel)
   (register-tick-object! pel)
 
-  (register-draw-object! eel)
+  ;(register-draw-object! eel)
   ;;(register-event-object! eel)
   ;;(register-tick-object! eel)
   )

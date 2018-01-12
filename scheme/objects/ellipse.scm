@@ -17,6 +17,7 @@
                      #:init-value '(0 #xFF 0)))
 
 (define-method (draw-func (el <ellipse>))
+               (display "drawing <ellipse>\n")
                (apply set-color (slot-ref el 'color))
                (let ((xp (inexact->exact (floor (x (pos el)))))
                      (yp (inexact->exact (floor (y (pos el))))))

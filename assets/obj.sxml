@@ -1,0 +1,9 @@
+;; Anchor relative pos
+
+(object (anchor (-50 -100))
+        (line (@ (from (50 25))
+                 (to (50 75))))
+        (line (@ (from (50 75))
+                 (to (0 100))))
+        (line (@ (from (50 75))
+                 (to (100 100)))))

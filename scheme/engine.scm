@@ -40,7 +40,8 @@
 
 (define-class <geo-object> (<game-object>)
               (pos #:accessor pos
-                   #:init-keyword #:pos))
+                   #:init-keyword #:pos
+                   #:init-form (make <v2> #:x 0 #:y 0)))
 
 #| Colliding
 

@@ -1,0 +1,31 @@
+(define-module (objects character)
+               #:use-module (oop goops)
+               #:use-module (engine)
+               #:use-module (vector)
+               #:use-module (objects vecloader)
+               #:use-module (objects ellipse)
+               #:export (<character> create-character))
+
+(define-class <character> (<vec-graphics> <ellipse>))
+
+(define-generic a)
+(define-generic b)
+
+(define-method (a (x <vec-graphics>))
+               (display "Drawing vec\n")
+               (draw-func x))
+(define-method (b (x <ellipse>))
+               (display "Drawing ellipse\n")
+               (draw-func x))
+
+(define-method (draw-func (obj <character>))
+               (display "drawing <character>\n")
+               (a obj)
+               (b obj))
+
+(define (create-character str)
+  (let ((obj (parse str)))
+    (change-class obj <character>)
+    (set! (pos obj) (make <v2> '(200 200)))
+    obj))
+               ;;; (for-each draw-func (class-direct-supers obj) )
