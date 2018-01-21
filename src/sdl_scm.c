@@ -113,26 +113,41 @@ SCM draw_ellipse (SCM _r, SCM _x0, SCM _y0, SCM _d) {
 	float r_y = sqrt (r_x * r_x - d * d);
 
 	int count = 100;
-	SDL_Point* pts = malloc (sizeof(*pts) * count);
+	//SDL_Point* pts = malloc (sizeof(*pts) * count);
+	SDL_Point pts[count];
 
 	for (int i = 0; i < count; i++) {
 		float theta = (TAU / (count - 1)) * i;
 		float x = r_x * cosf (theta);
 		float y = r_y * sinf (theta);
 
+		/*
 		SDL_Point* pt = malloc (sizeof (*pt));
 		pt->x = x + x_0;
 		pt->y = y + y_0;
 
 		pts [i] = *pt;
+		*/
+		SDL_Point pt = {
+			.x = x + x_0,
+			.y = y + y_0
+		};
+
+		pts [i] = pt;
 	}
 
 	SDL_RenderDrawLines (renderer, pts, count);
 
+	/*
+	printf ("sizeof %lu\n", sizeof (*pts));
 	for (int i = 0; i < count; i++) {
-		//free (pts + i * sizeof (*pts));
+		printf ("ptr: %p\n", &pts[i]);
+		free (&pts[i]);
+		//free (pts + i);
 	}
-	free (pts);
+	puts("done");
+	//free (pts);
+	*/
 
 	return SCM_UNSPECIFIED;
 }
