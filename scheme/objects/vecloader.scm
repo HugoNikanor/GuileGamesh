@@ -35,6 +35,7 @@
   (next-method))
 
 (define-method (initialize (this <vec-graphics>) args)
+  (next-method)
   (let ((file (keyword-ref #:file args)))
     (let* ((struct (read file))
            (anchor (cadr (list-ref struct 1)))
@@ -47,6 +48,6 @@
                                      #:start (make <v2> from)
                                      #:stop  (make <v2> to))))
                 lines)))
+        (display lineobjs) (newline)
         (slot-set! this 'anchor (make <v2> anchor))
-        (slot-set! this 'lines lineobjs)
-        (next-method)))))
+        (slot-set! this 'lines lineobjs)))))

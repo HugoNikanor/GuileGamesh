@@ -66,7 +66,8 @@
 ;;; (define c (create-character f))
 (define test-character
   (make <character>
-        #:file (open-input-file "assets/obj.sxml")))
+        #:file (open-input-file "assets/obj.sxml")
+        #:pos (make <v2> #:x 200 #:y 200)))
 
 (define-once *loaded* #f)
 

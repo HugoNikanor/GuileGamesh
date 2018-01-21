@@ -6,16 +6,21 @@
                #:use-module (objects ellipse)
                #:export (<character>))
 
-(define-class <character> (<vec-graphics> <ellipse>))
+#| TODO
+ | currently inheritance order dictates drawing order.
+ | This is probably bad, since it will then be hard
+ | to handle different layers in one model. But it
+ | might be possible by mutating the list during runtime.
+ |#
+(define-class <character> (<ellipse> <vec-graphics>))
 
 (define-method (draw-func (obj <character>))
                (next-method))
 
 (define-method (initialize (this <character>) args)
-               (set! (pos this) (make <v2> '(200 200)))
-               (slot-set! this 'r 50)
-               (slot-set! this 'd 30)
-               (next-method))
+               (next-method)
+               (slot-set! this 'r 100)
+               (slot-set! this 'd 30))
 
 #|
 (define (create-character str)
