@@ -8,24 +8,16 @@
 
 (define-class <character> (<vec-graphics> <ellipse>))
 
-(define-generic a)
-(define-generic b)
-
-(define-method (a (x <vec-graphics>))
-               (display "Drawing vec\n")
-               (draw-func x))
-(define-method (b (x <ellipse>))
-               (display "Drawing ellipse\n")
-               (draw-func x))
-
 (define-method (draw-func (obj <character>))
-               (display "drawing <character>\n")
-               (a obj)
-               (b obj))
+               (next-method))
 
 (define (create-character str)
+  "TODO It would be better if this was merged into
+  the constructor for characters"
   (let ((obj (parse str)))
     (change-class obj <character>)
     (set! (pos obj) (make <v2> '(200 200)))
+    (slot-set! obj 'r 20)
+    (slot-set! obj 'd 10)
     obj))
                ;;; (for-each draw-func (class-direct-supers obj) )

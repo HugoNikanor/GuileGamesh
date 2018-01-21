@@ -105,3 +105,7 @@ in the C part of the program.
 |#
 
 (define-generic draw-func)
+
+;; Default implementation, required so everything
+;; else can safely call `next-method'
+(define-method (draw-func (obj <geo-object>)))

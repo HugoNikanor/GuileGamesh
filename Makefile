@@ -25,8 +25,9 @@ main.so : $(O_FILES)
 main : $(O_FILES)
 	gcc ${LFLAGS} -o $@ $^
 
-all : main.so
+all : main.so main
 
 clean:
 	-rm obj/*.o
 	-rm main.so
+	-rm main

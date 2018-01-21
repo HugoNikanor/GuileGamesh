@@ -19,7 +19,6 @@
                      #:init-value '()))
 
 (define-method (draw-func (obj <vec-graphics>))
-               (display "drawing <vec-graphics>\n")
   (let ((anchor (slot-ref obj 'anchor))
         (pos (slot-ref obj 'pos)))
     (for-each
@@ -30,7 +29,8 @@
                 (x1 (x (shift (slot-ref line 'stop))))
                 (y1 (y (shift (slot-ref line 'stop)))))
             (draw-line x0 y0 x1 y1))))
-      (slot-ref obj 'lines))))
+      (slot-ref obj 'lines)))
+  (next-method))
 
 (define (parse file)
   (let* ((struct (read file))

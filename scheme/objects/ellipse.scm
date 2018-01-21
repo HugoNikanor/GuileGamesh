@@ -11,13 +11,14 @@
   #:export (<ellipse>))
 
 (define-class <ellipse> (<geo-object>)
-              (r #:init-keyword #:r)
-              (d #:init-keyword #:d)
+              (r #:init-keyword #:r
+                 #:init-vaule 1)
+              (d #:init-keyword #:d
+                 #:init-value 0)
               (color #:init-keyword #:color
                      #:init-value '(0 #xFF 0)))
 
 (define-method (draw-func (el <ellipse>))
-               (display "drawing <ellipse>\n")
                (apply set-color (slot-ref el 'color))
                (let ((xp (inexact->exact (floor (x (pos el)))))
                      (yp (inexact->exact (floor (y (pos el))))))
@@ -29,7 +30,8 @@
                  (slot-ref el 'r)
                  (inexact->exact (floor (x (pos el))))
                  (inexact->exact (floor (y (pos el))))
-                 (slot-ref el 'd)))
+                 (slot-ref el 'd))
+               (next-method))
 
 (define-method (get-intersection-translation-vector
                  (el1 <ellipse>)
