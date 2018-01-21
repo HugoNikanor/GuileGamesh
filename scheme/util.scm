@@ -2,7 +2,8 @@
                #:use-module (srfi srfi-1)
                #:use-module (srfi srfi-26)
                #:export (apply-for-each cart-prod r slot-mod!
-                                        square pi tau))
+                                        square pi tau
+                                        keyword-ref))
 
 (define (r)
   (system "reset"))
@@ -32,6 +33,14 @@
 
 (define pi 3.141592653589793)
 (define tau (* pi 2))
+
+(define (keyword-ref keyword list)
+  "Get value after keyword in list, default to #f:
+  (keyword-ref #:b '(#:a 1 #:b 2 #:c 3)) => 2
+  (keyword-ref #:b '()) => #f"
+  (and=> (member keyword list)
+         cadr))
+
 
 #| for future use
 (define-macro (swap! a b)

@@ -44,8 +44,11 @@
              (objects character)
              (scene))
 
-(define c (create-character (@@ (scene scene2) f)))
+;; (define c (create-character (@@ (scene scene2) f)))
 
+
+;; imported from scene2
+(set-current-scene! scene2)
 
 #|
 (define-method (event-do (box <box>)

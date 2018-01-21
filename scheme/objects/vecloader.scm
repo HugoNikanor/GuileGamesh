@@ -3,11 +3,13 @@
                #:use-module (oop goops)
                #:use-module (vector)
                #:use-module (engine)
-               #:export (<line> <vec-graphics> parse)
+               #:use-module (util) ;; for keyword-ref
+               #:export (<line> <vec-graphics>)
                )
 
 ;; (define file (open-input-file "assets/obj.sxml"))
 
+;; TODO break <line> into better file
 (define-class <line> ()
               (start #:init-keyword #:start)
               (stop  #:init-keyword #:stop))
@@ -32,18 +34,19 @@
       (slot-ref obj 'lines)))
   (next-method))
 
-(define (parse file)
-  (let* ((struct (read file))
-         (anchor (cadr (list-ref struct 1)))
-         (lines (cddr struct)))
-    (let ((lineobjs
-            (map
-              (match-lambda (('line `(@ (from ,from)
-                                        (to ,to)))
-                             (make <line>
-                                   #:start (make <v2> from)
-                                   #:stop  (make <v2> to))))
-              lines)))
-      (make <vec-graphics>
-            #:anchor (make <v2> anchor)
-            #:lines lineobjs))))
+(define-method (initialize (this <vec-graphics>) args)
+  (let ((file (keyword-ref #:file args)))
+    (let* ((struct (read file))
+           (anchor (cadr (list-ref struct 1)))
+           (lines (cddr struct)))
+      (let ((lineobjs
+              (map
+                (match-lambda (('line `(@ (from ,from)
+                                          (to ,to)))
+                               (make <line>
+                                     #:start (make <v2> from)
+                                     #:stop  (make <v2> to))))
+                lines)))
+        (slot-set! this 'anchor (make <v2> anchor))
+        (slot-set! this 'lines lineobjs)
+        (next-method)))))

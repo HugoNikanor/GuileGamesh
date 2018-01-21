@@ -10,6 +10,15 @@
 
   #:export (<ellipse>))
 
+#|
+ | ellipse should be split into two classes
+ | the core class which is just the shape of
+ | an ellispe. This is mostly to enable the
+ | vector format to use it.
+ |
+ | The other part is the collision ellipse.
+ |#
+
 (define-class <ellipse> (<geo-object>)
               (r #:init-keyword #:r
                  #:init-vaule 1)
@@ -20,12 +29,6 @@
 
 (define-method (draw-func (el <ellipse>))
                (apply set-color (slot-ref el 'color))
-               (let ((xp (inexact->exact (floor (x (pos el)))))
-                     (yp (inexact->exact (floor (y (pos el))))))
-                 (draw-line (- xp (slot-ref el 'd))
-                            yp
-                            (+ xp (slot-ref el 'd))
-                            yp))
                (draw-ellipse
                  (slot-ref el 'r)
                  (inexact->exact (floor (x (pos el))))
@@ -33,6 +36,7 @@
                  (slot-ref el 'd))
                (next-method))
 
+;;; TODO clean up this
 (define-method (get-intersection-translation-vector
                  (el1 <ellipse>)
                  (el2 <ellipse>))
@@ -50,6 +54,7 @@
                         (/ 1 (abs (- v u))))
                      (make <v2>)))))
 
+;;; TODO clean up this
 (define-method (helperfunction
                  (el1 <ellipse>)
                  (el2 <ellipse>))
@@ -74,6 +79,7 @@
         (make <v2> #:x (slot-ref el 'd))))
 
 
+;;; TODO remove this
 (define-method (colliding?
                  (el1 <ellipse>)
                  (el2 <ellipse>))
@@ -121,11 +127,15 @@
 ;;(define-method (collide <geo-object>))
 (define-method (collide! (el1 <ellipse>)
                          (el2 <ellipse>))
-               "Mutates el1"
-               (slot-mod! el1 'pos
-                          (lambda (p)
-                            (- p (catch 'numerical-overflow
-                                        (lambda ()
-                                          (get-intersection-translation-vector el1 el2))
-                                        (lambda (symb . msg)
-                                          (make <v2> #:x 1)))))))
+  "Mutates el1"
+  (slot-mod! el1 'pos
+             (lambda (p)
+               (- p (catch 'numerical-overflow
+                           (lambda ()
+                             (get-intersection-translation-vector el1 el2))
+                           (lambda (symb . msg)
+                             ;; Our algorithm doesn't work if the two
+                             ;; ellipses are in the exact same position.
+                             ;; We solve this by simply moving el1 one
+                             ;; step to the right.
+                             (make <v2> #:x 1)))))))
