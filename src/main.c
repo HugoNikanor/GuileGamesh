@@ -14,11 +14,13 @@ bool ready = false;
 SCM draw_func = SCM_UNDEFINED;
 SCM tick_func = SCM_UNDEFINED;
 SCM event_func = SCM_UNDEFINED;
+SCM collide_func = SCM_UNDEFINED;
 
 SCM make_empty_scene = SCM_UNDEFINED;
 SCM get_event_list   = SCM_UNDEFINED;
 SCM get_tick_list    = SCM_UNDEFINED;
 SCM get_draw_list    = SCM_UNDEFINED;
+SCM get_collide_list = SCM_UNDEFINED;
 SCM current_scene    = SCM_UNDEFINED;
 
 SDL_Window* window;
@@ -35,9 +37,11 @@ SDL_Renderer* renderer;
  * It should also slightly change what it does
  */
 static SCM set_ready() {
-	draw_func  = scm_variable_ref(scm_c_lookup ("draw-func"));
-	tick_func  = scm_variable_ref(scm_c_lookup ("tick-func"));
-	event_func = scm_variable_ref(scm_c_lookup ("event-func"));
+	// TODO better name for these METHODS
+	draw_func    = scm_variable_ref(scm_c_lookup ("draw-func"));
+	tick_func    = scm_variable_ref(scm_c_lookup ("tick-func"));
+	event_func   = scm_variable_ref(scm_c_lookup ("event-func"));
+	collide_func = scm_variable_ref(scm_c_lookup ("collide-func"));
 
 	ready = true;
 	return SCM_UNDEFINED;
@@ -51,6 +55,12 @@ static void* tick_objects (void* args) {
 
 static void* draw_objects (void* args) {
 	my_for_each (draw_func, scm_call_1 (get_draw_list,
+				scm_call_0(current_scene)));
+	return NULL;
+}
+
+static void* collide_objects (void* args) {
+	my_for_each (collide_func, scm_call_1 (get_collide_list,
 				scm_call_0(current_scene)));
 	return NULL;
 }
@@ -89,6 +99,7 @@ static void* call_funcs (void* args) {
 		tick_objects (args);
 		draw_objects (args);
 		event_objects (args);
+		collide_objects (args);
 	}
 
 	return NULL;
@@ -238,9 +249,10 @@ void init_functions () {
 
 	scm_c_use_module ("scene");
 
-	get_event_list = scm_variable_ref(scm_c_lookup ("get-event-list"));
-	get_tick_list  = scm_variable_ref(scm_c_lookup ("get-tick-list"));
-	get_draw_list  = scm_variable_ref(scm_c_lookup ("get-draw-list"));
+	get_event_list    = scm_variable_ref(scm_c_lookup ("get-event-list"));
+	get_tick_list     = scm_variable_ref(scm_c_lookup ("get-tick-list"));
+	get_draw_list     = scm_variable_ref(scm_c_lookup ("get-draw-list"));
+	get_collide_list  = scm_variable_ref(scm_c_lookup ("get-collide-list"));
 	current_scene  = scm_variable_ref(scm_c_lookup ("current-scene"));
 }
 

@@ -15,6 +15,8 @@ DFLAGS = -ggdb
 C_FILES = $(wildcard src/*.c)
 O_FILES = $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 
+all : main.so main
+
 obj/%.o : src/%.c
 	-mkdir obj
 	gcc -c ${CFLAGS} ${DFLAGS} -o $@ $<
@@ -24,8 +26,6 @@ main.so : $(O_FILES)
 
 main : $(O_FILES)
 	gcc ${LFLAGS} -o $@ $^
-
-all : main.so main
 
 clean:
 	-rm obj/*.o

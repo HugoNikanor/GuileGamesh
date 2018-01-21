@@ -1,9 +1,14 @@
 (define-module
   (objects ellipse)
+  #:use-module (srfi srfi-26)
   #:use-module (oop goops)
   #:use-module (engine) ;; <geo-object>
   #:use-module (util)
   #:use-module (vector)
+
+  ;; for current-scene in collide-func.
+  ;; TODO probably move this
+  #:use-module (scene) 
 
   #:use-module (collide)
   #:use-module (util)
@@ -26,6 +31,10 @@
                  #:init-value 0)
               (color #:init-keyword #:color
                      #:init-value '(0 #xFF 0)))
+
+(define-method (initialize (this <ellipse>) args)
+               (register-collider! this)
+               (next-method))
 
 (define-method (draw-func (el <ellipse>))
                (apply set-color (slot-ref el 'color))
@@ -118,6 +127,11 @@
                                (real-part (+ (abs v)
                                              (abs u)))))))))
 
+(define-method (collide-func (this <ellipse>))
+  (for-each (lambda (that)
+              (unless (eq? this that)
+                (collide! this that)))
+            (get-collide-list (current-scene))))
 
 
 ;;; TODO Actually figure out what can collide

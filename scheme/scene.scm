@@ -6,7 +6,7 @@
                           get-event-list
                           get-draw-list
                           get-tick-list
-                          get-colliders
+                          get-collide-list
                           register-tick-object!
                           register-draw-object!
                           register-event-object!
@@ -24,7 +24,7 @@
               (tick-list  #:init-value '()
                           #:getter get-tick-list)
               (collision-list #:init-value '()
-                              #:getter get-colliders))
+                              #:getter get-collide-list))
 
 (define-method (add-event! (scene <scene>) item)
   (slot-set! scene 'event-list

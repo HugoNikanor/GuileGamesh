@@ -25,6 +25,7 @@
 
             draw-func
             tick-func
+            collide-func
             )
   )
 
@@ -109,3 +110,5 @@ in the C part of the program.
 ;; Default implementation, required so everything
 ;; else can safely call `next-method'
 (define-method (draw-func (obj <geo-object>)))
+
+(define-generic collide-func)

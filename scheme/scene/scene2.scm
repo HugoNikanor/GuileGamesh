@@ -88,8 +88,8 @@
   ;;(register-tick-object! eel)
   )
 
-(define-method (tick-func (obj <ctrl-el>))
-               (collide! obj eel))
+;;;(define-method (tick-func (obj <ctrl-el>))
+;;;               (collide! obj eel))
 
 ;;               (let ((other eel))
 ;;                 (if (not (eq? obj other))
