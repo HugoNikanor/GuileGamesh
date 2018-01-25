@@ -3,23 +3,15 @@
                #:use-module (engine)
                #:use-module (scene)
                #:use-module (objects sprite)
+
+               #:use-module (util)
                
                #:export (scene3 s1))
 
-;; TODO look into replacing *loaded* with gensymed
-(define-macro (do-once . body)
-  `(begin
-     (define-once *loaded* #f)
-     (unless *loaded*
-       (set! *loaded* #t)
-       ,@body)))
+(with-new-scene scene3 "SCENE 3"
 
-(define-once scene3 (make <scene> #:name "SCENE 3"))
+  (define-once s1 (make <sprite>))
 
-(with-scene scene3
-
-(define-once s1 (make <sprite>))
-
-(do-once
-  (register-draw-object! s1))
-)
+  (do-once
+    (register-draw-object! s1)
+))

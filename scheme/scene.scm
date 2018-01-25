@@ -11,7 +11,7 @@
                           register-draw-object!
                           register-event-object!
                           register-collider!
-                          with-scene
+                          with-scene with-new-scene
                           ))
 
 
@@ -66,3 +66,10 @@
        (set! current-scene (lambda () ,scene))
        ,@exprs
        (set! current-scene ,orig-scene))))
+
+(define-macro (with-new-scene symb name . exprs)
+  "Creates a new scene bound to `symb' with `name'
+   And then call the rest with that scene as (current-scene)"
+  `(begin
+     (define-once ,symb (make <scene> #:name ,name))
+     (with-scene ,symb ,@exprs)))

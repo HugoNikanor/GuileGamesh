@@ -3,7 +3,8 @@
                #:use-module (srfi srfi-26)
                #:export (apply-for-each cart-prod r slot-mod!
                                         square pi tau
-                                        keyword-ref))
+                                        keyword-ref
+                                        do-once))
 
 (define (r)
   (system "reset"))
@@ -40,6 +41,19 @@
   (keyword-ref #:b '()) => #f"
   (and=> (member keyword list)
          cadr))
+
+;; *loaded* isn't gensymed because it needs to be
+;; the same symbol every time this is run.
+(define-macro (do-once . body)
+  "Like define-once, but for an entire code block
+   Note that definitions can't be present within
+   this body"
+  `(begin
+     (define-once *loaded* #f)
+     (unless *loaded*
+       (set! *loaded* #t)
+       (display "The module is now loading\n")
+       ,@body)))
 
 
 #| for future use
