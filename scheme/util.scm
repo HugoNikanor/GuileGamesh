@@ -4,6 +4,7 @@
                #:export (apply-for-each cart-prod r slot-mod!
                                         square pi tau
                                         keyword-ref
+                                        slot-ref*
                                         do-once))
 
 (define (r)
@@ -54,6 +55,15 @@
        (set! *loaded* #t)
        (display "The module is now loading\n")
        ,@body)))
+
+(define-syntax-rule (slot-ref* obj field default)
+  (begin
+    (catch 'goops-error
+           (lambda ()
+             (slot-ref obj field))
+           (lambda args
+             (slot-set! obj field default)))
+    (slot-ref obj field)))
 
 
 #| for future use

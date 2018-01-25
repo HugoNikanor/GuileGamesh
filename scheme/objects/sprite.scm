@@ -2,6 +2,7 @@
   (objects sprite)
   #:use-module (oop goops)
   #:use-module (engine)
+  #:use-module (util) ;; slot-ref*
 
   #:export (<sprite>))
 
@@ -14,14 +15,6 @@
 ;; But I can't seem to get slot-unbound to check
 ;; which field that wis trying to be accessed.
 
-(define-syntax-rule (slot-ref* obj field default)
-  (begin
-    (catch 'goops-error
-           (lambda ()
-             (slot-ref obj field))
-           (lambda args
-             (slot-set! obj field default)))
-    (slot-ref obj field)))
 
 (define-method (initialize (this <sprite>) args)
   (next-method)
