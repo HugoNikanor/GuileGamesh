@@ -9,7 +9,7 @@
                #:use-module (util)
                #:use-module (vector)
 
-               #:use-module (objects spritesheet)
+               #:use-module (objects swap-sprite)
                
                #:export (scene3 s1 ss))
 
