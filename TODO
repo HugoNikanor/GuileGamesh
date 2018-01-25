@@ -13,6 +13,10 @@ Module reloading
 - All the {event,tick,draw}-lists should have some way to
   ensure that the same objects isn't put there multiple times 
 
+- I use `#:init-value (func)' in a few places. Can this cause
+  issues if the fields of the created objects are modified.
+  Since all instances of the class possibly share the object
+
 ========================================
 
 resolve-module
