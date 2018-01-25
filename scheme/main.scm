@@ -198,7 +198,7 @@
              (load-image fpath))
   (register-draw-object! tileset scene2))
 
-(define scene3 (make <scene> #:name "SCENE 3"))
+(define removed-scene3 (make <scene> #:name "SCENE 3"))
 (set-current-scene! scene3)
 
 ;;(define-class <tileset-grid> (<tile-set>))

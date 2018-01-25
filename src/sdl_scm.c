@@ -58,6 +58,12 @@ SCM init_img (SCM filepath) {
 	return scm_from_long((long) img);
 }
 
+/*
+ * img_ptr :: pointer to an SDL_Texture. Returned from init_img
+ * _tile_size :: size in pixels, assumes square tile
+ * sprite_pos :: position within tilesheet (in tiles). Pass as list of len 2
+ * board_pos :: position on board, in tiles
+ */
 SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) {
 	img = (SDL_Texture*) scm_to_long (img_ptr);
 	int sx = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(0)));
@@ -77,6 +83,19 @@ SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) 
 		.y = board_pos_y * tile_size,
 		.w = tile_size,
 		.h = tile_size };
+
+	/*
+	printf ("tile  : { x=%i y=%i w=%i h=%i }\n",
+			sprite_tile.x,
+			sprite_tile.y,
+			sprite_tile.w,
+			sprite_tile.h);
+	printf ("board : { x=%i y=%i w=%i h=%i }\n",
+			board_space.x,
+			board_space.y,
+			board_space.w,
+			board_space.h);
+	*/
 
 	SDL_RenderCopy (renderer, img, &sprite_tile, &board_space);
 

@@ -52,3 +52,10 @@
                (sqrt (+ (square (x v))
                         (square (y v)))))
 
+(define-method (modulo (v <v2>)
+                       (u <v2>))
+               (v2 (modulo (x v)
+                           (x u))
+                   (modulo (y v)
+                           (y u))))
+

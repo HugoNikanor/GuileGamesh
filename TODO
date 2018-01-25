@@ -17,6 +17,8 @@ Module reloading
   issues if the fields of the created objects are modified.
   Since all instances of the class possibly share the object
 
+- with-new-scene definitions isn't found by ctags
+
 ========================================
 
 resolve-module
