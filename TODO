@@ -4,6 +4,17 @@ Module reloading
 - Methods doesn't seem to be reloaded, look into this
 - Figure out how objects move on collision
 
+2018-01-25
+==========
+
+- Why is tick-object the list to be in to recieve keyboard events?
+- What is event-objects for then?
+
+- All the {event,tick,draw}-lists should have some way to
+  ensure that the same objects isn't put there multiple times 
+
+========================================
+
 resolve-module
 reload-module
 define-once (defvar)

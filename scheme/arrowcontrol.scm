@@ -13,6 +13,10 @@
 (define-class <arrow-control> ()
              key-listener)
 
+;; TODO the slot-set! here should probably be set in
+;;      the class definition.
+;; This method should however probably register the
+;; objects to the correct {event,tick}-list.
 (define-method (initialize (obj <arrow-control>) initargs)
                (slot-set! obj 'key-listener
                           (make <key-listener>
