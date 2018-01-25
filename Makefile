@@ -1,4 +1,4 @@
-.PHONY : clean all
+.PHONY : clean all tags
 
 CFLAGS = $$(guile-config compile) \
          $$(pkg-config --cflags sdl2) \
@@ -26,6 +26,12 @@ main.so : $(O_FILES)
 
 main : $(O_FILES)
 	gcc ${LFLAGS} -o $@ $^
+
+# This is marked PHONY, but is actually a real file
+# the flag is since make has no idea if it has to be 
+# remade.
+tags :
+	ctags -R scheme src
 
 clean:
 	-rm obj/*.o
