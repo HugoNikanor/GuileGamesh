@@ -18,6 +18,7 @@
             draw-ellipse
             load-image
             render-texture
+            render-sprite
 
             <game-object> object-name counter
             <geo-object> pos

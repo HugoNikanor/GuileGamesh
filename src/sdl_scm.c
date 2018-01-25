@@ -43,6 +43,7 @@ SCM draw_text (SCM text, SCM _x, SCM _y) {
 	return SCM_UNDEFINED;
 }
 
+// TODO this really should be a malloc in init_img 
 SDL_Texture* img;
 SCM init_img (SCM filepath) {
 	char* path = scm_to_utf8_string (filepath);
@@ -51,6 +52,9 @@ SCM init_img (SCM filepath) {
 		puts ("_____couldn't load image______");
 		puts (SDL_GetError());
 	}
+	int w, h;
+	SDL_QueryTexture (img, NULL, NULL, &w, &h);
+	printf ("Loaded texture with size %ix%i\n", w, h);
 	return scm_from_long((long) img);
 }
 
@@ -73,6 +77,34 @@ SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) 
 		.y = board_pos_y * tile_size,
 		.w = tile_size,
 		.h = tile_size };
+
+	SDL_RenderCopy (renderer, img, &sprite_tile, &board_space);
+
+	return SCM_UNSPECIFIED;
+}
+
+/*
+ * TODO ability to scale sprites
+ */
+SCM render_single_sprite (SCM img_ptr, SCM board_pos) {
+	img = (SDL_Texture*) scm_to_long (img_ptr);
+	//int sx = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(0)));
+	//int sy = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(1)));
+	//int img_size = scm_to_int (_img_size);
+
+	int w, h;
+	SDL_QueryTexture (img, NULL, NULL, &w, &h);
+	//printf ("Loaded texture with size %ix%i\n", w, h);
+
+	int board_pos_x = scm_to_int (scm_list_ref (board_pos, scm_from_int (0)));
+	int board_pos_y = scm_to_int (scm_list_ref (board_pos, scm_from_int (1)));
+
+	SDL_Rect sprite_tile =
+		{ .x = 0, .y = 0, .w = w, .h = h };
+	SDL_Rect board_space = {
+		.x = board_pos_x,
+		.y = board_pos_y,
+		.w = w, .h = h };
 
 	SDL_RenderCopy (renderer, img, &sprite_tile, &board_space);
 

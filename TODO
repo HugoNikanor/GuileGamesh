@@ -8,3 +8,4 @@ resolve-module
 reload-module
 define-once (defvar)
 (reload-module (resolve-module '(engine)))
+,reload (engine)

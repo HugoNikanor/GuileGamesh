@@ -31,24 +31,28 @@
              )
 |#
 
-(use-modules (scene scene2)
-             (engine)
+(use-modules (engine)
+             (scene scene2)
+             (scene scene3)
              (event) ;; event-func
              ;; These three are for event-func to work
              (event key)
              (event mouse-btn)
              (event mouse-motion)
+
+             (vector)
              
              (oop goops)
              (oop goops describe)
              (objects character)
+             (objects sprite)
              (scene))
 
 ;; (define c (create-character (@@ (scene scene2) f)))
 
 
 ;; imported from scene2
-(set-current-scene! scene2)
+(set-current-scene! scene3)
 
 #|
 (define-method (event-do (box <box>)

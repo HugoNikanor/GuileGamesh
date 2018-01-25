@@ -1,10 +1,15 @@
 (define-module (vector)
                #:use-module (oop goops)
-               #:export (<v2> x y))
+               #:export (<v2> x y v2))
 
 (define-class <v2> ()
               (x #:init-value 0 #:accessor x #:init-keyword #:x)
               (y #:init-value 0 #:accessor y #:init-keyword #:y))
+
+(define* (v2 #:optional
+            (x 0)
+            (y 0))
+  (make <v2> #:x x #:y y))
 
 (define-method (initialize (obj <v2>) initargs)
                "Allows (make <v2> '(1 2)) as an alternative to

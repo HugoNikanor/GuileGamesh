@@ -244,6 +244,9 @@ void init_functions () {
 	scm_c_define_gsubr
 		("render-texture", 4, 0, 0, render_texture);
 
+	scm_c_define_gsubr
+		("render-sprite", 2, 0, 0, render_single_sprite);
+
 	pthread_t sdl_thread;
 	pthread_create (&sdl_thread, NULL, sdl_loop, NULL);
 
