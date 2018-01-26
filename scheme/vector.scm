@@ -1,6 +1,6 @@
 (define-module (vector)
                #:use-module (oop goops)
-               #:export (<v2> x y v2))
+               #:export (<v2> x y v2 m*))
 
 (define-class <v2> ()
               (x #:init-value 0 #:accessor x #:init-keyword #:x)
@@ -22,6 +22,14 @@
                    (slot-set! obj 'y y))
                  (next-method)))
 
+
+(define-method (m* (u <v2>)
+                   (v <v2>))
+               "Element-wise product"
+               (v2 (* (x u)
+                      (x v))
+                   (* (y u)
+                      (y v))))
 
 (define-method (+ (u <v2>)
                   (v <v2>))

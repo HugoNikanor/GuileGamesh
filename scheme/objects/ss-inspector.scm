@@ -15,7 +15,7 @@
                #:use-module (objects spritesheet)
                #:use-module (objects sprite)
 
-               #:export (<ss-inspector>))
+               #:export (<ss-inspector> single-size))
 
 ;; This is designed to be able to be changed into a spritesheet
 

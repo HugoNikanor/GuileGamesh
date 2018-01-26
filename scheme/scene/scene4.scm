@@ -8,14 +8,17 @@
 
                #:use-module (vector)
                #:use-module (objects ss-inspector)
+               #:use-module (objects ss-chooser)
                #:export (scene4))
 
 (with-new-scene scene4 "SCENE 4"
   ;;
 
   (define-once sheet-ins
-               (make <ss-inspector>
-                     #:file "assets/PathAndObjects_0.png"))
+               (make
+                 ;; <ss-inspector>
+                 <ss-chooser>
+                 #:file "assets/PathAndObjects_0.png"))
 
   ;; Through running the program I saw that
   ;; these were the correct sizes for PathAndObjects_0.png

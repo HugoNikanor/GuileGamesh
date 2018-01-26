@@ -34,6 +34,7 @@
 (use-modules (engine)
              (scene scene2)
              (scene scene3)
+             (scene scene4)
              (event) ;; event-func
              ;; These three are for event-func to work
              (event key)
@@ -52,7 +53,7 @@
 
 
 ;; imported from scene2
-(set-current-scene! scene3)
+(set-current-scene! scene4)
 
 #|
 (define-method (event-do (box <box>)
