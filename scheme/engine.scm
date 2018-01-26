@@ -114,3 +114,5 @@ in the C part of the program.
 (define-method (draw-func (obj <geo-object>)))
 
 (define-generic collide-func)
+
+(define-method (event-do (obj <game-object>) (event <event>)))

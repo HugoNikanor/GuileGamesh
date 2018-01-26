@@ -6,10 +6,22 @@
                #:use-module (scene) ;; with-new-scene
                #:use-module (util) ;; do-once
 
+               #:use-module (event)
+               #:use-module (event mouse-btn)
+
                #:use-module (vector)
                #:use-module (objects ss-inspector)
                #:use-module (objects ss-chooser)
                #:export (scene4))
+
+;;(define-method (event-do (this <ss-chooser>) (event <event>)))
+(define-method (event-do (this <ss-chooser>)
+                         (event <mouse-btn-event>))
+  ;;
+  (let ((click (v2 (mouseb-x event) (mouseb-y event))))
+    (slot-set! this 'current-tile
+      (floor (m/ (- click (slot-ref this 'pos))
+                (slot-ref this 'single-size))))))
 
 (with-new-scene scene4 "SCENE 4"
   ;;
@@ -26,5 +38,6 @@
   (slot-set! sheet-ins 'single-size (v2 32 32))
 
   (do-once
-    (register-draw-object! sheet-ins)))
+    (register-draw-object! sheet-ins)
+    (register-event-object! sheet-ins)))
 
