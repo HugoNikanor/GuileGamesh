@@ -58,6 +58,13 @@ SCM init_img (SCM filepath) {
 	return scm_from_long((long) img);
 }
 
+SCM texture_size (SCM img_ptr) {
+	img = (SDL_Texture*) scm_to_long (img_ptr);
+	int w, h;
+	SDL_QueryTexture (img, NULL, NULL, &w, &h);
+	return scm_list_2 (scm_from_int (w), scm_from_int (h));
+}
+
 /*
  * img_ptr :: pointer to an SDL_Texture. Returned from init_img
  * _tile_size :: size in pixels, assumes square tile

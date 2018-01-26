@@ -16,6 +16,7 @@ extern SDL_Renderer* renderer;
 SCM init_img (SCM filepath);
 SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos);
 SCM render_single_sprite (SCM img_ptr, SCM board_pos);
+SCM texture_size (SCM img_ptr);
 
 SCM draw_line (SCM _x1, SCM _y1, SCM _x2, SCM _y2);
 

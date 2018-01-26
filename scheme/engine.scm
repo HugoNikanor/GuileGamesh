@@ -19,6 +19,7 @@
             load-image
             render-texture
             render-sprite
+            texture-size
 
             <game-object> object-name counter
             <geo-object> pos
