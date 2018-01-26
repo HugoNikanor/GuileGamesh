@@ -4,11 +4,14 @@
   #:use-module (engine)
   #:use-module (util) ;; slot-ref*
 
-  #:export (<sprite>))
+  #:use-module (vector)
+
+  #:export (<sprite> get-sprite-size))
 
 (define-class <sprite> (<geo-object>)
               sprite
-              (file #:init-keyword #:file))
+              (file #:init-keyword #:file)
+              (size #:getter get-sprite-size))
 
 ;; TODO
 ;; I want to get slot-unbound to work for `file'
@@ -23,7 +26,9 @@
     (load-image
       (slot-ref*
         this 'file
-        "assets/MissingTexture.jpg"))))
+        "assets/MissingTexture.jpg")))
+  (slot-set! this 'size
+    (apply v2 (texture-size (slot-ref this 'sprite)))))
 
 ;; TODO
 ;; have a better way to go from <v2> to positions

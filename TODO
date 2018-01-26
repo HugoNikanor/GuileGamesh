@@ -19,6 +19,12 @@ Module reloading
 
 - with-new-scene definitions isn't found by ctags
 
+2018-01-26
+==========
+
+- ss-inspector should be extended to support non-rectangular
+  and non-regular sprites.
+
 ========================================
 
 resolve-module
