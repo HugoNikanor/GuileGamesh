@@ -1,6 +1,6 @@
 (define-module (vector)
                #:use-module (oop goops)
-               #:export (<v2> x y v2 m*))
+               #:export (<v2> x y v2 m* m/))
 
 (define-class <v2> ()
               (x #:init-value 0 #:accessor x #:init-keyword #:x)
@@ -29,6 +29,14 @@
                (v2 (* (x u)
                       (x v))
                    (* (y u)
+                      (y v))))
+
+(define-method (m/ (u <v2>)
+                   (v <v2>))
+               "Element-wise division"
+               (v2 (/ (x u)
+                      (x v))
+                   (/ (y u)
                       (y v))))
 
 (define-method (+ (u <v2>)
@@ -67,3 +75,6 @@
                    (modulo (y v)
                            (y u))))
 
+(define-method (floor (v <v2>))
+               (v2 (floor (x v))
+                   (floor (y v))))
