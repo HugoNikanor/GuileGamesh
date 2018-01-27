@@ -26,7 +26,7 @@
 
 (define-class <ellipse> (<geo-object>)
               (r #:init-keyword #:r
-                 #:init-vaule 1)
+                 #:init-value 1)
               (d #:init-keyword #:d
                  #:init-value 0)
               (color #:init-keyword #:color

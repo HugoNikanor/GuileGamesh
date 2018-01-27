@@ -30,8 +30,8 @@
                      #:init-value '(#xFF 0 0))
               )
 
-(define-method (initialize (this <ss-inspector>) args)
-               (next-method))
+;;(define-method (initialize (this <ss-inspector>) args)
+;;               (next-method))
 
 ;; draws all lines in top left of tile
 (define-method (draw-func (this <ss-inspector>))

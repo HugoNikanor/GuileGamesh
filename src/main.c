@@ -270,6 +270,11 @@ void init_functions () {
  * init_functions
  */
 static void inner_main (void* data, int argc, char* argv []) {
+
+	// This doesn't seem to do anything
+	scm_variable_set_x
+		(scm_from_utf8_symbol ("*random-state*"),
+		 scm_random_state_from_platform ());
 	/*
 	 * if (ready!) is called at the end of this file then
 	 * then that works.

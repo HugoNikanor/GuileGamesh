@@ -14,9 +14,9 @@
 ;; have spritesheets created from dynamic data
 (define-class <spritesheet> ()
               sprite
-              (single-size #:init-value (v2 1 1)
+              (single-size #:init-form (v2 1 1)
                            #:init-keyword #:size)
-              (amount #:init-value (v2 1 1)
+              (amount #:init-form (v2 1 1)
                       #:init-keyword #:amount)
               (file #:init-keyword #:file))
 

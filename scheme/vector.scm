@@ -1,6 +1,6 @@
 (define-module (vector)
                #:use-module (oop goops)
-               #:export (<v2> x y v2 m* m/))
+               #:export (<v2> x y v2 m* m/ v2->list))
 
 (define-class <v2> ()
               (x #:init-value 0 #:accessor x #:init-keyword #:x)
@@ -22,6 +22,9 @@
                    (slot-set! obj 'y y))
                  (next-method)))
 
+(define (v2->list v)
+  (list (x v)
+        (y v)))
 
 (define-method (m* (u <v2>)
                    (v <v2>))

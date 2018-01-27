@@ -12,7 +12,7 @@
                #:use-module (vector)
                #:use-module (objects ss-inspector)
                #:use-module (objects ss-chooser)
-               #:export (scene4))
+               #:export (sheet-ins scene4))
 
 ;;(define-method (event-do (this <ss-chooser>) (event <event>)))
 (define-method (event-do (this <ss-chooser>)
@@ -27,17 +27,13 @@
   ;;
 
   (define-once sheet-ins
-               (make
-                 ;; <ss-inspector>
-                 <ss-chooser>
-                 #:file "assets/PathAndObjects_0.png"))
-
-  ;; Through running the program I saw that
-  ;; these were the correct sizes for PathAndObjects_0.png
-  (slot-set! sheet-ins 'amount (v2 16 16))
-  (slot-set! sheet-ins 'single-size (v2 32 32))
+               (make <ss-chooser>
+                 #:file "assets/PathAndObjects_0.png"
+                 #:amount (v2 16 16)
+                 #:size (v2 32 32)))
 
   (do-once
     (register-draw-object! sheet-ins)
-    (register-event-object! sheet-ins)))
+    (register-event-object! sheet-ins)
+))
 

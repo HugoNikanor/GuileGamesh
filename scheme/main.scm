@@ -35,6 +35,7 @@
              (scene scene2)
              (scene scene3)
              (scene scene4)
+             (scene scene5)
              (event) ;; event-func
              ;; These three are for event-func to work
              (event key)
@@ -47,13 +48,16 @@
              (oop goops describe)
              (objects character)
              (objects sprite)
+             (objects tileworld)
              (scene))
 
 ;; (define c (create-character (@@ (scene scene2) f)))
 
 
+(set! *random-state* (random-state-from-platform))
+
 ;; imported from scene2
-(set-current-scene! scene4)
+(set-current-scene! scene5)
 
 #|
 (define-method (event-do (box <box>)
