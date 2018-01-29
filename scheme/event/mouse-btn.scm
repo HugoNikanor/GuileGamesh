@@ -3,7 +3,13 @@
   #:use-module (event)
   #:use-module (oop goops)
   #:export (<mouse-btn-event>
-             mouse-button mouseb-x mouseb-y))
+             mouse-button mouseb-x mouseb-y
+             *mouse-left-btn*  *mouse-middle-btn* *mouse-right-btn* 
+             ))
+
+(define *mouse-left-btn*   1)
+(define *mouse-middle-btn* 2)
+(define *mouse-right-btn*  3)
 
 (define-class <mouse-btn-event> (<event>) which state clicks
               (button #:getter mouse-button)

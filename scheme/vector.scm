@@ -26,6 +26,14 @@
   (list (x v)
         (y v)))
 
+(define-method (< (u <v2>)
+                  (v <v2>))
+               (and (< (x u)
+                       (x v))
+                    (< (y u)
+                       (y v))))
+               
+
 (define-method (m* (u <v2>)
                    (v <v2>))
                "Element-wise product"
