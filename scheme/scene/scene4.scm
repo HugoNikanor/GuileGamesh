@@ -10,9 +10,22 @@
                #:use-module (event mouse-btn)
 
                #:use-module (vector)
+               #:use-module (objects sprite)
                #:use-module (objects ss-inspector)
                #:use-module (objects ss-chooser)
                #:export (sheet-ins scene4))
+
+(define-generic in-object?)
+(define-method
+  (in-object? (this <sprite>)
+              (pos <v2>))
+  (< (v2) pos (slot-ref this 'size)))
+
+(define-method
+  (lclick? (this <mouse-btn-event>))
+  "Is the mouse event a left click"
+  (and (= *mouse-left-btn* (slot-ref this 'button))
+       (eqv? 'SDL_MOUSEBUTTONUP (slot-ref this 'type))))
 
 ;; Most of this method shoud be generalized
 ;; into macros and other functions.
@@ -20,10 +33,9 @@
                          (event <mouse-btn-event>))
   ;;
   ;; Check that it was left btn, and btn released 
-  (when (and (= *mouse-left-btn* (slot-ref event 'button))
-             (eqv? 'SDL_MOUSEBUTTONUP (slot-ref event 'type)))
+  (when (lclick? event)
 
-    (let* ((click (v2 (mouseb-x event) (mouseb-y event)))
+    (let* ((click (mpos event))
            (rel-coord (- click (slot-ref this 'pos)))
            (tile-pos (floor (m/ rel-coord
                                 (slot-ref this 'single-size)))))
@@ -31,7 +43,7 @@
       ;; The thing about getting the relative position,
       ;; and ensuring that the event is within should
       ;; be done somewhere else
-      (when (< (v2) rel-coord (slot-ref this 'size))
+      (when (in-object? this rel-coord)
         (slot-set! this 'current-tile tile-pos)))))
 
 (with-new-scene scene4 "SCENE 4"

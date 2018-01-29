@@ -24,8 +24,7 @@
 
 (define-method (event-do (box <ctrl-box>)
                          (event <mouse-btn-event>))
-               (slot-set! (pos box) 'x (mouseb-x event))
-               (slot-set! (pos box) 'y (mouseb-y event))
+               (set! (pos box) (pos event))
                (next-method))
 
 (define-method (event-do (obj <game-object>)
