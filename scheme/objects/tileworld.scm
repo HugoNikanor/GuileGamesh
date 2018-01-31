@@ -9,6 +9,7 @@
                #:use-module (objects spritesheet)
 
 	       #:use-module (draw-help)
+	       #:use-module (objects chooser)
 
                #:export (<tileworld> <tileworld-chooser>))
 
@@ -55,23 +56,26 @@
                                    (v2 x y)))))
     (slot-ref this 'world-def)
     x-index-array
-    y-index-array))
+    y-index-array)
+  (next-method))
+
+;;; ------------------------------------------------------------
 
 (define-class <tileworld-chooser> (<tileworld>)
-  (current-tile #:init-form (v2 0 0)
-		#:accessor ctile))
+  chooser)
 
-(define-method (draw-func (this <tileworld-chooser>))
-  (next-method)
-  (set-color #xFF #x7F #x7F #xA0)
-
-  ;; This should really have a safeguard
-  ;; ensuring that it's inside the sprite
-  (draw-rect* #t 
-	      (+ (pos this)
-		 (m* (ctile this)
-		     (slot-ref this 'single-size)))
-	      (slot-ref this 'single-size)))
-
-
-
+;;; (define-class <tileworld-chooser> (<tileworld>)
+;;;   (current-tile #:init-form (v2 0 0)
+;;; 		#:accessor ctile))
+;;; 
+;;; (define-method (draw-func (this <tileworld-chooser>))
+;;;   (next-method)
+;;;   (set-color #xFF #x7F #x7F #xA0)
+;;; 
+;;;   ;; This should really have a safeguard
+;;;   ;; ensuring that it's inside the sprite
+;;;   (draw-rect* #t 
+;;; 	      (+ (pos this)
+;;; 		 (m* (ctile this)
+;;; 		     (slot-ref this 'single-size)))
+;;; 	      (slot-ref this 'single-size)))

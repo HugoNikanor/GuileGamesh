@@ -66,7 +66,7 @@
 	    scene5)))
 
 ;; imported from scene2
-(set-current-scene! scene5)
+(set-current-scene! (car (slot-ref scene-changer 'scene-list)))
 
 #|
 (define-method (event-do (box <box>)

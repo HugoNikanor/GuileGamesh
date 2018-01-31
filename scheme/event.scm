@@ -4,6 +4,7 @@
   #:use-module (srfi srfi-1)
   #:export (
             last-event
+	    past-events
             <event>
 
             event-do
@@ -25,6 +26,8 @@
  | Should really be of type Maybe Event
  |#
 (define last-event '())
+
+(define past-events '())
 
 #| <event>
  | Event class represents SDL events
@@ -58,13 +61,18 @@
  | when called.
  |#
 (define (event-func event)
+
   (set! last-event event)
+
   (let ((e (eval `((@ (oop goops) make) ,(car event))
                  (current-module))))
     (slot-set! e 'type (list-ref event 1))
     (slot-set! e 'timestamp (list-ref event 2))
     (slot-set! e 'window-id (list-ref event 3))
     (apply fix-event-args e (drop event 4))
+
+    (set! past-events (cons e past-events))
+
     (for-each (lambda (obj)
                 (event-do obj e))
               (current-eventlist))))

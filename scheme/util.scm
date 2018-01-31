@@ -1,11 +1,16 @@
 (define-module (util)
                #:use-module (srfi srfi-1)
                #:use-module (srfi srfi-26)
+
+               #:use-module (oop goops)
+
                #:export (apply-for-each cart-prod r slot-mod!
                                         square pi tau
                                         keyword-ref
                                         slot-ref*
-                                        do-once))
+                                        do-once
+                                        is-class?
+                                        ))
 
 (define (r)
   (system "reset"))
@@ -64,6 +69,11 @@
            (lambda args
              (slot-set! obj field default)))
     (slot-ref obj field)))
+
+(define* ((is-class? name) obj)
+  "name is a symbol"
+  (eqv? (class-name (class-of obj))
+        name))
 
 
 #| for future use

@@ -31,6 +31,7 @@
 		     (slot-set! o 'x (x v))
 		     (slot-set! o 'y (y v))))
 
+  ;; current object
   (cobj #:init-form (make <geo-object>)
 	#:accessor cobj)
   (rpos #:allocation #:virtual
@@ -43,7 +44,11 @@
 
 (define-method (event-do (object <geo-object>)
 			 (event <mouse-btn-event>))
-  (set! (cobj event) object))
+  ((@ (oop goops describe) describe) object)
+  (display "event-do <geo-object> <mouse-btn-event>\n")
+  (set! (cobj event) object)
+  ;;(next-method)
+  )
 
 ;; this should be a <mouse-btn-event>
 (define (lclick? this)

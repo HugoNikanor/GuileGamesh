@@ -32,6 +32,7 @@ main : $(O_FILES)
 # remade.
 tags :
 	ctags -R scheme src
+	ctags -e -R scheme src
 
 clean:
 	-rm obj/*.o
