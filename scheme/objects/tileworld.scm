@@ -8,7 +8,9 @@
 
                #:use-module (objects spritesheet)
 
-               #:export (<tileworld>))
+	       #:use-module (draw-help)
+
+               #:export (<tileworld> <tileworld-chooser>))
 
 (define x-index-array (make-array #f 16 16))
 (array-index-map! x-index-array (lambda (y x) x))
@@ -54,4 +56,22 @@
     (slot-ref this 'world-def)
     x-index-array
     y-index-array))
+
+(define-class <tileworld-chooser> (<tileworld>)
+  (current-tile #:init-form (v2 0 0)
+		#:accessor ctile))
+
+(define-method (draw-func (this <tileworld-chooser>))
+  (next-method)
+  (set-color #xFF #x7F #x7F #xA0)
+
+  ;; This should really have a safeguard
+  ;; ensuring that it's inside the sprite
+  (draw-rect* #t 
+	      (+ (pos this)
+		 (m* (ctile this)
+		     (slot-ref this 'single-size)))
+	      (slot-ref this 'single-size)))
+
+
 
