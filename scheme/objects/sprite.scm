@@ -30,6 +30,11 @@
   (slot-set! this 'size
     (apply v2 (texture-size (slot-ref this 'sprite)))))
 
+;; simple rectangle bounding box
+(define-method (in-object? (this <sprite>)
+			   (v <v2>))
+  (< (v2) v (slot-ref this 'size)))
+
 ;; TODO
 ;; have a better way to go from <v2> to positions
 ;; possibly have the C functions useing slot-ref

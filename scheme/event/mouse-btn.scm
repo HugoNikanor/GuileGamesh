@@ -10,6 +10,8 @@
 	    *mouse-left-btn*
 	    *mouse-middle-btn*
 	    *mouse-right-btn* 
+
+	    lclick?
 	    ))
 
 (define *mouse-left-btn*   1)
@@ -42,6 +44,12 @@
 (define-method (event-do (object <geo-object>)
 			 (event <mouse-btn-event>))
   (set! (cobj event) object))
+
+;; this should be a <mouse-btn-event>
+(define (lclick? this)
+  "Is the mouse event a left click"
+  (and (= *mouse-left-btn* (slot-ref this 'button))
+       (eqv? 'SDL_MOUSEBUTTONUP (slot-ref this 'type))))
 
 (define-method (fix-event-args (ev <mouse-btn-event>)
                                which button state clicks x y)

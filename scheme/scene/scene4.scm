@@ -17,18 +17,6 @@
                #:use-module (objects ss-chooser)
                #:export (sheet-ins scene4))
 
-(define-generic in-object?)
-(define-method
-  (in-object? (this <sprite>)
-              (pos <v2>))
-  (< (v2) pos (slot-ref this 'size)))
-
-(define-method
-  (lclick? (this <mouse-btn-event>))
-  "Is the mouse event a left click"
-  (and (= *mouse-left-btn* (slot-ref this 'button))
-       (eqv? 'SDL_MOUSEBUTTONUP (slot-ref this 'type))))
-
 ;; Most of this method shoud be generalized
 ;; into macros and other functions.
 (define-method (event-do (this <ss-chooser>)

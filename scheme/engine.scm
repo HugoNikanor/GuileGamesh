@@ -28,6 +28,8 @@
             draw-func
             tick-func
             collide-func
+
+	    in-object?
             )
   )
 
@@ -116,3 +118,11 @@ in the C part of the program.
 (define-generic collide-func)
 
 (define-method (event-do (obj <game-object>) (event <event>)))
+
+;; This should return true if v is inside the object
+;; since different objects have different ways of determening size
+;; every object has to define this for them selves
+(define-generic in-object?)
+(define-method (in-object? (o <geo-object>)
+			   (v <v2>))
+  #f)
