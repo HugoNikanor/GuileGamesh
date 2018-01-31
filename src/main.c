@@ -272,9 +272,12 @@ void init_functions () {
 static void inner_main (void* data, int argc, char* argv []) {
 
 	// This doesn't seem to do anything
+        // or maybe it fails
+	/*
 	scm_variable_set_x
 		(scm_from_utf8_symbol ("*random-state*"),
 		 scm_random_state_from_platform ());
+	*/
 	/*
 	 * if (ready!) is called at the end of this file then
 	 * then that works.
@@ -289,6 +292,10 @@ static void inner_main (void* data, int argc, char* argv []) {
 	// scm_call_0 ( scm_c_public_ref ("ready!"));
 	// scm_c_eval_string ("(set-current-scene! scene2)");
 	// scm_c_primitive_load ("scheme/postmain.scm");
+
+	puts ("");
+	puts ("Booting into Guile REPL");
+	puts ("=======================");
 
 	// This function also doesn't return.
 	scm_shell (argc, argv);

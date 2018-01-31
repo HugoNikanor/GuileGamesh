@@ -49,12 +49,21 @@
              (objects character)
              (objects sprite)
              (objects tileworld)
+	     (objects scene-changer)
              (scene))
 
 ;; (define c (create-character (@@ (scene scene2) f)))
 
 
 (set! *random-state* (random-state-from-platform))
+
+(define scene-changer
+  (make <scene-changer>
+    #:list (list
+	    scene2
+	    scene3
+	    scene4
+	    scene5)))
 
 ;; imported from scene2
 (set-current-scene! scene5)
