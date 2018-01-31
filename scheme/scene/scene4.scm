@@ -5,11 +5,13 @@
                #:use-module (engine) ;; register-*-object!
                #:use-module (scene) ;; with-new-scene
                #:use-module (util) ;; do-once
+               #:use-module (vector)
+
+               ;; #:use-module (scene common)
 
                #:use-module (event)
                #:use-module (event mouse-btn)
 
-               #:use-module (vector)
                #:use-module (objects sprite)
                #:use-module (objects ss-inspector)
                #:use-module (objects ss-chooser)
@@ -31,19 +33,12 @@
 ;; into macros and other functions.
 (define-method (event-do (this <ss-chooser>)
                          (event <mouse-btn-event>))
-  ;;
+  (next-method) ;; binds this to event, fixing rpos
   ;; Check that it was left btn, and btn released 
   (when (lclick? event)
-
-    (let* ((click (mpos event))
-           (rel-coord (- click (slot-ref this 'pos)))
-           (tile-pos (floor (m/ rel-coord
+    (let* ((tile-pos (floor (m/ (rpos event)
                                 (slot-ref this 'single-size)))))
-
-      ;; The thing about getting the relative position,
-      ;; and ensuring that the event is within should
-      ;; be done somewhere else
-      (when (in-object? this rel-coord)
+      (when (in-object? this (rpos event))
         (slot-set! this 'current-tile tile-pos)))))
 
 (with-new-scene scene4 "SCENE 4"
