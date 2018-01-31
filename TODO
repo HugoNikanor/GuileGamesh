@@ -25,6 +25,19 @@ Module reloading
 - ss-inspector should be extended to support non-rectangular
   and non-regular sprites.
 
+2018-01-31
+==========
+
+- Mouse-btn-events should only be sent to objects it would hit
+  This could probably be solved by requiring everything that
+  wants <mouse-btn-event> to implement an `in-object` method.
+  	Only if this method is true for the coordinate of the
+  specific event would the object recieve the event.
+- I should also sort event objects in a Z order. And allow any
+  object to intercept an event. This is mostly for mouse event,
+  so I can choose between an event activating everything in its
+  patth. Or only the top object. (think UI vs game)
+
 ========================================
 
 resolve-module
