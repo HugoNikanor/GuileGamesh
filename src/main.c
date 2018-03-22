@@ -10,14 +10,20 @@
 #include "event.h"
 #include "sdl_scm.h"
 
-bool ready = false;
-SCM draw_func = SCM_UNDEFINED;
-SCM tick_func = SCM_UNDEFINED;
-SCM event_func = SCM_UNDEFINED;
+bool ready       = false;
+SCM draw_func    = SCM_UNDEFINED;
+SCM tick_func    = SCM_UNDEFINED;
 SCM collide_func = SCM_UNDEFINED;
 
+// obj event -> nothing
+SCM event_func = SCM_UNDEFINED;
+
+// SCM get_event_list   = SCM_UNDEFINED;
+SCM mouse_motion_event_list = SCM_UNDEFINED;
+SCM mouse_click_event_list  = SCM_UNDEFINED;
+SCM keyboard_event_list     = SCM_UNDEFINED;
+
 SCM make_empty_scene = SCM_UNDEFINED;
-SCM get_event_list   = SCM_UNDEFINED;
 SCM get_tick_list    = SCM_UNDEFINED;
 SCM get_draw_list    = SCM_UNDEFINED;
 SCM get_collide_list = SCM_UNDEFINED;
@@ -78,13 +84,14 @@ static void* event_objects (arg_struct* args) {
 		return NULL;
 
 	switch (event->type) {
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+			bind_mouse_btn (&event->button);
+			// scm_call_1 (event_func, bind_mouse_btn (&event->button));
+			break;
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
 			scm_call_1 (event_func, bind_keyboard_event (&event->key));
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
-			scm_call_1 (event_func, bind_mouse_btn (&event->button));
 			break;
 		case SDL_MOUSEMOTION:
 			scm_call_1 (event_func, bind_mouse_move (&event->motion));
@@ -94,12 +101,17 @@ static void* event_objects (arg_struct* args) {
 	return NULL;
 }
 
+/*
+ * This is called from the main SDL thread. But in guile mode.
+ * It's basicly the bridge between the two.
+ */
 static void* call_funcs (void* args) {
 	if (ready) {
 		tick_objects (args);
 		draw_objects (args);
-		event_objects (args);
 		collide_objects (args);
+
+		event_objects (args);
 	}
 
 	return NULL;
@@ -209,6 +221,7 @@ static void* sdl_loop (void* args) {
 	return NULL;
 }
 
+/*
 SCM get_eventlist_current_scene () {
 	return scm_call_1 (get_event_list, scm_call_0 (current_scene));
 }
@@ -217,6 +230,7 @@ void expose_event () {
 	scm_c_define_gsubr
 		("current-eventlist", 0, 0, 0, get_eventlist_current_scene);
 }
+*/
 
 //static void inner_guile_main (void* data, int argc, char* argv[]) {
 void init_functions () {

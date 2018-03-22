@@ -1,5 +1,6 @@
 #include "event.h"
 
+/*
 static SCM bind_keysym (SDL_Keysym sym) {
 	// scancode
 	// keycode sym
@@ -8,25 +9,38 @@ static SCM bind_keysym (SDL_Keysym sym) {
 			scm_from_int (sym.sym),
 			scm_from_uint16 (sym.mod));
 }
+*/
 
+/*
+void init_event_module () {
+	scm_c_use_module ("(oop goops)");
+	scm_c_use_module ("(event)");
+}
+*/
+
+// make sure scheme is in the load path before calling these
 
 SCM bind_keyboard_event (SDL_KeyboardEvent* event) {
-	return scm_list_n (
-			SYMB ("<key-event>"),
-			scm_from_utf8_symbol(event->type == SDL_KEYUP ? "SDL_KEYUP" : "SDL_KEYDOWN"),
-			scm_from_uint32 (event->timestamp),
-			scm_from_uint32 (event->windowID),
-			scm_from_uint8  (event->state),
-			scm_from_uint8  (event->repeat),
-			bind_keysym (event->keysym),
-			SCM_UNDEFINED
-			);
+	return scm_c_call_8
+		scm_c_public_ref ("event", "make-keyboard-event"),
+		scm_from_utf8_symbol(event->type == SDL_KEYUP
+		                     ? "SDL_KEYUP"
+		                     : "SDL_KEYDOWN"),
+		scm_from_uint32 (event->timestamp),
+		scm_from_uint32 (event->windowID),
+		scm_from_uint8  (event->state),
+		scm_from_uint8  (event->repeat),
+		scm_from_uint32 (event->keysym.scancode),
+		scm_from_uint32 (event->keysym.sym),
+		scm_from_uint32 (event->keysym.mod));
 }
 
 SCM bind_mouse_btn (SDL_MouseButtonEvent* event) {
 	return scm_list_n (
 			SYMB ("<mouse-btn-event>"),
-			scm_from_utf8_symbol(event->type == SDL_MOUSEBUTTONDOWN ? "SDL_MOUSEBUTTONDOWN" : "SDL_MOUSEBUTTONUP"),
+			scm_from_utf8_symbol(event->type == SDL_MOUSEBUTTONDOWN
+			                     ? "SDL_MOUSEBUTTONDOWN"
+			                     : "SDL_MOUSEBUTTONUP"),
 			scm_from_uint32 (event->timestamp),
 			scm_from_uint32 (event->windowID),
 			scm_from_uint32 (event->which),

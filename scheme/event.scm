@@ -1,22 +1,30 @@
-(define-module
-  (event)
+(define-module (event)
   #:use-module (oop goops)
-  #:use-module (srfi srfi-1)
+  ;; #:use-module (srfi srfi-1)
   #:export (
-            last-event
-            <event>
+            ;; last-event
+            <common-event>
+            <keyboard-event>
+            <mouse-motion-event>
+            <mouse-button-event>
 
-            event-do
+            make-keyboard-event
+            make-mouse-motion-event
+            make-mouse-button-event
+
+            handle-event
+
+            ;; event-do
 
             ;; exported for c code?
-            fix-event-args
-            event-func
+            ;; fix-event-args
+            ;; event-func
             ))
 
 #| Provides:
  | - current-eventlist
  |#
-(load-extension "./main" "expose_event")
+;; (load-extension "./main" "expose_event")
 
 #| last-event
  | Last event which was created
@@ -24,27 +32,84 @@
  |
  | Should really be of type Maybe Event
  |#
-(define last-event '())
+;; (define last-event '())
+
+(define-generic handle-event)
+
+;; (define-method (handle-event (obj <game-object>)
+;;                              (event <common-event>))
+;;   ;; Default method
+;;   )
 
 #| <event>
  | Event class represents SDL events
  |#
-(define-class <event> ()
-              type timestamp window-id)
+(define-class <common-event> ()
+              type timestamp)
+
+(define-class <keyboard-event> (<common-event>)
+  ;; Type \in { SDL_KEYDOWN, SDL_KEYUP }
+  window-id
+  state ; \in { SDL_PRESSED SDL_RELEASED }
+  repeat
+
+  ;; These three are originally in the keysym field
+  scancode sym mod
+  )
+
+(define-macro (create-make-func type . args)
+  `(let ((ev (make ,type)))
+     ,@ (map (lambda (t)
+               `(slot-set! ev (quote ,t) t))
+             args)
+        ev))
+
+(define-macro (define-event-make-func name type . args)
+  `(define (,name ,@args)
+     (create-make-func ,type ,@args)))
+
+(define-event-make-func make-keyboard-event <keyboard-event>
+  type timestamp window-id state repeat scancode sym mod)
+
+(define-class <mouse-motion-event> (<common-event>)
+  ;; type \in { SDL_MOUSEMOTION }
+  window-id
+  which ; which mouse?
+  state
+  x y
+  xrel yrel
+  )
+
+(define-event-make-func make-mouse-motion-event <mouse-motion-event>
+  type timestamp window-id state repeat keysym)
+
+(define-class <mouse-button-event> (<common-event>)
+  ;; type \in { SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP }
+  window-id
+  which
+  button
+  state
+  clicks
+  x y
+  )
+
+(define-event-make-func make-mouse-button-event <mouse-button-event>
+  type timestamp window-id which button state clicks x y)
+
 
 #| fix-event-args
  | This is a fix for rebinding the SDL structs into GOOPS
  | objects. There is a foreign object interface in Guile,
  | but I can't get it to work.
  |#
-(define-generic fix-event-args)
-(define-method (fix-event-args (_ <event>) rest))
+;; (define-generic fix-event-args)
+;; (define-method (fix-event-args (_ <event>) rest))
 
 #| event-do
  | Method to override if you want an event to do something
  | also requires registering it in the event-list
  |#
-(define-generic event-do)
+;; (define-generic event-do)
 
 #| event-func
  | Takes an incomming event, populates it with useful
@@ -57,14 +122,14 @@
  | This requires (event ...) to be into (current-module)
  | when called.
  |#
-(define (event-func event)
-  (set! last-event event)
-  (let ((e (eval `((@ (oop goops) make) ,(car event))
-                 (current-module))))
-    (slot-set! e 'type (list-ref event 1))
-    (slot-set! e 'timestamp (list-ref event 2))
-    (slot-set! e 'window-id (list-ref event 3))
-    (apply fix-event-args e (drop event 4))
-    (for-each (lambda (obj)
-                (event-do obj e))
-              (current-eventlist))))
+;; (define (event-func event)
+;;   (set! last-event event)
+;;   (let ((e (eval `((@ (oop goops) make) ,(car event))
+;;                  (current-module))))
+;;     (slot-set! e 'type (list-ref event 1))
+;;     (slot-set! e 'timestamp (list-ref event 2))
+;;     (slot-set! e 'window-id (list-ref event 3))
+;;     (apply fix-event-args e (drop event 4))
+;;     (for-each (lambda (obj)
+;;                 (event-do obj e))
+;;               (current-eventlist))))

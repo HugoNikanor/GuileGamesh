@@ -12,4 +12,13 @@ typedef struct {
 	arg_types arg;
 } arg_struct;
 
+// TODO possibly possible to rewrite the above as:
+
+/*
+typedef struct {
+	union { SDL_Event* event } type;
+	enum { NOEVENT, EVENT } arg_t;
+} arg_struct;
+*/
+
 #endif // TYPES_H

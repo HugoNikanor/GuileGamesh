@@ -41,9 +41,9 @@
 	#:slot-set! (lambda (o v)
 		     (slot-set! o 'pos (+ v (mpos (cobj o)))))))
 
-(define-method (event-do (object <geo-object>)
-			 (event <mouse-btn-event>))
-  (set! (cobj event) object))
+;; (define-method (event-do (object <geo-object>)
+;; 			 (event <mouse-btn-event>))
+;;   (set! (cobj event) object))
 
 ;; this should be a <mouse-btn-event>
 (define (lclick? this)
@@ -51,11 +51,11 @@
   (and (= *mouse-left-btn* (slot-ref this 'button))
        (eqv? 'SDL_MOUSEBUTTONUP (slot-ref this 'type))))
 
-(define-method (fix-event-args (ev <mouse-btn-event>)
-                               which button state clicks x y)
-               (slot-set! ev 'which which)
-               (slot-set! ev 'button button)
-               (slot-set! ev 'state state)
-               (slot-set! ev 'clicks clicks)
-               (slot-set! ev 'x x)
-               (slot-set! ev 'y y))
+;; (define-method (fix-event-args (ev <mouse-btn-event>)
+;;                                which button state clicks x y)
+;;                (slot-set! ev 'which which)
+;;                (slot-set! ev 'button button)
+;;                (slot-set! ev 'state state)
+;;                (slot-set! ev 'clicks clicks)
+;;                (slot-set! ev 'x x)
+;;                (slot-set! ev 'y y))
