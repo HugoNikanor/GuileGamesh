@@ -2,29 +2,39 @@
   #:use-module (oop goops)
   #:use-module (ice-9 curried-definitions)
 
+  ;; This is only imported for (define-generic pos)
+  ;; That sexp should probably be placed somewhere better to minimize
+  ;; imports
+  ;; #:use-module (object)
+
   #:use-module (vector)
 
+  #:use-module (pos)
+  #:re-export (pos)
   #:export (
-            ;; last-event
-            <common-event>
-            <keyboard-event>
-            <mouse-motion-event>
-            <mouse-button-event>
+             ;; last-event
+             <common-event>
+             <keyboard-event>
+             <mouse-motion-event>
+             <mouse-button-event>
+             ;; pos
 
-            make-common-event
-            make-keyboard-event
-            make-mouse-motion-event
-            make-mouse-button-event
+             make-common-event
+             make-keyboard-event
+             make-mouse-motion-event
+             make-mouse-button-event
 
-            ;; handle-event
-            ;; handle-curried
+             ;; handle-event
+             ;; handle-curried
 
-            event-do
+             event-do
 
-            ;; exported for c code?
-            ;; fix-event-args
-            ;; event-func
-            ))
+             ;; pos
+
+             ;; exported for c code?
+             ;; fix-event-args
+             ;; event-func
+             ))
 
 ;;; Why does the helper functions have to be before the actual
 ;;; functions here? That usually isn't the case.
@@ -114,11 +124,10 @@
   clicks
   x y
 
-  (pos
-   #:accessor pos
-   #:allocation #:virtual
-   #:slot-ref v-from-obj
-   #:slot-set! obj-v-save)
+  (pos #:accessor pos
+       #:allocation #:virtual
+       #:slot-ref v-from-obj
+       #:slot-set! obj-v-save)
   )
 
 (define-event-make-func make-mouse-button-event <mouse-button-event>

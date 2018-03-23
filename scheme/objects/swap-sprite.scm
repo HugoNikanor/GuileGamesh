@@ -2,6 +2,7 @@
                #:use-module (oop goops)
                #:use-module (engine)
                #:use-module (vector)
+               #:use-module (object)
                #:use-module (objects spritesheet)
                #:export (<swap-sprite> move-cur))
 

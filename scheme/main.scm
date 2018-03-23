@@ -7,30 +7,6 @@
  |#
 (add-to-load-path "scheme")
 
-#|
-(use-modules (engine)
-             ;;(srfi srfi-1)
-             ;;(srfi srfi-26)
-             (oop goops)
-             (oop goops describe)
-             (scene)
-             ;;(vector)
-             (util)
-             (collide)
-
-             (event)
-             (event key)
-             (event mouse-motion)
-             (event mouse-btn)
-
-             ;;(objects box)
-             ;;(objects ellipse)
-
-             (scene scene2)
-
-             )
-|#
-
 (use-modules (engine)
              (scene scene2)
              (scene scene3)

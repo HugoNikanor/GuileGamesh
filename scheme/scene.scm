@@ -2,6 +2,7 @@
                #:use-module (oop goops)
                #:use-module (srfi srfi-26)
                #:use-module (event)
+               #:use-module (object)
                #:export (<scene>
                          dispatch-event
                          current-scene
@@ -41,6 +42,8 @@
                           #:getter get-tick-list)
               (collision-list #:init-value '()
                               #:getter get-collide-list))
+
+(define last-event #f)
 
 (define-generic dispatch-event)
 
@@ -84,6 +87,7 @@
 ;;; thrown away after it's dispatched.
 (define-method (dispatch-event (scene <scene>)
                                (event <mouse-button-event>))
+  (set! last-event event)
   (let ((original-position (pos event)))
     (call-with-prompt 'return
       (lambda ()

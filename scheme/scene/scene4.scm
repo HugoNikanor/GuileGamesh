@@ -12,6 +12,7 @@
                #:use-module (event)
                #:use-module (event mouse-btn)
 
+               #:use-module (object) ; geo-object scene
                #:use-module (objects sprite)
                #:use-module (objects ss-inspector)
                #:use-module (objects ss-chooser)

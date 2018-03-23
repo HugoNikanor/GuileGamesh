@@ -1,13 +1,17 @@
 (define-module
   (engine)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
+  ;; #:use-module (srfi srfi-1)
+  ;; #:use-module (srfi srfi-26)
+  ;; #:use-module (oop goops)
+  ;; #:use-module (oop goops describe)
+  ;; #:use-module (scene)
+  ;; #:use-module (vector)
+  ;; #:use-module (util)
+  ;; #:use-module (event) ; event-func
+
   #:use-module (oop goops)
-  #:use-module (oop goops describe)
-  #:use-module (scene)
-  #:use-module (vector)
   #:use-module (util)
-  #:use-module (event) ; event-func
+  #:use-module (object)
 
   #:export (
             ready!
@@ -21,37 +25,13 @@
             render-sprite
             texture-size
 
-            <game-object> object-name counter
-            <geo-object> pos
-            <text-obj>
-
             draw-func
             tick-func
             collide-func
-
-	    in-object?
             )
   )
 
 (load-extension "./main" "init_functions")
-
-;;; Primitive Data-objects
-(define-class <game-object> ()
-              (name #:init-keyword #:name
-                    #:getter object-name
-                    #:init-value "[NAMELESS]")
-              (c #:init-value 0
-                 #:getter counter))
-
-(define-class <geo-object> (<game-object>)
-  ;; z order of the object, used for mouse button eventts,
-  ;; as well as drawing order.
-  (z #:accessor z
-     #:init-value 0
-     #:init-keyword #:z)
-  (pos #:accessor pos
-       #:init-keyword #:pos
-       #:init-form (make <v2> #:x 0 #:y 0)))
 
 #| Colliding
 
@@ -88,18 +68,14 @@ in the C part of the program.
 ;;;                    (not (> (y v) (+ (y u) (y (size b))))))))
 |#
 
-(define-class <text-obj> (<geo-object>)
-              (text #:init-value " "
-                    #:init-keyword #:str)
-              (update-text #:init-value #f
-                           #:init-keyword #:update))
+;;; TODO This should be defined in objects/text-obj.scm
+;; (define-class <text-obj> (<geo-object>)
+;;               (text #:init-value " "
+;;                     #:init-keyword #:str)
+;;               (update-text #:init-value #f
+;;                            #:init-keyword #:update))
 
 
-(define-generic tick-func)
-
-(define-method (tick-func (obj <game-object>))
-               ;;(slot-set! obj 'c (1+ (slot-ref obj 'c))))
-               (slot-mod! obj 'c 1+))
 
 #|
 (define* (collision-check #:optional (scene (current-scene)))
@@ -114,23 +90,15 @@ in the C part of the program.
          (inner (get-colliders scene)))
 |#
 
-(define-generic draw-func)
 
-;; Default implementation, required so everything
-;; else can safely call `next-method'
+(define-generic tick-func)
+(define-method (tick-func (obj <game-object>))
+  (slot-mod! obj 'counter 1+))
+
+(define-generic draw-func)
 (define-method (draw-func (obj <geo-object>)))
 
 (define-generic collide-func)
-
-(define-method (event-do (obj <game-object>)
-                         (event <common-event>))
-  ;; Default event, intentionally does nothing
-  )
-
-;; This should return true if v is inside the object
-;; since different objects have different ways of determening size
-;; every object has to define this for them selves
-(define-generic in-object?)
-(define-method (in-object? (o <geo-object>)
-			   (v <v2>))
+(define-method (collide-func (obj-a <geo-object>)
+                             (obj-b <geo-object>))
   #f)

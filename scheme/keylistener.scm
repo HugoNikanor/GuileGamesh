@@ -3,6 +3,7 @@
                #:use-module (engine)
                #:use-module (event) ;; is this needed?
                #:use-module (event key)
+               #:use-module (object)
                #:use-module (scene) ;; register-event-object!
                #:export (<key-listener>))
 

@@ -12,6 +12,7 @@
 
                #:use-module (vector)
                #:use-module (draw-help)
+               #:use-module (object)
                #:use-module (objects spritesheet)
                #:use-module (objects sprite)
 
