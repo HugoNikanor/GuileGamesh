@@ -34,7 +34,12 @@
 ;; simple rectangle bounding box
 (define-method (in-object? (this <sprite>)
 			   (v <v2>))
-  (< (v2) v (slot-ref this 'size)))
+  (< (- (pos this) ; This is slower, but we will have a off
+        (v2 1 1))  ; by one error otherwise.
+     v
+     (+ (pos this)
+        (slot-ref this 'size))))
+  ;; (< (v2) v (slot-ref this 'size)))
 
 ;; TODO
 ;; have a better way to go from <v2> to positions

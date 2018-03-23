@@ -86,6 +86,7 @@
 ;;; of the event once it's done. That can be implemented,
 ;;; but I won't since the event object is suposed to be
 ;;; thrown away after it's dispatched.
+
 (define-method (dispatch-event (scene <scene>)
                                (event <mouse-button-event>))
   (set! last-event event)

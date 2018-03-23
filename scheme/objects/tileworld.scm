@@ -48,6 +48,15 @@
                        ((= 0 (random 10)) (v2 2 4))
                        (else (v2 1 1)))))))
 
+(define-method (in-object? (this <tileworld>)
+                           (v <v2>))
+  ;; Three might be a off by one error here
+  (< (pos this)
+     v
+     (+ (pos this)
+        (m* (slot-ref this 'single-size)
+            (slot-ref this 'amount)))))
+
 (define-method (draw-func (this <tileworld>))
   (array-for-each
     (lambda (tile x y)
