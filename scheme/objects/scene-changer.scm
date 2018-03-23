@@ -24,13 +24,13 @@
 
 (define-method (initialize (this <scene-changer>) args)
   (next-method)
-  (for-each (cut register-event-object! this <>)
+  (for-each (cut register-keyboard-event! this <>)
 	    (scenes this))
   (slot-set! this 'scene-list
 	     (apply circular-list (scenes this))))
 
 (define-method (event-do (this <scene-changer>)
-			 (event <key-event>))
+			 (event <keyboard-event>))
   (next-method)
   (when (and (eqv? (slot-ref event 'type)
 		   'SDL_KEYUP)

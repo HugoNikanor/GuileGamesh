@@ -67,6 +67,9 @@ SCM bind_mouse_btn (SDL_MouseButtonEvent* event) {
 		  scm_from_uint8 (event->clicks),
 		  scm_from_int32 (event->x),
 		  scm_from_int32 (event->y));
+}
 
-		
+SCM common_event () {
+	return scm_call_0
+		( scm_c_public_ref ("event", "make-common-event") );
 }

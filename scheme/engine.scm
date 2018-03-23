@@ -117,7 +117,10 @@ in the C part of the program.
 
 (define-generic collide-func)
 
-(define-method (event-do (obj <game-object>) (event <event>)))
+;; (define-method (event-do (obj <game-object>) (event <event>)))
+;;; Default event, intentionally does nothing
+(define-method (event-do (obj <game-object>)
+                         (event <common-event>)))
 
 ;; This should return true if v is inside the object
 ;; since different objects have different ways of determening size

@@ -21,13 +21,13 @@
                           ;;(format #f "[KEY LISTENER ~a]"
                                   ;; object is not yet initialized, name doesn't exist
                                   ;;(object-name (slot-ref lis 'obj))))
-               (register-event-object! lis))
+               (register-keyboard-event! lis))
+
+;; (define-method (event-do (listener <key-listener>)
+;;                          (event <event>)))
 
 (define-method (event-do (listener <key-listener>)
-                         (event <event>)))
-
-(define-method (event-do (listener <key-listener>)
-                         (event <key-event>))
+                         (event <keyboard-event>))
                ((slot-ref listener 'map)
                 (slot-ref listener 'obj)
                 event)

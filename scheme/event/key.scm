@@ -1,7 +1,9 @@
 (define-module (event key)
   #:use-module (event)
   #:use-module (oop goops)
-  #:export (<key-event> scancodes))
+  #:re-export (<keyboard-event> make-keyboard-event)
+  #:export (scancodes)
+  )
 
 ;;; (assv-ref scancodes 'a)
 ;(define scancodes
@@ -15,7 +17,7 @@
 (define scancodes
   '((n . 15)))
 
-(define-class <key-event> (<event>) state repeat scancode sym mod)
+;; (define-class <key-event> (<event>) state repeat scancode sym mod)
 ;; (define-method (fix-event-args (ev <key-event>) state repeat keysym)
 ;;                (apply (lambda (scancode sym mod)
 ;;                         (slot-set! ev 'state state)

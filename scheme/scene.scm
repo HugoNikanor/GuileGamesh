@@ -12,7 +12,12 @@
                           get-collide-list
                           register-tick-object!
                           register-draw-object!
-                          register-event-object!
+                          ;; register-event-object!
+
+                          register-keyboard-event!
+                          register-mouse-motion-event!
+                          register-mouse-button-event!
+
                           register-collider!
                           with-scene with-new-scene
                           ))
@@ -46,6 +51,11 @@
                                (event <common-event>))
   (display "UNSUPORTED EVENT TYPE")
   (newline))
+
+;; (define-method (dispatch-event (scene <scene>)
+;;                                (event <object>))
+;;   (display "NOT EVEN AN EVENT")
+;;   (newline))
 
 (define-method (dispatch-event (scene <scene>)
                                (event <keyboard-event>))

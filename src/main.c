@@ -97,11 +97,15 @@ static void* event_objects (arg_struct* args) {
 	case SDL_MOUSEMOTION:
 		ev = bind_mouse_move (&event->motion);
 		break;
+	default:
+		ev = common_event();
 	}
+
+	// scm_describe (ev);
 
 	scm_call_2
 		( scm_c_public_ref ("scene", "dispatch-event"),
-		  current_scene,
+		  scm_call_0 (current_scene),
 		  ev );
 
 	return NULL;

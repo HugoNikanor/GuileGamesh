@@ -20,7 +20,7 @@
 ;; Most of this method shoud be generalized
 ;; into macros and other functions.
 (define-method (event-do (this <ss-chooser>)
-                         (event <mouse-btn-event>))
+                         (event <mouse-button-event>))
   (next-method) ;; binds this to event, fixing rpos
   ;; Check that it was left btn, and btn released 
   (when (lclick? event)
@@ -41,6 +41,6 @@
 
   (do-once
     (register-draw-object! sheet-ins)
-    (register-event-object! sheet-ins)
+    (register-mouse-button-event! sheet-ins)
 ))
 

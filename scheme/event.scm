@@ -9,12 +9,13 @@
             <mouse-motion-event>
             <mouse-button-event>
 
+            make-common-event
             make-keyboard-event
             make-mouse-motion-event
             make-mouse-button-event
 
-            handle-event
-            handle-curried
+            ;; handle-event
+            ;; handle-curried
 
             event-do
 
@@ -22,6 +23,17 @@
             ;; fix-event-args
             ;; event-func
             ))
+
+(define-macro (create-make-func type . args)
+  `(let ((ev (make ,type)))
+     ,@ (map (lambda (t)
+               `(slot-set! ev (quote ,t) ,t))
+             args)
+        ev))
+
+(define-macro (define-event-make-func name type . args)
+  `(define (,name ,@args)
+     (create-make-func ,type ,@args)))
 
 #| Provides:
  | - current-eventlist
@@ -37,10 +49,10 @@
 ;; (define last-event '())
 
 ;;; obj -> event -> nothing
-(define-generic handle-event)
+;; (define-generic handle-event)
 
-(define ((handle-curried event) object)
-  (handle-event object event))
+;; (define ((handle-curried event) object)
+;;   (handle-event object event))
 
 ;; (define-method (handle-event (obj <game-object>)
 ;;                              (event <common-event>))
@@ -53,6 +65,8 @@
 (define-class <common-event> ()
               type timestamp)
 
+(define-event-make-func make-common-event <common-event>)
+
 (define-class <keyboard-event> (<common-event>)
   ;; Type \in { SDL_KEYDOWN, SDL_KEYUP }
   window-id
@@ -62,17 +76,6 @@
   ;; These three are originally in the keysym field
   scancode sym mod
   )
-
-(define-macro (create-make-func type . args)
-  `(let ((ev (make ,type)))
-     ,@ (map (lambda (t)
-               `(slot-set! ev (quote ,t) ,t))
-             args)
-        ev))
-
-(define-macro (define-event-make-func name type . args)
-  `(define (,name ,@args)
-     (create-make-func ,type ,@args)))
 
 (define-event-make-func make-keyboard-event <keyboard-event>
   type timestamp window-id state repeat scancode sym mod)
@@ -87,7 +90,7 @@
   )
 
 (define-event-make-func make-mouse-motion-event <mouse-motion-event>
-  type timestamp window-id state repeat keysym)
+  type timestamp window-id which state x y xrel yrel)
 
 (define-class <mouse-button-event> (<common-event>)
   ;; type \in { SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP }
