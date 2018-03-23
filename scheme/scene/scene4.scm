@@ -2,7 +2,7 @@
 ;;           `(begin
 (define-module (scene scene4)
                #:use-module (oop goops) ;; make
-               #:use-module (engine) ;; register-*-object!
+               #:use-module (engine)
                #:use-module (scene) ;; with-new-scene
                #:use-module (util) ;; do-once
                #:use-module (vector)
@@ -17,17 +17,15 @@
                #:use-module (objects ss-chooser)
                #:export (sheet-ins scene4))
 
-;; Most of this method shoud be generalized
-;; into macros and other functions.
+;;; Shouldn't this also be in the ss-chooser module?
 (define-method (event-do (this <ss-chooser>)
                          (event <mouse-button-event>))
-  (next-method) ;; binds this to event, fixing rpos
-  ;; Check that it was left btn, and btn released 
   (when (lclick? event)
-    (let* ((tile-pos (floor (m/ (rpos event)
-                                (slot-ref this 'single-size)))))
-      (when (in-object? this (rpos event))
-        (slot-set! this 'current-tile tile-pos)))))
+    (let ((tile-pos (floor (m/ (pos event)
+                               (single-size this)))))
+      (set! (ctile this)
+            tile-pos))))
+
 
 (with-new-scene scene4 "SCENE 4"
   ;;

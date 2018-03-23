@@ -38,6 +38,15 @@ Module reloading
   so I can choose between an event activating everything in its
   patth. Or only the top object. (think UI vs game)
 
+2018-03-23
+==========
+
+- Drawing should respect z order of objects
+- tick_objects, draw_objects and collide_objects should all
+  probably be moved to inside the scheme code. See `event_objects`
+  for a reference of how to possibly do it.
+
+
 ========================================
 
 resolve-module

@@ -44,9 +44,14 @@
                  #:getter counter))
 
 (define-class <geo-object> (<game-object>)
-              (pos #:accessor pos
-                   #:init-keyword #:pos
-                   #:init-form (make <v2> #:x 0 #:y 0)))
+  ;; z order of the object, used for mouse button eventts,
+  ;; as well as drawing order.
+  (z #:accessor z
+     #:init-value 0
+     #:init-keyword #:z)
+  (pos #:accessor pos
+       #:init-keyword #:pos
+       #:init-form (make <v2> #:x 0 #:y 0)))
 
 #| Colliding
 
@@ -117,10 +122,10 @@ in the C part of the program.
 
 (define-generic collide-func)
 
-;; (define-method (event-do (obj <game-object>) (event <event>)))
-;;; Default event, intentionally does nothing
 (define-method (event-do (obj <game-object>)
-                         (event <common-event>)))
+                         (event <common-event>))
+  ;; Default event, intentionally does nothing
+  )
 
 ;; This should return true if v is inside the object
 ;; since different objects have different ways of determening size

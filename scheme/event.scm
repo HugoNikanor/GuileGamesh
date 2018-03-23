@@ -1,7 +1,9 @@
 (define-module (event)
   #:use-module (oop goops)
   #:use-module (ice-9 curried-definitions)
-  ;; #:use-module (srfi srfi-1)
+
+  #:use-module (vector)
+
   #:export (
             ;; last-event
             <common-event>
@@ -24,6 +26,9 @@
             ;; event-func
             ))
 
+;;; Why does the helper functions have to be before the actual
+;;; functions here? That usually isn't the case.
+
 (define-macro (create-make-func type . args)
   `(let ((ev (make ,type)))
      ,@ (map (lambda (t)
@@ -34,6 +39,14 @@
 (define-macro (define-event-make-func name type . args)
   `(define (,name ,@args)
      (create-make-func ,type ,@args)))
+
+(define (v-from-obj obj)
+  (v2 (slot-ref obj 'x)
+      (slot-ref obj 'y)))
+
+(define (obj-v-save obj vec)
+  (slot-set! obj 'x (x vec))
+  (slot-set! obj 'y (y vec)))
 
 #| Provides:
  | - current-eventlist
@@ -70,7 +83,7 @@
 (define-class <keyboard-event> (<common-event>)
   ;; Type \in { SDL_KEYDOWN, SDL_KEYUP }
   window-id
-  state ; \in { SDL_PRESSED SDL_RELEASED }
+  state ; \in { SDL_PRESSED, SDL_RELEASED }
   repeat
 
   ;; These three are originally in the keysym field
@@ -100,6 +113,12 @@
   state
   clicks
   x y
+
+  (pos
+   #:accessor pos
+   #:allocation #:virtual
+   #:slot-ref v-from-obj
+   #:slot-set! obj-v-save)
   )
 
 (define-event-make-func make-mouse-button-event <mouse-button-event>

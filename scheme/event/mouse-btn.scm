@@ -4,9 +4,7 @@
   #:use-module (oop goops)
   #:use-module (vector)
   #:re-export (<mouse-button-event> make-mouse-button-event)
-  #:export (
-            ;; <mouse-btn-event>
-	    mpos rpos
+  #:export (mpos rpos
 	    mouse-button
 
 	    *mouse-left-btn*
@@ -52,12 +50,3 @@
   "Is the mouse event a left click"
   (and (= *mouse-left-btn* (slot-ref this 'button))
        (eqv? 'SDL_MOUSEBUTTONUP (slot-ref this 'type))))
-
-;; (define-method (fix-event-args (ev <mouse-btn-event>)
-;;                                which button state clicks x y)
-;;                (slot-set! ev 'which which)
-;;                (slot-set! ev 'button button)
-;;                (slot-set! ev 'state state)
-;;                (slot-set! ev 'clicks clicks)
-;;                (slot-set! ev 'x x)
-;;                (slot-set! ev 'y y))
