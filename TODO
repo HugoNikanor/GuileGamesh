@@ -45,6 +45,7 @@ Module reloading
 - tick_objects, draw_objects and collide_objects should all
   probably be moved to inside the scheme code. See `event_objects`
   for a reference of how to possibly do it.
+- Makefile currenttly remakes everything whenever make is run
 
 
 ========================================

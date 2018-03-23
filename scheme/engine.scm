@@ -1,37 +1,27 @@
-(define-module
-  (engine)
-  ;; #:use-module (srfi srfi-1)
-  ;; #:use-module (srfi srfi-26)
-  ;; #:use-module (oop goops)
-  ;; #:use-module (oop goops describe)
-  ;; #:use-module (scene)
-  ;; #:use-module (vector)
-  ;; #:use-module (util)
-  ;; #:use-module (event) ; event-func
-
+(define-module (engine)
   #:use-module (oop goops)
   #:use-module (util)
   #:use-module (object)
 
-  #:export (
-            ready!
-            draw-rect
-            set-color
-            draw-text
-            draw-line
-            draw-ellipse
-            load-image
-            render-texture
-            render-sprite
-            texture-size
+  #:export (ready! draw-rect set-color draw-text
+            draw-line draw-ellipse load-image
+            render-texture render-sprite texture-size
 
-            draw-func
-            tick-func
-            collide-func
-            )
-  )
+            draw-func tick-func collide-func))
 
 (load-extension "./main" "init_functions")
+
+(define-generic tick-func)
+(define-method (tick-func (obj <game-object>))
+  (slot-mod! obj 'counter 1+))
+
+(define-generic draw-func)
+(define-method (draw-func (obj <geo-object>)))
+
+(define-generic collide-func)
+(define-method (collide-func (obj-a <geo-object>)
+                             (obj-b <geo-object>))
+  #f)
 
 #| Colliding
 
@@ -68,14 +58,6 @@ in the C part of the program.
 ;;;                    (not (> (y v) (+ (y u) (y (size b))))))))
 |#
 
-;;; TODO This should be defined in objects/text-obj.scm
-;; (define-class <text-obj> (<geo-object>)
-;;               (text #:init-value " "
-;;                     #:init-keyword #:str)
-;;               (update-text #:init-value #f
-;;                            #:init-keyword #:update))
-
-
 
 #|
 (define* (collision-check #:optional (scene (current-scene)))
@@ -89,16 +71,3 @@ in the C part of the program.
            (inner (cdr rem)))
          (inner (get-colliders scene)))
 |#
-
-
-(define-generic tick-func)
-(define-method (tick-func (obj <game-object>))
-  (slot-mod! obj 'counter 1+))
-
-(define-generic draw-func)
-(define-method (draw-func (obj <geo-object>)))
-
-(define-generic collide-func)
-(define-method (collide-func (obj-a <geo-object>)
-                             (obj-b <geo-object>))
-  #f)

@@ -46,7 +46,6 @@
 (define last-event #f)
 
 (define-generic dispatch-event)
-
 (define-method (dispatch-event (scene <scene>)
                                (event <common-event>))
   ;; This is for all unsupported event types

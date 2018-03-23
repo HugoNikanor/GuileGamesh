@@ -2,11 +2,6 @@
   #:use-module (oop goops)
   #:use-module (ice-9 curried-definitions)
 
-  ;; This is only imported for (define-generic pos)
-  ;; That sexp should probably be placed somewhere better to minimize
-  ;; imports
-  ;; #:use-module (object)
-
   #:use-module (vector)
 
   #:use-module (pos)
@@ -17,7 +12,6 @@
              <keyboard-event>
              <mouse-motion-event>
              <mouse-button-event>
-             ;; pos
 
              make-common-event
              make-keyboard-event

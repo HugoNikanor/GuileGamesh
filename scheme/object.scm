@@ -3,12 +3,11 @@
   #:use-module (vector)
   #:use-module (util)
   #:use-module (event)
+
   #:use-module (pos)
   #:re-export (pos)
   #:export (<game-object> object-name counter
             <geo-object>
-
-            ;; pos
 
             in-object?)
   )

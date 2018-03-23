@@ -1,13 +1,9 @@
-;;(def-macro scene-modules
-;;           `(begin
 (define-module (scene scene4)
                #:use-module (oop goops) ;; make
                #:use-module (engine)
                #:use-module (scene) ;; with-new-scene
                #:use-module (util) ;; do-once
                #:use-module (vector)
-
-               ;; #:use-module (scene common)
 
                #:use-module (event)
                #:use-module (event mouse-btn)
