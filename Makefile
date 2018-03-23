@@ -17,8 +17,10 @@ O_FILES = $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 
 all : main.so main
 
-obj/%.o : src/%.c
-	-mkdir obj
+obj :
+	mkdir obj
+
+obj/%.o : src/%.c obj
 	gcc -c ${CFLAGS} ${DFLAGS} -o $@ $<
 
 main.so : $(O_FILES)
@@ -36,5 +38,6 @@ tags :
 
 clean:
 	-rm obj/*.o
+	-rmdir obj
 	-rm main.so
 	-rm main
