@@ -13,7 +13,9 @@ SCM arr_to_list (int counter, SCM* arr);
 void my_for_each (SCM func, SCM list);
 void my_for_each_1 (SCM func, SCM item, SCM list);
 
+SCM scm_descirbe (SCM);
+
 #define PI 3.141592653589793
 #define TAU (2 * PI)
 
-#endif // UTIL_H
+#endif /* UTIL_H */

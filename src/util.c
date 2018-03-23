@@ -25,3 +25,13 @@ void my_for_each_1 (SCM func, SCM item, SCM list) {
 		nlist = scm_cdr (nlist);
 	}
 }
+
+/*
+ * C binding of (oop goops describe)'s describe
+ */
+SCM scm_describe (SCM obj) {
+	scm_call_1
+		( scm_c_public_ref ("oop goops describe", "describe"),
+		  obj );
+	return SCM_UNSPECIFIED;
+}
