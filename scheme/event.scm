@@ -1,5 +1,6 @@
 (define-module (event)
   #:use-module (oop goops)
+  #:use-module (ice-9 curried-definitions)
   ;; #:use-module (srfi srfi-1)
   #:export (
             ;; last-event
@@ -13,8 +14,9 @@
             make-mouse-button-event
 
             handle-event
+            handle-curried
 
-            ;; event-do
+            event-do
 
             ;; exported for c code?
             ;; fix-event-args
@@ -34,7 +36,11 @@
  |#
 ;; (define last-event '())
 
+;;; obj -> event -> nothing
 (define-generic handle-event)
+
+(define ((handle-curried event) object)
+  (handle-event object event))
 
 ;; (define-method (handle-event (obj <game-object>)
 ;;                              (event <common-event>))
@@ -60,7 +66,7 @@
 (define-macro (create-make-func type . args)
   `(let ((ev (make ,type)))
      ,@ (map (lambda (t)
-               `(slot-set! ev (quote ,t) t))
+               `(slot-set! ev (quote ,t) ,t))
              args)
         ev))
 
@@ -109,7 +115,7 @@
  | Method to override if you want an event to do something
  | also requires registering it in the event-list
  |#
-;; (define-generic event-do)
+(define-generic event-do)
 
 #| event-func
  | Takes an incomming event, populates it with useful
