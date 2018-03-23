@@ -15,14 +15,6 @@ SCM draw_func    = SCM_UNDEFINED;
 SCM tick_func    = SCM_UNDEFINED;
 SCM collide_func = SCM_UNDEFINED;
 
-// obj event -> nothing
-// SCM event_func = SCM_UNDEFINED;
-
-// SCM get_event_list   = SCM_UNDEFINED;
-// SCM mouse_motion_event_list = SCM_UNDEFINED;
-// SCM mouse_click_event_list  = SCM_UNDEFINED;
-// SCM keyboard_event_list     = SCM_UNDEFINED;
-
 SCM make_empty_scene = SCM_UNDEFINED;
 SCM get_tick_list    = SCM_UNDEFINED;
 SCM get_draw_list    = SCM_UNDEFINED;
@@ -46,7 +38,6 @@ static SCM set_ready() {
 	// TODO better name for these METHODS
 	draw_func    = scm_variable_ref(scm_c_lookup ("draw-func"));
 	tick_func    = scm_variable_ref(scm_c_lookup ("tick-func"));
-	//event_func   = scm_variable_ref(scm_c_lookup ("event-func"));
 	collide_func = scm_variable_ref(scm_c_lookup ("collide-func"));
 
 	ready = true;
@@ -87,7 +78,6 @@ static void* event_objects (arg_struct* args) {
 	switch (event->type) {
 	case SDL_MOUSEBUTTONDOWN:
 	case SDL_MOUSEBUTTONUP:
-		// TODO This one should have the coordinate fix applied
 		ev = bind_mouse_btn (&event->button);
 		break;
 	case SDL_KEYDOWN:
@@ -231,17 +221,6 @@ static void* sdl_loop (void* args) {
 	return NULL;
 }
 
-/*
-SCM get_eventlist_current_scene () {
-	return scm_call_1 (get_event_list, scm_call_0 (current_scene));
-}
-
-void expose_event () {
-	scm_c_define_gsubr
-		("current-eventlist", 0, 0, 0, get_eventlist_current_scene);
-}
-*/
-
 //static void inner_guile_main (void* data, int argc, char* argv[]) {
 void init_functions () {
 	//setenv("GUILE_LOAD_PATH", "scheme", 1);
@@ -279,16 +258,14 @@ void init_functions () {
 	pthread_t sdl_thread;
 	pthread_create (&sdl_thread, NULL, sdl_loop, NULL);
 
-	scm_c_use_module ("scene");
+	// scm_c_use_module ("scene");
 
 	// TODO
 	// scm_variable_ref (scm_c_lookup (x)) -> scm_c_public_ref (x)
-	// get_event_list    = scm_variable_ref(scm_c_lookup ("get-event-list"));
-	get_tick_list     = scm_variable_ref(scm_c_lookup ("get-tick-list"));
-	get_draw_list     = scm_variable_ref(scm_c_lookup ("get-draw-list"));
-	get_collide_list  = scm_variable_ref(scm_c_lookup ("get-collide-list"));
-
-	current_scene     = scm_variable_ref(scm_c_lookup ("current-scene"));
+	get_tick_list    = scm_c_public_ref ("scene", "get-tick-list");
+	get_draw_list    = scm_c_public_ref ("scene", "get-draw-list");
+	get_collide_list = scm_c_public_ref ("scene", "get-collide-list");
+	current_scene    = scm_c_public_ref ("scene", "current-scene");
 }
 
 /*

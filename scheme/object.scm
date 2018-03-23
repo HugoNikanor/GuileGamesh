@@ -1,3 +1,5 @@
+;;; TODO this module should be renamed to objects
+
 (define-module (object)
   #:use-module (oop goops)
   #:use-module (vector)

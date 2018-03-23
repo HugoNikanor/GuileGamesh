@@ -43,6 +43,8 @@
               (collision-list #:init-value '()
                               #:getter get-collide-list))
 
+;;; TODO a better system for keeping track of past events should
+;;; probably be put in place. Should only be used for debugging.
 (define last-event #f)
 
 (define-generic dispatch-event)

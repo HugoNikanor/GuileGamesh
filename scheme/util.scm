@@ -1,11 +1,11 @@
 (define-module (util)
-               #:use-module (srfi srfi-1)
-               #:use-module (srfi srfi-26)
-               #:export (apply-for-each cart-prod r slot-mod!
-                                        square pi tau
-                                        keyword-ref
-                                        slot-ref*
-                                        do-once))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+  #:export (apply-for-each cart-prod r slot-mod!
+                           square pi tau
+                           keyword-ref
+                           slot-ref*
+                           do-once))
 
 (define (r)
   (system "reset"))

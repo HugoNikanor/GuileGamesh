@@ -26,10 +26,10 @@
 
 (define (key-map obj event)
   (case (slot-ref event 'scancode)
-    ((82)  (slot-mod! (pos obj) 'y (cut - <> 5) ));1- )) ;;
-    ((81)  (slot-mod! (pos obj) 'y (cut + <> 5) ));1+ ))
-    ((79)  (slot-mod! (pos obj) 'x (cut + <> 5) ));1+ )) ;;
-    ((80)  (slot-mod! (pos obj) 'x (cut - <> 5) ));1- ))
+    ((82)  (slot-mod! (pos obj) 'y (cut - <> 5)))
+    ((81)  (slot-mod! (pos obj) 'y (cut + <> 5)))
+    ((79)  (slot-mod! (pos obj) 'x (cut + <> 5)))
+    ((80)  (slot-mod! (pos obj) 'x (cut - <> 5)))
     (else #f)))
 
 (define arrow-up 82)
