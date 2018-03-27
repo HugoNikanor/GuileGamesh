@@ -21,25 +21,20 @@
 ;; This is designed to be able to be changed into a spritesheet
 
 (define-class <ss-inspector> (<sprite>)
-              (single-size #:init-value (v2 1 1)
-                           #:init-keyword #:size
-                           #:getter single-size)
-              (amount #:init-value (v2 1 1)
-                      #:init-keyword #:amount
-                      #:getter amount)
-              (color #:init-keyword #:color
-                     #:init-value '(#xFF 0 0))
-              )
-
-;;(define-method (initialize (this <ss-inspector>) args)
-;;               (next-method))
+  (single-size #:init-value (v2 1 1)
+               #:init-keyword #:size
+               #:getter single-size)
+  (amount #:init-value (v2 1 1)
+          #:init-keyword #:amount
+          #:getter amount)
+  (color #:init-keyword #:color
+         #:init-value '(#xFF 0 0)))
 
 ;; draws all lines in top left of tile
 (define-method (draw-func (this <ss-inspector>))
-               (next-method)
-               (apply set-color (slot-ref this 'color))
-               (draw-all-lines this)
-               )
+  (next-method)
+  (apply set-color (slot-ref this 'color))
+  (draw-all-lines this))
 
 ;; Should possibly be a method
 (define (draw-all-lines this)
