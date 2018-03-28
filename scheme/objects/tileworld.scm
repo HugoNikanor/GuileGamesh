@@ -1,19 +1,19 @@
 (define-module (objects tileworld)
-               #:use-module (oop goops)
-               #:use-module (oop goops describe)
-               #:use-module (engine)
+  #:use-module (oop goops)
+  #:use-module (oop goops describe)
+  #:use-module (engine)
 
-               #:use-module (vector)
-               #:use-module (util)
+  #:use-module (vector)
+  #:use-module (util)
 
-               #:use-module (object)
-               #:use-module (objects spritesheet)
+  #:use-module (object)
+  #:use-module (objects spritesheet)
 
-               ;; #:use-module (pos)
+  ;; #:use-module (pos)
 
-	       #:use-module (draw-help)
+  #:use-module (draw-help)
 
-               #:export (<tileworld> <tileworld-chooser>))
+  #:export (<tileworld> <tileworld-chooser>))
 
 (define x-index-array (make-array #f 16 16))
 (array-index-map! x-index-array (lambda (y x) x))

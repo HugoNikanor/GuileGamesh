@@ -1,3 +1,9 @@
+;;; This is where the C code is sourced,
+;;; and also where the main procedures get
+;;; their declarations.
+;;; I belive this is also where the graphical
+;;; window is spawned, but I'm not sure
+
 (define-module (engine)
   #:use-module (oop goops)
   #:use-module (util)

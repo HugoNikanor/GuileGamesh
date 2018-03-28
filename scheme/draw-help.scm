@@ -5,10 +5,10 @@
 ;; which works an <v2> instead of points.
 
 (define-module (draw-help)
-               #:use-module (engine)
-               #:use-module (vector)
-               #:export (draw-line*
-                          draw-rect*))
+  #:use-module (engine)
+  #:use-module (vector)
+  #:export (draw-line*
+            draw-rect*))
 
 (define (draw-line* u v)
   "Draws a line between the two vectors"

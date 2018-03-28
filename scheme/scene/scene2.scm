@@ -1,18 +1,18 @@
 (define-module (scene scene2)
-               #:use-module (oop goops)
-               #:use-module (engine) ;; tick-func
-               #:use-module (scene)
-               #:use-module (vector)
-               #:use-module (objects ellipse)
-               #:use-module (objects character)
+  #:use-module (oop goops)
+  #:use-module (engine) ;; tick-func
+  #:use-module (scene)
+  #:use-module (vector)
+  #:use-module (objects ellipse)
+  #:use-module (objects character)
 
-               #:use-module (collide)
+  #:use-module (collide)
 
-               #:use-module (util)
-               #:use-module (arrowcontrol)
-               #:export (eel pel test-character
-                         scene2
-                             ))
+  #:use-module (util)
+  #:use-module (arrowcontrol)
+  #:export (eel pel test-character
+                scene2
+                ))
 
 #| TODO
  | Quite a lot of stuff here should be out-macro'd

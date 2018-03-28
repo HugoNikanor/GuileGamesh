@@ -9,4 +9,6 @@
 
 (define-once *path* "/tmp/guile-gamesh-repl")
 
+(system* "rm" *path*)
+
 (spawn-server (make-unix-domain-server-socket #:path *path*))

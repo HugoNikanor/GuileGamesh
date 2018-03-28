@@ -30,5 +30,5 @@
   (slot-set! this 'sprite
              (load-image
               (slot-ref* this 'file
-                         "assets/MissingTexture.jpg")))
+                         "assets/MissingTexture.jpg"))))
 

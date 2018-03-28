@@ -6,6 +6,9 @@
   #:use-module (vector)
   #:use-module (draw-help)
 
+  #:use-module (event)
+  #:use-module (event mouse-btn)
+
   #:use-module (object)
   #:use-module (objects sprite)
   #:use-module (objects ss-inspector)

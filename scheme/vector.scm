@@ -96,6 +96,6 @@
   (v2 (floor (x v))
       (floor (y v))))
 
-(define-method (map proc (v <v2>))
-  (v2 (proc (x v))
-      (proc (y v))))
+;; (define-method (map proc (v <v2>))
+;;   (v2 (proc (x v))
+;;       (proc (y v))))

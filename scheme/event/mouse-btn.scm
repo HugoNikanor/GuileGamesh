@@ -1,13 +1,9 @@
 (define-module (event mouse-btn)
-  #:use-module (engine)
   #:use-module (event)
   #:use-module (oop goops)
-  #:use-module (vector)
-  #:re-export (<mouse-button-event> make-mouse-button-event)
-  #:export (mpos rpos
-	    mouse-button
-
-	    *mouse-left-btn*
+  ;; Something with this re-export doesn't work as expected
+  #:re-export (<mouse-button-event> make-mouse-button-event pos)
+  #:export (*mouse-left-btn*
 	    *mouse-middle-btn*
 	    *mouse-right-btn* 
 
@@ -17,33 +13,6 @@
 (define *mouse-left-btn*   1)
 (define *mouse-middle-btn* 2)
 (define *mouse-right-btn*  3)
-
-;; (define-class <mouse-btn-event> (<event>)
-;;   which state clicks
-;;   (button #:getter mouse-button)
-;;   x y
-;;   (pos #:allocation #:virtual
-;;        #:getter mpos
-;;        #:slot-ref (lambda (o)
-;; 		    (v2 (slot-ref o 'x)
-;; 			(slot-ref o 'y)))
-;;        #:slot-set! (lambda (o v)
-;; 		     (slot-set! o 'x (x v))
-;; 		     (slot-set! o 'y (y v))))
-
-;;   (cobj #:init-form (make <geo-object>)
-;; 	#:accessor cobj)
-;;   (rpos #:allocation #:virtual
-;; 	#:getter rpos
-;; 	#:slot-ref (lambda (o)
-;; 		     (- (mpos o)
-;; 			(pos (cobj o))))
-;; 	#:slot-set! (lambda (o v)
-;; 		     (slot-set! o 'pos (+ v (mpos (cobj o)))))))
-
-;; (define-method (event-do (object <geo-object>)
-;; 			 (event <mouse-btn-event>))
-;;   (set! (cobj event) object))
 
 ;; this should be a <mouse-btn-event>
 (define (lclick? this)

@@ -7,16 +7,16 @@
   #:use-module (pos)
   #:re-export (pos)
   #:export (<common-event>
-             <keyboard-event>
-             <mouse-motion-event>
-             <mouse-button-event>
+            <keyboard-event>
+            <mouse-motion-event>
+            <mouse-button-event>
 
-             make-common-event
-             make-keyboard-event
-             make-mouse-motion-event
-             make-mouse-button-event
+            make-common-event
+            make-keyboard-event
+            make-mouse-motion-event
+            make-mouse-button-event
 
-             event-do))
+            event-do))
 
 ;;; Why does the helper functions have to be before the actual
 ;;; functions here? That usually isn't the case.
