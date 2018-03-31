@@ -214,6 +214,9 @@ static void* sdl_loop (void* args) {
 		scm_with_guile (call_funcs, arg);
 
 		SDL_RenderPresent (renderer);
+
+		// Throttle to slightly under 60 fps
+		SDL_Delay (20);
 	}
 
 	close_sdl();

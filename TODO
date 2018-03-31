@@ -47,6 +47,16 @@ Module reloading
   for a reference of how to possibly do it.
 - Makefile currenttly remakes everything whenever make is run
 
+2018-03-30
+==========
++ I should start throttling the main loop. Currently it
+  drains all my CPU resources, which is less than desirable.
+
+2018-03-31
+==========
+- CPU throttling is now in effect, it should however instead
+  check how long the frame took to handle, and wait up until
+  the correct time. 
 
 ========================================
 
