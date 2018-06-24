@@ -13,7 +13,10 @@
             draw-line draw-ellipse load-image
             render-texture render-sprite texture-size
 
-            draw-func tick-func collide-func))
+            draw-func tick-func collide-func
+
+            set-window-size!
+            ))
 
 (load-extension "./main" "init_functions")
 

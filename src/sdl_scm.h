@@ -23,4 +23,8 @@ SCM draw_line (SCM _x1, SCM _y1, SCM _x2, SCM _y2);
 SCM draw_ellipse (SCM _r, SCM _x0, SCM _y0, SCM _d);
 SCM draw_pixel (SCM _x, SCM _y);
 
+extern SDL_Window* window;
+
+SCM scm_set_window_size (SCM _width, SCM _height);
+
 #endif /* SDL_SCM_H */

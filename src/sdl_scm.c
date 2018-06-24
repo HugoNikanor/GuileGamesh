@@ -212,3 +212,10 @@ SCM draw_ellipse (SCM _r, SCM _x0, SCM _y0, SCM _d) {
 
 	return SCM_UNSPECIFIED;
 }
+
+SCM scm_set_window_size (SCM _width, SCM _height) {
+	int width = scm_to_int(_width);
+	int height = scm_to_int(_height);
+	SDL_SetWindowSize (window, width, height);
+	return SCM_UNSPECIFIED;
+}

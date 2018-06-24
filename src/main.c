@@ -169,7 +169,6 @@ static void init_sdl () {
 	SDL_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
 }
 
-
 static void* sdl_loop (void* args) {
 	int arg_len = 1;
 	arg_struct arg[arg_len];
@@ -257,6 +256,9 @@ void init_functions () {
 
 	scm_c_define_gsubr
 		("texture-size", 1, 0, 0, texture_size);
+
+	scm_c_define_gsubr
+		("set-window-size!", 2, 0, 0, scm_set_window_size);
 
 	pthread_t sdl_thread;
 	pthread_create (&sdl_thread, NULL, sdl_loop, NULL);
