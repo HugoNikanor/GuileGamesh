@@ -35,16 +35,16 @@
                (car (texture-size
                      (car (sprite-list this)))))))
 
-(define-method (access-sprite (this <multi-sprite>)
-                              current-sprite)
+(define-method (access-sprite (this <multi-sprite>))
   "Access the current sprite, default implementation
 Uses the current-sprite field for a numeric index, but
 other implementations are free to do how they please."
-  (list-ref (sprite-list this) current-sprite))
+  (list-ref (sprite-list this)
+            (current-sprite this)))
 
 (define-method (draw-func (this <multi-sprite>))
   (next-method)
-  (render-texture (access-sprite this (current-sprite this))
+  (render-texture (access-sprite this)
                   (size this)
                   '(0 0)
                   ;; TODO this is a hack since the render_texture
