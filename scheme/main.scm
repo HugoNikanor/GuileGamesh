@@ -27,9 +27,16 @@
              (objects tileworld)
 	     (objects scene-changer)
              (scene)
-             (mines mines)
-             (mines mine-scene)
+
+             ;; Only (mines scene) is needed to be imported,
+             ;; the others are just for testing.
+             (mines scene)
+             (mines square)
+             (mines board)
+             (mines helpers)
+             (mines utils)
              )
+             
 
 ;; (define c (create-character (@@ (scene scene2) f)))
 
