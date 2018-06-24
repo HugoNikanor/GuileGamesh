@@ -25,7 +25,7 @@
 
 (define-method (initialize (this <scene-changer>) args)
   (next-method)
-  (for-each (cut register-keyboard-event! this <>)
+  (for-each (cut add-event-listener! <keyboard-event> this <>)
 	    (scenes this))
   (slot-set! this 'scene-list
 	     (apply circular-list (scenes this))))

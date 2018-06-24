@@ -4,7 +4,7 @@
   #:use-module (event) ;; is this needed?
   #:use-module (event key)
   #:use-module (object)
-  #:use-module (scene) ;; register-event-object!
+  #:use-module (scene)
   #:export (<key-listener>))
 
 (define-class <key-listener> (<game-object>)
@@ -22,7 +22,7 @@
   ;;(format #f "[KEY LISTENER ~a]"
   ;; object is not yet initialized, name doesn't exist
   ;;(object-name (slot-ref lis 'obj))))
-  (register-keyboard-event! lis))
+  (add-event-listener! <keyboard-event> lis))
 
 (define-method (event-do (listener <key-listener>)
                          (event <keyboard-event>))

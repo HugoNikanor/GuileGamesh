@@ -24,6 +24,6 @@
 
   (do-once
     (register-draw-object! sheet-ins)
-    (register-mouse-button-event! sheet-ins)
+    (add-event-listener! <mouse-button-event> sheet-ins)
 ))
 
