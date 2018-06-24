@@ -18,6 +18,7 @@
              (y v)))
 
 (define (draw-rect* fill tl br)
+  "Top Left & Bottom Right"
   (draw-rect fill
              (x tl) (y tl)
              (x br) (y br)))
