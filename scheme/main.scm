@@ -26,7 +26,10 @@
              (objects sprite)
              (objects tileworld)
 	     (objects scene-changer)
-             (scene))
+             (scene)
+             (mines mines)
+             (mines mine-scene)
+             )
 
 ;; (define c (create-character (@@ (scene scene2) f)))
 
@@ -39,10 +42,13 @@
 	    scene2
 	    scene3
 	    scene4
-	    scene5)))
+	    scene5
+            mine-scene
+            )))
 
 ;; imported from scene2
-(set-current-scene! scene5)
+;; (set-current-scene! scene5)
+(set-current-scene! mine-scene)
 
 #|
 (define-method (event-do (box <box>)
