@@ -20,7 +20,13 @@
 
                          register-collider!
                          with-scene with-new-scene
-                         ))
+
+                         <scene-changed-event>
+                         <scene-changed-in-event>
+                         <scene-changed-out-event>
+                         new-scene old-scene
+                         )
+               #:re-export (event-do))
 
 
 (define-class <scene> ()
@@ -117,8 +123,30 @@
 (define cur-scene (make <scene>))
 (define (current-scene) cur-scene)
 
+(define-class <scene-changed-event> (<common-event>)
+  (new-scene #:getter new-scene
+             #:init-keyword #:new)
+  (old-scene #:getter old-scene
+             #:init-keyword #:old))
+
+(define-class <scene-changed-in-event> (<scene-changed-event>))
+(define-class <scene-changed-out-event> (<scene-changed-event>))
+
+;; Sets the current scene to 'scene,
+;; sends an event to the shifted in and out scene
+;; about what has happened.
 (define (set-current-scene! scene)
-  (set! cur-scene scene))
+  (let ((ev (make <scene-changed-event>
+              #:old cur-scene
+              #:new scene)))
+    (change-class ev <scene-changed-out-event>)
+    (event-do cur-scene ev)
+    (set! cur-scene scene)
+    (change-class ev <scene-changed-in-event>)
+    (event-do cur-scene ev)))
+
+(define-method (event-do (this <scene>)
+                         (event <scene-changed-event>)))
 
 (define* (register-tick-object! obj #:optional (scene (current-scene)))
   (slot-set! scene 'tick-list
