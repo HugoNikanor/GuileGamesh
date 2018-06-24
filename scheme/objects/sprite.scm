@@ -19,7 +19,6 @@
 ;; But I can't seem to get slot-unbound to check
 ;; which field that wis trying to be accessed.
 
-
 (define-method (initialize (this <sprite>) args)
   (next-method)
   (slot-set!

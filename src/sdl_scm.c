@@ -70,6 +70,9 @@ SCM texture_size (SCM img_ptr) {
  * _tile_size :: size in pixels, assumes square tile
  * sprite_pos :: position within tilesheet (in tiles). Pass as list of len 2
  * board_pos :: position on board, in tiles
+ *
+ * TODO this really should take <v2> instead of list
+ * TODO board_pos should maybe take in pixels and not in tiles!
  */
 SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) {
 	img = (SDL_Texture*) scm_to_long (img_ptr);
