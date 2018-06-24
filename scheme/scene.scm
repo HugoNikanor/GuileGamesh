@@ -7,16 +7,18 @@
                          dispatch-event
                          current-scene
                          set-current-scene!
-                         get-event-list
+                         ;; get-event-list
                          get-draw-list
                          get-tick-list
                          get-collide-list
                          register-tick-object!
                          register-draw-object!
 
-                         register-keyboard-event!
-                         register-mouse-motion-event!
-                         register-mouse-button-event!
+                         ;; register-keyboard-event!
+                         ;; register-mouse-motion-event!
+                         ;; register-mouse-button-event!
+
+                         add-event-listener!
 
                          register-collider!
                          with-scene with-new-scene
@@ -32,15 +34,22 @@
 (define-class <scene> ()
               (name #:init-keyword #:name)
 
+              #; 
               (mouse-motion-event-list
                #:init-value '()
                #:getter get-mouse-motion-event-list)
+              #;
               (mouse-button-event-list
                #:init-value '()
                #:getter get-mouse-button-event-list)
+              #;
               (keyboard-event-list
                #:init-value '()
                #:getter get-keyboard-event-list)
+
+              (event-listeners
+               #:init-form (make-hash-table)
+               #:getter event-listeners)
 
               (draw-list  #:init-value '()
                           #:getter get-draw-list)
@@ -53,23 +62,31 @@
 ;;; probably be put in place. Should only be used for debugging.
 (define last-event #f)
 
-(define-generic dispatch-event)
-(define-method (dispatch-event (scene <scene>)
-                               (event <common-event>))
-  ;; This is for all unsupported event types
-  )
+;; (define-generic dispatch-event)
+;; (define-method (dispatch-event (scene <scene>)
+;;                                (event <common-event>))
+;;   ;; This is for all unsupported event types
+;;   )
 
-(define-method (dispatch-event (scene <scene>)
-                               (event <keyboard-event>))
+(define (dispatch-event scene event)
+  (set! last-event event)
   (for-with-false-break
-   (cut event-do <> event)
-   (get-keyboard-event-list scene)))
+   (cut event-do <> (event-preprocess scene event))
+   (hash-ref (event-listeners scene)
+             (class-of event)
+             '())))
 
-(define-method (dispatch-event (scene <scene>)
-                               (event <mouse-motion-event>))
-  (for-with-false-break
-   (cut event-do <> event)
-   (get-mouse-motion-event-list scene)))
+;; (define-method (dispatch-event (scene <scene>)
+;;                                (event <keyboard-event>))
+;;   (for-with-false-break
+;;    (cut event-do <> event)
+;;    (get-keyboard-event-list scene)))
+
+;; (define-method (dispatch-event (scene <scene>)
+;;                                (event <mouse-motion-event>))
+;;   (for-with-false-break
+;;    (cut event-do <> event)
+;;    (get-mouse-motion-event-list scene)))
 
 ;;; TODO it's an error to register an object for mouse events
 ;;; which isn't an <geo-object>. There should be some form of
@@ -79,6 +96,17 @@
 (define (z-order list)
   "Functions which returns the input list sorted by z coordinate."
   list)
+
+;;; Some events (<mouse-button-event>) needs to reconfigure
+;;; the event to match the scene in some ways. This allows
+;;; that to be done.
+
+(define-generic event-preprocess)
+
+;; Default empty implementation
+(define-method (event-preprocess (scene <scene>)
+                                 (event <common-event>))
+  event)
 
 ;;; mouse-button-events are special when it comes to
 ;;; dispatching them. This method loops through all objects
@@ -93,9 +121,8 @@
 ;;; but I won't since the event object is suposed to be
 ;;; thrown away after it's dispatched.
 
-(define-method (dispatch-event (scene <scene>)
-                               (event <mouse-button-event>))
-  (set! last-event event)
+(define-method (event-preprocess (scene <scene>)
+                                 (event <mouse-button-event>))
   (let ((original-position (pos event)))
     (call-with-prompt 'return
       (lambda ()
@@ -107,8 +134,10 @@
                       (abort-to-prompt 'return)))
                   (z-order
                    (filter (cut in-object? <> original-position)
-                           (get-mouse-button-event-list scene)))))
-      list)))
+                           (hash-ref (event-listeners scene)
+                                     <mouse-button-event>)))))
+      list))
+  (next-method))
 
 ;;; like a regular for-each, but returns early if the
 ;;; procedure returns  
@@ -157,15 +186,15 @@
 (define* (register-collider! obj #:optional (scene (current-scene)))
   (slot-set! scene 'collision-list
              (cons obj (slot-ref scene 'collision-list))))
-(define* (register-keyboard-event! obj #:optional (scene (current-scene)))
-  (slot-set! scene 'keyboard-event-list
-             (cons obj (slot-ref scene 'keyboard-event-list))))
-(define* (register-mouse-motion-event! obj #:optional (scene (current-scene)))
-  (slot-set! scene 'mouse-motion-event-list
-             (cons obj (slot-ref scene 'mouse-motion-event-list))))
-(define* (register-mouse-button-event! obj #:optional (scene (current-scene)))
-  (slot-set! scene 'mouse-button-event-list
-             (cons obj (slot-ref scene 'mouse-button-event-list))))
+;; (define* (register-keyboard-event! obj #:optional (scene (current-scene)))
+;;   (slot-set! scene 'keyboard-event-list
+;;              (cons obj (slot-ref scene 'keyboard-event-list))))
+;; (define* (register-mouse-motion-event! obj #:optional (scene (current-scene)))
+;;   (slot-set! scene 'mouse-motion-event-list
+;;              (cons obj (slot-ref scene 'mouse-motion-event-list))))
+;; (define* (register-mouse-button-event! obj #:optional (scene (current-scene)))
+;;   (slot-set! scene 'mouse-button-event-list
+;;              (cons obj (slot-ref scene 'mouse-button-event-list))))
 
 (define-macro (with-scene scene . exprs)
   "call <exprs> with (current-scene) set to return <scene>
@@ -183,3 +212,13 @@
   `(begin
      (define-once ,symb (make <scene> #:name ,name))
      (with-scene ,symb ,@exprs)))
+
+
+;; Currently all event listeners are stored in linked lists
+;; inside a hash table. The hash table stays, but the linked
+;; lists can possibly be replaced with other iteratable
+;; datastructures.
+(define* (add-event-listener! type obj #:optional
+                              (scene (current-scene)))
+  (let ((h (event-listeners scene)))
+    (hash-set! h type (cons obj (hash-ref h type '())))))
