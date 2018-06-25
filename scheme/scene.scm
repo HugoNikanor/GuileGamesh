@@ -15,6 +15,7 @@
 
                          add-event-listener!
                          event-listeners
+                         listeners-of-type
 
                          register-collider!
                          with-scene with-new-scene
@@ -50,9 +51,14 @@
   (set! last-event event)
   (for-with-false-break
    (cut event-do <> (event-preprocess scene event))
-   (hashq-ref (event-listeners scene)
-              (class-name (class-of event))
-              '())))
+   (listeners-of-type scene (class-of event))))
+
+(define (listeners-of-type scene type)
+  "Returns all event listeners of specified type in scene.
+Type should be a class."
+  (hashq-ref (event-listeners scene)
+             (class-name type)
+             '()))
 
 ;;; TODO it's an error to register an object for mouse events
 ;;; which isn't an <geo-object>. There should be some form of
@@ -100,8 +106,8 @@
                       (abort-to-prompt 'return)))
                   (z-order
                    (filter (cut in-object? <> original-position)
-                           (hash-ref (event-listeners scene)
-                                     <mouse-button-event>)))))
+                           (listeners-of-type scene <mouse-button-event>)
+                           ))))
       list))
   (next-method))
 
@@ -180,6 +186,6 @@
 ;; is the name of the class, as a symbol.
 (define* (add-event-listener! type obj #:optional
                               (scene (current-scene)))
-  (let ((h (event-listeners scene))
-        (name (class-name type)))
-    (hashq-set! h name (cons obj (hashq-ref h name '())))))
+  (let ((h (event-listeners scene)))
+    (hashq-set! h (class-name type)
+                (cons obj (listeners-of-type scene type)))))
