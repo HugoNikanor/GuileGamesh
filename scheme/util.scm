@@ -1,11 +1,15 @@
 (define-module (util)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  ;; GOOPS currently only needed for describe implementation
+  #:use-module (oop goops)
+  #:use-module (oop goops describe)
   #:export (apply-for-each cart-prod r slot-mod!
                            square pi tau
                            keyword-ref
                            slot-ref*
-                           do-once))
+                           do-once)
+  #:re-export (describe))
 
 (define (r)
   (system "reset"))
@@ -73,3 +77,13 @@
        (set! ,symb ,a)
        (set!
          |#
+
+(define-method (describe (table <hashtable>))
+  (display table) (newline)
+  (hash-for-each-handle
+   (lambda (handle)
+     (let ((key (car handle))
+           (value (cdr handle)))
+       (format #t "~s: ~s~%"
+               key value)))
+   table))
