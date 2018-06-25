@@ -14,6 +14,7 @@
                          register-draw-object!
 
                          add-event-listener!
+                         event-listeners
 
                          register-collider!
                          with-scene with-new-scene
@@ -49,9 +50,9 @@
   (set! last-event event)
   (for-with-false-break
    (cut event-do <> (event-preprocess scene event))
-   (hash-ref (event-listeners scene)
-             (class-of event)
-             '())))
+   (hashq-ref (event-listeners scene)
+              (class-name (class-of event))
+              '())))
 
 ;;; TODO it's an error to register an object for mouse events
 ;;; which isn't an <geo-object>. There should be some form of
@@ -174,7 +175,11 @@
 ;; inside a hash table. The hash table stays, but the linked
 ;; lists can possibly be replaced with other iteratable
 ;; datastructures.
+;;
+;; Type is supposed to be a class, but the value stored
+;; is the name of the class, as a symbol.
 (define* (add-event-listener! type obj #:optional
                               (scene (current-scene)))
-  (let ((h (event-listeners scene)))
-    (hash-set! h type (cons obj (hash-ref h type '())))))
+  (let ((h (event-listeners scene))
+        (name (class-name type)))
+    (hashq-set! h name (cons obj (hashq-ref h name '())))))
