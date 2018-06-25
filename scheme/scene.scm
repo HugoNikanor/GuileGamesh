@@ -23,22 +23,23 @@
                          <scene-changed-out-event>
                          new-scene old-scene
                          )
-               #:re-export (event-do))
+               #:re-export (event-do name))
 
 
 (define-class <scene> ()
-              (name #:init-keyword #:name)
+  (name #:init-keyword #:name
+        #:getter name)
 
-              (event-listeners
-               #:init-form (make-hash-table)
-               #:getter event-listeners)
+  (event-listeners
+   #:init-form (make-hash-table)
+   #:getter event-listeners)
 
-              (draw-list  #:init-value '()
-                          #:getter get-draw-list)
-              (tick-list  #:init-value '()
-                          #:getter get-tick-list)
-              (collision-list #:init-value '()
-                              #:getter get-collide-list))
+  (draw-list  #:init-value '()
+              #:getter get-draw-list)
+  (tick-list  #:init-value '()
+              #:getter get-tick-list)
+  (collision-list #:init-value '()
+                  #:getter get-collide-list))
 
 ;;; TODO a better system for keeping track of past events should
 ;;; probably be put in place. Should only be used for debugging.

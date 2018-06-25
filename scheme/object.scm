@@ -8,7 +8,7 @@
 
   #:use-module (pos)
   #:re-export (pos)
-  #:export (<game-object> object-name counter
+  #:export (<game-object> name counter
             <geo-object>
 
             in-object?)
@@ -17,7 +17,7 @@
 ;;; Primitive Data-objects
 (define-class <game-object> ()
               (name #:init-keyword #:name
-                    #:getter object-name
+                    #:getter name
                     #:init-value "[NAMELESS]")
               (counter #:init-value 0
                        #:getter counter))
