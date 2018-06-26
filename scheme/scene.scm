@@ -49,8 +49,10 @@
 
 (define (dispatch-event scene event)
   (set! last-event event)
-  (for-with-false-break
-   (cut event-do <> (event-preprocess scene event))
+  (for-each
+   (lambda (object)
+     (when (event-guard scene object event)
+       (event-do object event)))
    (listeners-of-type scene (class-of event))))
 
 (define (listeners-of-type scene type)
@@ -64,52 +66,22 @@ Type should be a class."
 ;;; which isn't an <geo-object>. There should be some form of
 ;;; safeguards for this.
 
-;;; TODO actually implement this
-(define (z-order list)
-  "Functions which returns the input list sorted by z coordinate."
-  list)
+;;; Event guards can be registered. This method should return
+;;; #f if the object shouldn't recieve the event, and #t if it
+;;; should. Currently used to only forward mouse-button-events
+;;; to objects which are within the click.
 
-;;; Some events (<mouse-button-event>) needs to reconfigure
-;;; the event to match the scene in some ways. This allows
-;;; that to be done.
+(define-generic event-guard)
 
-(define-generic event-preprocess)
+(define-method (event-guard (scene <scene>)
+                            (object <object>)
+                            (event <common-event>))
+  #t)
 
-;; Default empty implementation
-(define-method (event-preprocess (scene <scene>)
-                                 (event <common-event>))
-  event)
-
-;;; mouse-button-events are special when it comes to
-;;; dispatching them. This method loops through all objects
-;;; currently registered to recieve mouse button events. It
-;;; starts by filtering out all objects that doesn't contain
-;;; the position of the event. It then sorts the objects in
-;;; a z order and sends the mouse button event through the
-;;; stack, with the coordinates of the event shifted to be
-;;; local tho the event it's currently being sent to.
-;;;     This method currently doesn't restore the position
-;;; of the event once it's done. That can be implemented,
-;;; but I won't since the event object is suposed to be
-;;; thrown away after it's dispatched.
-
-(define-method (event-preprocess (scene <scene>)
-                                 (event <mouse-button-event>))
-  (let ((original-position (pos event)))
-    (call-with-prompt 'return
-      (lambda ()
-        (for-each (lambda (obj)
-                    (set! (pos event)
-                          (- original-position
-                             (pos obj)))
-                    (when (not (event-do obj event))
-                      (abort-to-prompt 'return)))
-                  (z-order
-                   (filter (cut in-object? <> original-position)
-                           (listeners-of-type scene <mouse-button-event>)
-                           ))))
-      list))
-  (next-method))
+(define-method (event-guard (scene <scene>)
+                            (object <geo-object>)
+                            (event <mouse-button-event>))
+  (in-object? object (pos event)))
 
 ;;; like a regular for-each, but returns early if the
 ;;; procedure returns  
