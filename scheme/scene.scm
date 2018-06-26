@@ -43,12 +43,14 @@
   (collision-list #:init-value '()
                   #:getter get-collide-list))
 
-;;; TODO a better system for keeping track of past events should
-;;; probably be put in place. Should only be used for debugging.
-(define last-event #f)
+;; History over events, should mostly be used for debugging the engine.
+(define last-events '())
+
+(define-syntax-rule (push! item list)
+  (set! list (cons item list)))
 
 (define (dispatch-event scene event)
-  (set! last-event event)
+  (push! event last-events)
   (for-each
    (lambda (object)
      (when (event-guard scene object event)
