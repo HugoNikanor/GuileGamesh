@@ -10,16 +10,17 @@
   #:use-module (objects multi-sprite)
   #:use-module (vector)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 curried-definitions)
 
   #:use-module (mines helpers)
 
-  #:export (<square>
+  #:export (<square> board-pos
             make-square
             hidden value flag
             repr
 
             ;; These maybe shouldn't be exported:
-            hidden? bomb? empty? sq:number?)
+            hidden? bomb? empty? flag? sq:number?)
   #:re-export (size ; from multi-sprite
                current-sprite
                ))
@@ -32,7 +33,7 @@
   ;; #f, 'b, 0-8
   (value #:init-value #f
          #:accessor value)
-  ;; #f, 'f, '?
+  ;; #f, #t
   (flag #:init-value #f
         #:accessor flag)
 
@@ -40,23 +41,31 @@
                   #:accessor current-sprite
                   #:slot-ref (lambda (this)
                                (if (hidden? this)
-                                   (case (flag this)
-                                     ((f) 10)
-                                     (else 11))
+                                   (if (flag this)
+                                       10 11)
                                    (case (value this)
                                      ((#f) 0)
                                      ((b) 9)
                                      (else (value this)))))
                   #:slot-set! (lambda (this new)
                                 '(set-value "Can't set value")))
-  )
+
+  (board-pos #:allocation #:virtual
+             #:accessor board-pos
+             #:slot-ref (lambda (this)
+                          (m/ (pos this)
+                              (v2 (size this)
+                                  (size this))))
+             #:slot-set! (lambda (this new)
+                           (slot-set! this 'pos (* (size this) new)))))
 
 ;;; TODO the sprite and name list is currently not shared between objects,
 ;;; I think that there is some kind of static solution to this.
 
-(define* (make-square #:optional (bomb-probability 10))
+;; parent is the board the square resides in.
+(define* ((make-square parent) #:optional (bomb-probability 10))
   "Creates a new square, and maybe add a bomb to it."
-  (let ((sq (make <square>)))
+  (let ((sq (make <square> #:parent parent)))
     (when (< 7 (random bomb-probability))
       (set! (value sq) 'b))
     sq))
@@ -73,24 +82,25 @@ argument is an error."
 (define-method (in-object? (this <square>)
                            (point <v2>))
   (let* ((p (pos this))
-         (u (+ p (size this))))
-    (< p point u)))
+         (u (+ p (v2 (size this)
+                     (size this)))))
+    ;; TODO this is really uggly
+    (< (- p (v2 1 1)) point u)))
 
 (define-method (event-do (this <square>)
                          (event <mouse-button-event>))
-  (when (in-object? this (+ (pos this)
-                            (pos event)))
-    (display "Pressed a square\n")
+  (when (up? event)
+    #; (set! (hidden this) (not (hidden this)))
     (cond
-     ((lclick? event))
-     ((rclick? event)))))
+     ((lclick? event)
+      (open-squares this))
+     ((rclick? event)
+      (set! (flag this) (not (flag this)))))))
 
 (define-method (repr (sq <square>))
   (if (hidden? sq)
-      (case (flag sq)
-        ((f) 'F)
-        ((?) '?)
-        (else #\space))
+      (if (flag? sq)
+          'F #\space)
       (cond ((bomb? sq) 'B)
             ((sq:number? sq) => (lambda (n) (if (zero? n) #\~ n)))
             (else #\space))))
@@ -102,6 +112,8 @@ argument is an error."
 
 (define (empty? square)
   (not (value square)))
+
+(define flag? flag)
 
 (define (sq:number? square)
   (if (number? (value square))

@@ -6,14 +6,18 @@
   #:use-module (object)
 
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 arrays)
+  #:use-module (event)
+  #:use-module (vector)
 
   #:use-module (mines utils)
   #:use-module (mines square)
   #:use-module (mines board)
 
   #:export (adjacency-list falsify-zero place-numbers!
-                           display-board open-square))
+                           display-board open-squares
+                           <game-end-event> reason))
 
 ;;; These are helper functions specific enough to only really
 ;;; be helpfull for exactly this game.
@@ -48,14 +52,21 @@
     (apply format port "~:@{|~@{~a~}|~%~}~%"
            (array->list target))))
 
+(define-class <game-end-event> (<common-event>)
+  ;; Reason the game ended
+  (reason #:init-keyword #:reason
+          #:getter reason))
 
-;; Return of #f indicates that opening should stop,
-;; Return of #t indicates that opening should continue
-;; to adjacent tiles
-(define (open-square square)
-  (when (hidden? square)
+(define (open-squares square)
+  (let ((board (parent square)))
     (set! (hidden square) #f)
-    (let ((v (value square)))
-      (cond ((eqv? v 'b) (display "BOOM!\n") #f)
-            ((sq:number? v) #f)
-            ((eqv? v #f) #t)))))
+    (cond ((bomb? square)
+           (dispatch-event (parent board)
+                           (make <game-end-event>
+                             #:reason 'bomb)))
+          ((empty? square)
+           (map open-squares
+                (filter hidden?
+                        (apply adjacency-list (tiles board)
+                               (v2->list (board-pos square)))))))
+    (board-pos square)))

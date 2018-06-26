@@ -5,8 +5,11 @@
   #:use-module (util) ;; do-once
 
   #:use-module (vector)
+  #:use-module (srfi srfi-26)
+  #:use-module (event mouse-btn)
 
   #:use-module (mines board)
+  #:use-module (mines helpers) ; <game-end-event>
   #:use-module (mines square) ; size
 
   #:export (mine-scene board))
@@ -22,18 +25,32 @@
          (board-size (* cell-size (tilecount board))))
     (apply set-window-size! (v2->list board-size))))
 
+(define-method (event-do (this <mine-scene>)
+                         (event <game-end-event>))
+  (format #t "The game ended due to ~a~%" (reason event)))
+
 
 (with-new-scene
  mine-scene "Minesweeper Scene"
- (define-once board (make <mine-board>))
+ (define-once board (make <mine-board>
+                      #:parent mine-scene))
 
  ;; This is here for debugging
+ #;
  (array-for-each (lambda (sq) (set! ((@ (mines square) hidden) sq) #f))
                  (tiles board))
 
  (do-once
   (change-class mine-scene <mine-scene>)
+
   (register-draw-object! board)
+
+  (array-for-each
+   (cut add-event-listener! <mouse-button-event> <>)
+   (tiles board))
+
+  (add-event-listener! <game-end-event> mine-scene)
+
   (add-event-listener! <scene-changed-in-event> mine-scene)))
 
 
