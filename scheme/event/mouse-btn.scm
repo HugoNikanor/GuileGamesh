@@ -9,6 +9,7 @@
 	    *mouse-right-btn* 
 
 	    lclick? rclick?
+            up? down?
 	    ))
 
 (define *mouse-left-btn*   1)
@@ -23,3 +24,8 @@
 
 (define lclick? (click? *mouse-left-btn*))
 (define rclick? (click? *mouse-right-btn*))
+
+(define (up? event)
+  (eq? 'SDL_MOUSEBUTTONUP (slot-ref event 'type)))
+(define (down? event)
+  (eq? 'SDL_MOUSEBUTTONDOWN (slot-ref event 'type)))
