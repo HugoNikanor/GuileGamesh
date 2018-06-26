@@ -8,7 +8,8 @@
                            square pi tau
                            keyword-ref
                            slot-ref*
-                           do-once)
+                           do-once
+                           push!)
   #:re-export (describe))
 
 (define (r)
@@ -87,3 +88,6 @@
        (format #t "~s: ~s~%"
                key value)))
    table))
+
+(define-syntax-rule (push! item list)
+  (set! list (cons item list)))

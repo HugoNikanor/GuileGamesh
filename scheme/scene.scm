@@ -3,6 +3,7 @@
                #:use-module (srfi srfi-26)
                #:use-module (event)
                #:use-module (object)
+               #:use-module (util)
                #:export (<scene>
                          dispatch-event
                          current-scene
@@ -45,9 +46,6 @@
 
 ;; History over events, should mostly be used for debugging the engine.
 (define last-events '())
-
-(define-syntax-rule (push! item list)
-  (set! list (cons item list)))
 
 (define (dispatch-event scene event)
   (push! event last-events)
