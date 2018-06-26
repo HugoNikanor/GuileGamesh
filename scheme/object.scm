@@ -8,7 +8,7 @@
 
   #:use-module (pos)
   #:re-export (pos)
-  #:export (<game-object> name counter
+  #:export (<game-object> name counter parent
             <geo-object>
 
             in-object?)
@@ -20,7 +20,11 @@
                     #:getter name
                     #:init-value "[NAMELESS]")
               (counter #:init-value 0
-                       #:getter counter))
+                       #:getter counter)
+              ;; TODO currently parent needs to be manually set whenever
+              ;; An object is created. Figure something better out.
+              (parent #:init-keyword #:parent
+                      #:getter parent))
 
 (define-class <geo-object> (<game-object>)
   ;; z order of the object, used for mouse button eventts,
