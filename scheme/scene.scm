@@ -1,32 +1,32 @@
 (define-module (scene)
-               #:use-module (oop goops)
-               #:use-module (srfi srfi-26)
-               #:use-module (event)
-               #:use-module (objects)
-               #:use-module (util)
-               #:export (<scene>
-                         dispatch-event
-                         current-scene
-                         set-current-scene!
-                         get-draw-list
-                         get-tick-list
-                         get-collide-list
-                         register-tick-object!
-                         register-draw-object!
+  #:use-module (oop goops)
+  #:use-module (srfi srfi-26)
+  #:use-module (event)
+  #:use-module (objects)
+  #:use-module (util)
+  #:export (<scene>
+            dispatch-event
+            current-scene
+            set-current-scene!
+            get-draw-list
+            get-tick-list
+            get-collide-list
+            register-tick-object!
+            register-draw-object!
 
-                         add-event-listener!
-                         event-listeners
-                         listeners-of-type
+            add-event-listener!
+            event-listeners
+            listeners-of-type
 
-                         register-collider!
-                         with-scene with-new-scene
+            register-collider!
+            with-scene with-new-scene
 
-                         <scene-changed-event>
-                         <scene-changed-in-event>
-                         <scene-changed-out-event>
-                         new-scene old-scene
-                         )
-               #:re-export (event-do name))
+            <scene-changed-event>
+            <scene-changed-in-event>
+            <scene-changed-out-event>
+            new-scene old-scene
+            )
+  #:re-export (event-do name))
 
 
 (define-class <scene> ()
