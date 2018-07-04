@@ -1,15 +1,9 @@
 (define-module (mines square)
-  #:use-module (oop goops) ;; make
-  #:use-module (engine) ;; register-*-object!
-  #:use-module (scene) ;; with-new-scene
-  #:use-module (util) ;; do-once
-  #:use-module (objects)
+  #:use-module (common)
 
   #:use-module (event)
   #:use-module (event mouse-btn)
   #:use-module (objects multi-sprite)
-  #:use-module (vector)
-  #:use-module (srfi srfi-26)
   #:use-module (ice-9 curried-definitions)
 
   #:use-module (mines helpers)

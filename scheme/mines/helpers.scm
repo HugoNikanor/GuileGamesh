@@ -1,15 +1,11 @@
 (define-module (mines helpers)
-  #:use-module (oop goops) ;; make
-  #:use-module (engine) ;; register-*-object!
-  #:use-module (scene) ;; with-new-scene
-  #:use-module (util) ;; do-once
-  #:use-module (objects)
+  #:use-module (common)
+
+  #:use-module (scene) ; dispatch-event
 
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
   #:use-module (ice-9 arrays)
   #:use-module (event)
-  #:use-module (vector)
 
   #:use-module (mines utils)
   #:use-module (mines square)

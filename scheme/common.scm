@@ -13,6 +13,7 @@
   :use-module (srfi srfi-26)
   #:re-export
   (make define-class define-method
+        slot-ref slot-set! initialize
         describe
         draw-func tick-func collide-func
             set-window-size!

@@ -1,12 +1,6 @@
 (define-module (mines board)
-  #:use-module (oop goops) ;; make
-  #:use-module (engine) ;; register-*-object!
-  #:use-module (scene) ;; with-new-scene
-  #:use-module (util) ;; do-once
-  #:use-module (objects)
+  #:use-module (common)
 
-  #:use-module (vector)
-  #:use-module (oop goops describe)
   #:use-module (ice-9 format)
   #:use-module (ice-9 arrays)
 

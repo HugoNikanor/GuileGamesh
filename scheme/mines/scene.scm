@@ -1,11 +1,8 @@
 (define-module (mines scene)
-  #:use-module (oop goops) ;; make
-  #:use-module (engine) ;; register-*-object!
+  #:use-module (common)
+  #:use-module (oop goops)
   #:use-module (scene) ;; with-new-scene
-  #:use-module (util) ;; do-once
 
-  #:use-module (vector)
-  #:use-module (srfi srfi-26)
   #:use-module (event mouse-btn)
 
   #:use-module (mines board)
