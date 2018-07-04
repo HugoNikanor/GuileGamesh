@@ -58,6 +58,13 @@ Module reloading
   check how long the frame took to handle, and wait up until
   the correct time. 
 
+2018-07-04
+==========
+- Possibly add class for lists with current object.
+  Currently useful for scene, where it would be used for the
+  camera list, and in mines/square where current-sprite is a
+  pointer into the list of sprites.
+
 ========================================
 
 resolve-module
