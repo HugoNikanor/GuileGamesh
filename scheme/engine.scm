@@ -7,7 +7,7 @@
 (define-module (engine)
   #:use-module (oop goops)
   #:use-module (util)
-  #:use-module (object)
+  #:use-module (objects)
 
   #:export (ready! draw-rect set-color draw-text
             draw-line draw-ellipse load-image

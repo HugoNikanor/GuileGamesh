@@ -3,7 +3,7 @@
                #:use-module (oop goops)
                #:use-module (vector)
                #:use-module (engine)
-               #:use-module (object)
+               #:use-module (objects)
                #:use-module (util) ;; for keyword-ref
                #:export (<line> <vec-graphics>)
                )

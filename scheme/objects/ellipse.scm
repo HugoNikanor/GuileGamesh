@@ -2,7 +2,7 @@
   (objects ellipse)
   #:use-module (srfi srfi-26)
   #:use-module (oop goops)
-  #:use-module (object) ;; <geo-object>
+  #:use-module (objects) ;; <geo-object>
   #:use-module (engine)
   #:use-module (util)
   #:use-module (vector)

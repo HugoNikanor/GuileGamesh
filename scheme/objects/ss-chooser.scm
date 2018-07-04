@@ -9,7 +9,7 @@
   #:use-module (event)
   #:use-module (event mouse-btn)
 
-  #:use-module (object)
+  #:use-module (objects)
   #:use-module (objects sprite)
   #:use-module (objects ss-inspector)
   #:export (<ss-chooser> ctile))

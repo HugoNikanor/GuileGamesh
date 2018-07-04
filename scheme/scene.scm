@@ -2,7 +2,7 @@
                #:use-module (oop goops)
                #:use-module (srfi srfi-26)
                #:use-module (event)
-               #:use-module (object)
+               #:use-module (objects)
                #:use-module (util)
                #:export (<scene>
                          dispatch-event

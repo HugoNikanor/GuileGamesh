@@ -3,7 +3,7 @@
   #:use-module (engine) ;; register-*-object!
   #:use-module (scene) ;; with-new-scene
   #:use-module (util) ;; do-once
-  #:use-module (object)
+  #:use-module (objects)
 
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)

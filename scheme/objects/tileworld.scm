@@ -6,7 +6,7 @@
   #:use-module (vector)
   #:use-module (util)
 
-  #:use-module (object)
+  #:use-module (objects)
   #:use-module (objects spritesheet)
 
   ;; #:use-module (pos)

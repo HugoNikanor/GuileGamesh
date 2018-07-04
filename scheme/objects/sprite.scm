@@ -5,7 +5,7 @@
   #:use-module (util) ;; slot-ref*
 
   #:use-module (vector)
-  #:use-module (object)
+  #:use-module (objects)
 
   #:export (<sprite> get-sprite-size))
 

@@ -1,6 +1,6 @@
 (define-module (collide)
   #:use-module (oop goops)
-  #:use-module (object)
+  #:use-module (objects)
   #:export (colliding? collide!))
 
 (define-generic colliding?)

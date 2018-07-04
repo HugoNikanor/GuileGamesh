@@ -1,6 +1,6 @@
 (define-module (objects text-obj)
   #:use-module (oop goops)
-  #:use-module (object)
+  #:use-module (objects)
   #:export (<text-obj>))
 
 ;;; Object for displaying simple text objects on

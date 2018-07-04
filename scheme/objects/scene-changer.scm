@@ -10,7 +10,7 @@
   #:use-module (scene)
   #:use-module (event)
   #:use-module (event key)
-  #:use-module (object)
+  #:use-module (objects)
   #:export (<scene-changer>))
 
 (define-class <scene-changer> (<game-object>)
