@@ -144,7 +144,7 @@ static void init_sdl () {
 	}
 
 	int width, height;
-	width = height = 512;
+	width = height = 120;
 
     // Create an application window with the following settings:
     window = SDL_CreateWindow(
