@@ -16,6 +16,8 @@
             make-mouse-motion-event
             make-mouse-button-event
 
+            bound-object
+
             event-do))
 
 ;;; Why does the helper functions have to be before the actual
@@ -31,14 +33,6 @@
 (define-macro (define-event-make-func name type . args)
   `(define (,name ,@args)
      (create-make-func ,type ,@args)))
-
-(define (v-from-obj obj)
-  (v2 (slot-ref obj 'x)
-      (slot-ref obj 'y)))
-
-(define (obj-v-save obj vec)
-  (slot-set! obj 'x (x vec))
-  (slot-set! obj 'y (y vec)))
 
 #| <common-event>
  | Event class represents SDL events
@@ -82,11 +76,27 @@
   clicks
   x y
 
+  (bound-object #:accessor bound-object
+                #:init-value #f)
+
   (pos #:accessor pos
        #:allocation #:virtual
-       #:slot-ref v-from-obj
-       #:slot-set! obj-v-save)
-  )
+       #:slot-ref (lambda (this)
+                    (v2 (slot-ref this 'x)
+                        (slot-ref this 'y)))
+       #:slot-set! (lambda (this v)
+                     (slot-set! this 'x (x v))
+                     (slot-set! this 'y (y v)))
+       )
+
+  (obj-pos #:accessor obj-pos
+           #:allocation #:virtual
+           #:slot-ref (lambda (this)
+                        (- (pos this)
+                           (or (and=> (bound-object this) pos) (v2))))
+           #:slot-set! (lambda (this v)
+                         (let ((u (+ v (or (and=> (bound-object this) pos) (v2)))))
+                           (set! (pos this) u)))))
 
 (define-event-make-func make-mouse-button-event <mouse-button-event>
   type timestamp window-id which button state clicks x y)
