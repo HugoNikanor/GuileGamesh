@@ -233,26 +233,26 @@ void init_functions () {
 		("ready!", 0, 0, 0, scm_set_ready);
 
 	scm_c_define_gsubr
-		("draw-rect", 5, 0, 0, scm_primitive_draw_rect);
+		("primitive-draw-rect!", 5, 0, 0, scm_primitive_draw_rect);
 	scm_c_define_gsubr
-		("set-color", 3, 1, 0, scm_set_color);
+		("set-color!", 3, 1, 0, scm_set_color);
 	scm_c_define_gsubr
-		("draw-text", 3, 0, 0, scm_primitive_draw_text);
+		("primitive-draw-text!", 3, 0, 0, scm_primitive_draw_text);
 	scm_c_define_gsubr
-		("draw-line", 4, 0, 0, scm_primitive_draw_line);
+		("primitive-draw-line!", 4, 0, 0, scm_primitive_draw_line);
 	scm_c_define_gsubr
-		("draw-ellipse", 4, 0, 0, scm_primitive_draw_ellipse);
+		("primitive-draw-ellipse!", 4, 0, 0, scm_primitive_draw_ellipse);
 	scm_c_define_gsubr
-		("draw-pixel", 2, 0, 0, scm_primitive_draw_pixel);
+		("primitive-draw-pixel!", 2, 0, 0, scm_primitive_draw_pixel);
 
 	scm_c_define_gsubr
 		("load-image", 1, 0, 0, scm_init_img);
 
 	scm_c_define_gsubr
-		("render-texture", 4, 0, 0, scm_primitive_render_texture);
+		("primitive-render-texture!", 4, 0, 0, scm_primitive_render_texture);
 
 	scm_c_define_gsubr
-		("render-sprite", 2, 0, 0, scm_primitive_render_single_sprite);
+		("primitive-render-sprite!", 2, 0, 0, scm_primitive_render_single_sprite);
 
 	scm_c_define_gsubr
 		("texture-size", 1, 0, 0, scm_texture_size);

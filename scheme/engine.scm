@@ -20,6 +20,15 @@
 
 (load-extension "./main" "init_functions")
 
+(define set-color set-color!)
+(define draw-rect primitive-draw-rect!)
+(define draw-text primitive-draw-text!)
+(define draw-line primitive-draw-line!)
+(define draw-ellipse primitive-draw-ellipse!)
+(define draw-pixel primitive-draw-pixel!)
+(define render-texture primitive-render-texture!)
+(define render-sprite primitive-render-sprite!)
+
 (define-generic tick-func)
 (define-method (tick-func (obj <game-object>))
   (slot-mod! obj 'counter 1+))
