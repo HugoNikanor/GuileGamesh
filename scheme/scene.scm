@@ -4,6 +4,7 @@
   #:use-module (event)
   #:use-module (objects)
   #:use-module (util)
+  #:use-module (camera)
   #:export (<scene>
             dispatch-event
             current-scene
@@ -21,6 +22,8 @@
             register-collider!
             with-scene with-new-scene
 
+            current-camera
+
             <scene-changed-event>
             <scene-changed-in-event>
             <scene-changed-out-event>
@@ -37,12 +40,27 @@
    #:init-form (make-hash-table)
    #:getter event-listeners)
 
+  (camera-list #:init-value #f
+               #:accessor cameras)
+  (current-camera #:init-value 0
+                  #:accessor camera-idx)
+
   (draw-list  #:init-value '()
               #:getter get-draw-list)
   (tick-list  #:init-value '()
               #:getter get-tick-list)
   (collision-list #:init-value '()
                   #:getter get-collide-list))
+
+;; Scenes created without a camera automaticly get one.
+(define-method (initialize (this <scene>) args)
+  (next-method)
+  (when (not (cameras this))
+    (set! (cameras this) (list (make-camera)))))
+
+(define* (current-camera #:optional (scene (current-scene)))
+  (list-ref (cameras scene)
+            (camera-idx scene)))
 
 ;; History over events, should mostly be used for debugging the engine.
 (define last-events '())
