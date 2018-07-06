@@ -1,14 +1,14 @@
 .PHONY : clean all tags
 
-CFLAGS = $$(guile-config compile) \
-         $$(pkg-config --cflags sdl2) \
-         $$(pkg-config --cflags SDL2_ttf) \
-         $$(pkg-config --cflags SDL2_image) \
+CFLAGS = $(shell guile-config compile) \
+         $(shell pkg-config --cflags sdl2) \
+         $(shell pkg-config --cflags SDL2_ttf) \
+         $(shell pkg-config --cflags SDL2_image) \
          -pthread -fPIC -Wall
-LFLAGS = $$(guile-config link) \
-         $$(pkg-config --libs sdl2) \
-         $$(pkg-config --libs SDL2_ttf) \
-         $$(pkg-config --libs SDL2_image) \
+LFLAGS = $(shell guile-config link) \
+         $(shell pkg-config --libs sdl2) \
+         $(shell pkg-config --libs SDL2_ttf) \
+         $(shell pkg-config --libs SDL2_image) \
          -lm -pthread
 DFLAGS = -ggdb
 
@@ -17,10 +17,8 @@ O_FILES = $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 
 all : main.so main
 
-obj :
-	mkdir obj
-
-obj/%.o : src/%.c obj
+obj/%.o : src/%.c
+	test -d obj || mkdir obj
 	gcc -c ${CFLAGS} ${DFLAGS} -o $@ $<
 
 main.so : $(O_FILES)
