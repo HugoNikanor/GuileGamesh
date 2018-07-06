@@ -67,6 +67,7 @@
 
 (define (dispatch-event scene event)
   (push! event last-events)
+  (scene-preprocess-event! scene event)
   (for-each
    (lambda (object)
      (when (event-guard scene object event)
@@ -100,6 +101,20 @@ Type should be a class."
                             (object <geo-object>)
                             (event <mouse-button-event>))
   (in-object? object (pos event)))
+
+;;; scene-preprocess-event! allows any event to be changed relative to
+;;; the current scene. To start with used to get mouse clicks relative
+;;; to the world instead of the camera.
+
+(define-generic scene-preprocess-event!)
+(define-method (scene-preprocess-event! (scene <scene>)
+                                        (event <common-event>)))
+(define-method (scene-preprocess-event! (scene <scene>)
+                                        (event <mouse-button-event>))
+  "Changes the pos of the event from camera relative to world relative."
+  (set! (pos event)
+        (+ (pos event)
+           (pos (current-camera scene)))))
 
 ;;; like a regular for-each, but returns early if the
 ;;; procedure returns  
