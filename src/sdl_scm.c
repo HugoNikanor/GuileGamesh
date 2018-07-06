@@ -1,7 +1,7 @@
 #include "sdl_scm.h"
 #include "util.h"
 
-SCM draw_rect (SCM fill_p, SCM x, SCM y, SCM w, SCM h) {
+SCM scm_primitive_draw_rect (SCM fill_p, SCM x, SCM y, SCM w, SCM h) {
 	SDL_Rect rect = {.x = (int) scm_to_double (x),
 	                 .y = (int) scm_to_double (y),
 					 .w = (int) scm_to_double (w),
@@ -11,7 +11,7 @@ SCM draw_rect (SCM fill_p, SCM x, SCM y, SCM w, SCM h) {
 	return SCM_UNDEFINED;
 }
 
-SCM set_color (SCM r, SCM g, SCM b, SCM a) {
+SCM scm_set_color (SCM r, SCM g, SCM b, SCM a) {
 	if (SCM_UNBNDP (a))
 		a = scm_from_int(0xFF);
 
@@ -26,7 +26,7 @@ SCM set_color (SCM r, SCM g, SCM b, SCM a) {
 
 //TTF_Font* sans;
 SDL_Color white = {0xFF, 0xFF, 0xFF};
-SCM draw_text (SCM text, SCM _x, SCM _y) {
+SCM scm_primitive_draw_text (SCM text, SCM _x, SCM _y) {
 	int x = scm_to_int (_x);
 	int y = scm_to_int (_y);
 	char* str = scm_to_utf8_string (text);
@@ -45,7 +45,7 @@ SCM draw_text (SCM text, SCM _x, SCM _y) {
 
 // TODO this really should be a malloc in init_img 
 SDL_Texture* img;
-SCM init_img (SCM filepath) {
+SCM scm_init_img (SCM filepath) {
 	char* path = scm_to_utf8_string (filepath);
 	img = IMG_LoadTexture (renderer, path);
 	if (img == NULL) {
@@ -58,7 +58,7 @@ SCM init_img (SCM filepath) {
 	return scm_from_long((long) img);
 }
 
-SCM texture_size (SCM img_ptr) {
+SCM scm_texture_size (SCM img_ptr) {
 	img = (SDL_Texture*) scm_to_long (img_ptr);
 	int w, h;
 	SDL_QueryTexture (img, NULL, NULL, &w, &h);
@@ -74,7 +74,7 @@ SCM texture_size (SCM img_ptr) {
  * TODO this really should take <v2> instead of list
  * TODO board_pos should maybe take in pixels and not in tiles!
  */
-SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) {
+SCM scm_primitive_render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) {
 	img = (SDL_Texture*) scm_to_long (img_ptr);
 	int sx = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(0)));
 	int sy = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(1)));
@@ -115,7 +115,7 @@ SCM render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) 
 /*
  * TODO ability to scale sprites
  */
-SCM render_single_sprite (SCM img_ptr, SCM board_pos) {
+SCM scm_primitive_render_single_sprite (SCM img_ptr, SCM board_pos) {
 	img = (SDL_Texture*) scm_to_long (img_ptr);
 	//int sx = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(0)));
 	//int sy = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(1)));
@@ -140,7 +140,7 @@ SCM render_single_sprite (SCM img_ptr, SCM board_pos) {
 	return SCM_UNSPECIFIED;
 }
 
-SCM draw_line (SCM _x1, SCM _y1, SCM _x2, SCM _y2) {
+SCM scm_primitive_draw_line (SCM _x1, SCM _y1, SCM _x2, SCM _y2) {
 	int x1 = scm_to_double (_x1);
 	int y1 = scm_to_double (_y1);
 	int x2 = scm_to_double (_x2);
@@ -151,7 +151,7 @@ SCM draw_line (SCM _x1, SCM _y1, SCM _x2, SCM _y2) {
 	return SCM_UNSPECIFIED;
 }
 
-SCM draw_pixel (SCM _x, SCM _y) {
+SCM scm_primitive_draw_pixel (SCM _x, SCM _y) {
 	int x = scm_to_int (_x);
 	int y = scm_to_int (_y);
 
@@ -164,7 +164,7 @@ SCM draw_pixel (SCM _x, SCM _y) {
  * This function most likely has a memory leak
  * for the points it creates for rendering
  */
-SCM draw_ellipse (SCM _r, SCM _x0, SCM _y0, SCM _d) {
+SCM scm_primitive_draw_ellipse (SCM _r, SCM _x0, SCM _y0, SCM _d) {
 	int x_0 = scm_to_int (_x0);
 	int y_0 = scm_to_int (_y0);
 	int r  = scm_to_int (_r);

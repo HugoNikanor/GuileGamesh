@@ -34,7 +34,7 @@ SDL_Renderer* renderer;
  * This should be rebranded as init-sdl
  * It should also slightly change what it does
  */
-static SCM set_ready() {
+static SCM scm_set_ready() {
 	// TODO better name for these METHODS
 	draw_func    = scm_variable_ref(scm_c_lookup ("draw-func"));
 	tick_func    = scm_variable_ref(scm_c_lookup ("tick-func"));
@@ -230,32 +230,32 @@ void init_functions () {
 	init_sdl ();
 
 	scm_c_define_gsubr
-		("ready!", 0, 0, 0, set_ready);
+		("ready!", 0, 0, 0, scm_set_ready);
 
 	scm_c_define_gsubr
-		("draw-rect", 5, 0, 0, draw_rect);
+		("draw-rect", 5, 0, 0, scm_primitive_draw_rect);
 	scm_c_define_gsubr
-		("set-color", 3, 1, 0, set_color);
+		("set-color", 3, 1, 0, scm_set_color);
 	scm_c_define_gsubr
-		("draw-text", 3, 0, 0, draw_text);
+		("draw-text", 3, 0, 0, scm_primitive_draw_text);
 	scm_c_define_gsubr
-		("draw-line", 4, 0, 0, draw_line);
+		("draw-line", 4, 0, 0, scm_primitive_draw_line);
 	scm_c_define_gsubr
-		("draw-ellipse", 4, 0, 0, draw_ellipse);
+		("draw-ellipse", 4, 0, 0, scm_primitive_draw_ellipse);
 	scm_c_define_gsubr
-		("draw-pixel", 2, 0, 0, draw_pixel);
+		("draw-pixel", 2, 0, 0, scm_primitive_draw_pixel);
 
 	scm_c_define_gsubr
-		("load-image", 1, 0, 0, init_img);
+		("load-image", 1, 0, 0, scm_init_img);
 
 	scm_c_define_gsubr
-		("render-texture", 4, 0, 0, render_texture);
+		("render-texture", 4, 0, 0, scm_primitive_render_texture);
 
 	scm_c_define_gsubr
-		("render-sprite", 2, 0, 0, render_single_sprite);
+		("render-sprite", 2, 0, 0, scm_primitive_render_single_sprite);
 
 	scm_c_define_gsubr
-		("texture-size", 1, 0, 0, texture_size);
+		("texture-size", 1, 0, 0, scm_texture_size);
 
 	scm_c_define_gsubr
 		("set-window-size!", 2, 0, 0, scm_set_window_size);
