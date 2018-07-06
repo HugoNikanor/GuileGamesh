@@ -100,6 +100,7 @@ Type should be a class."
 (define-method (event-guard (scene <scene>)
                             (object <geo-object>)
                             (event <mouse-button-event>))
+  (set! (bound-object event) object)
   (in-object? object (pos event)))
 
 ;;; scene-preprocess-event! allows any event to be changed relative to
