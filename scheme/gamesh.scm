@@ -10,6 +10,7 @@
   #:use-module (event mouse-motion)
 
   #:use-module (vector)
+  #:use-module (engine)
 
   #:use-module (oop goops)
   #:use-module (oop goops describe)

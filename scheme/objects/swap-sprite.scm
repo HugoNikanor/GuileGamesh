@@ -30,8 +30,8 @@
                      (slot-ref this 'amount))))
 
 (define-method (draw-func (this <swap-sprite>))
-  (render-texture (slot-ref this 'sprite)
-                  (car (v2->list (slot-ref this 'single-size)))
-                  (v2->list (slot-ref this 'current-sprite))
-                  (v2->list (pos this))))
+  (render-texture! (slot-ref this 'sprite)
+                   (slot-ref this 'single-size)
+                   (slot-ref this 'current-sprite)
+                   (pos this)))
 

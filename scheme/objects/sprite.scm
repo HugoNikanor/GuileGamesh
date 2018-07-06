@@ -44,11 +44,7 @@
 ;; have a better way to go from <v2> to positions
 ;; possibly have the C functions useing slot-ref
 (define-method (draw-func (this <sprite>))
-               (render-sprite (slot-ref this 'sprite)
-                              ((lambda (pos)
-                                 (list
-                                   (slot-ref pos 'x)
-                                   (slot-ref pos 'y)))
-                               (pos this)))
-               (next-method))
+  (render-sprite! (slot-ref this 'sprite)
+                  (pos this))
+  (next-method))
   

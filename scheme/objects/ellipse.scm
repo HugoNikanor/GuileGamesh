@@ -38,31 +38,31 @@
                (next-method))
 
 (define-method (draw-func (el <ellipse>))
-               (apply set-color (slot-ref el 'color))
-               (draw-ellipse
-                 (slot-ref el 'r)
-                 (inexact->exact (floor (x (pos el))))
-                 (inexact->exact (floor (y (pos el))))
-                 (slot-ref el 'd))
-               (next-method))
+  (apply set-color! (slot-ref el 'color))
+  (draw-ellipse!
+   (slot-ref el 'r)
+   (slot-ref el 'd)
+   (v2 (inexact->exact (floor (x (pos el))))
+       (inexact->exact (floor (y (pos el))))))
+  (next-method))
 
 ;;; TODO clean up this
 (define-method (get-intersection-translation-vector
-                 (el1 <ellipse>)
-                 (el2 <ellipse>))
-               (let ((s2 (helperfunction el1 el2))
-                     (s1 (helperfunction el2 el1)))
-                 (let ((v (pos el1))
-                       (u (pos el2)))
-                   (if (<= (abs (- v u))
-                           (+ (abs (- v s2))
-                              (abs (- u s1))))
-                     (* (- v u)
-                        (- (abs (- v u))
-                           (abs (- v s2))
-                           (abs (- u s1)))
-                        (/ 1 (abs (- v u))))
-                     (make <v2>)))))
+                (el1 <ellipse>)
+                (el2 <ellipse>))
+  (let ((s2 (helperfunction el1 el2))
+        (s1 (helperfunction el2 el1)))
+    (let ((v (pos el1))
+          (u (pos el2)))
+      (if (<= (abs (- v u))
+             (+ (abs (- v s2))
+                (abs (- u s1))))
+          (* (- v u)
+             (- (abs (- v u))
+                (abs (- v s2))
+                (abs (- u s1)))
+             (/ 1 (abs (- v u))))
+          (make <v2>)))))
 
 ;;; TODO clean up this
 (define-method (helperfunction
@@ -111,17 +111,13 @@
 
                      (if togeled?
                        (begin
-                         (set-color #xFF 0 0) ; RED
-                         (draw-line (x el1_a) (y el1_a)
-                                    (x el2_b) (y el2_b))
-                         (draw-line (x el1_b) (y el1_b)
-                                    (x el2_a) (y el2_a)))
+                         (set-color! #xFF 0 0) ; RED
+                         (draw-line! el1_a el2_b)
+                         (draw-line! el1_b el2_a))
                        (begin
-                         (set-color 0 #xFF 0) ; GREEN
-                         (draw-line (x el1_a) (y el1_a)
-                                    (x el2_a) (y el2_a))
-                         (draw-line (x el1_b) (y el1_b)
-                                    (x el2_b) (y el2_b))))
+                         (set-color! 0 #xFF 0) ; GREEN
+                         (draw-line! el1_a el2_a)
+                         (draw-line! el1_b el2_b)))
                        ;; TODO
                        (not (< (real-part (+ (slot-ref el1 'r)
                                              (slot-ref el2 'r)))

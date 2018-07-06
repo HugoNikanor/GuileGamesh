@@ -11,7 +11,6 @@
                #:use-module (srfi srfi-26)
 
                #:use-module (vector)
-               #:use-module (draw-help)
                #:use-module (objects)
                #:use-module (objects spritesheet)
                #:use-module (objects sprite)
@@ -33,15 +32,17 @@
 ;; draws all lines in top left of tile
 (define-method (draw-func (this <ss-inspector>))
   (next-method)
-  (apply set-color (slot-ref this 'color))
+  (apply set-color! (slot-ref this 'color))
   (draw-all-lines this))
 
 ;; Should possibly be a method
+;;; TODO check that my rewrite is correct
 (define (draw-all-lines this)
   (map (lambda (set)
-         (apply draw-line*
-                (map (cut + <> (pos this))
-                     set)))
+         (draw-line! (+ (pos this)
+                        (list-ref set 0))
+                     (+ (pos this)
+                        (list-ref set 1))))
        ;; TODO O(1) append
        (append (hori-lines this)
                (vert-lines this))))

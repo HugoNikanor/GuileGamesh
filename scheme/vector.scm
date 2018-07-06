@@ -29,7 +29,7 @@
       (next-method)))
 
 (define-method (write (this <v2>) port)
-  (display (list 'v2 (x this) (y this))
+  (write (list 'v2 (x this) (y this))
            port))
 
 (define (v2->list v)

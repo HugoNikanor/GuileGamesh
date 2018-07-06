@@ -4,7 +4,7 @@
   #:use-module (engine)
 
   #:use-module (vector)
-  #:use-module (draw-help)
+  #; #; #:use-module (draw-help)
 
   #:use-module (event)
   #:use-module (event mouse-btn)
@@ -28,8 +28,8 @@
 
 (define-method (draw-func (this <ss-chooser>))
   (next-method)
-  (set-color #xFF #x7F #x7F #xA0)
-  (draw-rect*
+  (set-color! #xFF #x7F #x7F #xA0)
+  (draw-rect!
    #t 
    (+ (pos this)
       (m* (ctile this)

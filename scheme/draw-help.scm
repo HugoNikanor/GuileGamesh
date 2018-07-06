@@ -7,9 +7,11 @@
 (define-module (draw-help)
   #:use-module (engine)
   #:use-module (vector)
-  #:export (draw-line*
-            draw-rect*))
+  #:export (#; draw-line*
+            #; draw-rect*
+            ))
 
+#; 
 (define (draw-line* u v)
   "Draws a line between the two vectors"
   (draw-line (x u)
@@ -17,6 +19,7 @@
              (x v)
              (y v)))
 
+#;
 (define (draw-rect* fill tl br)
   "Top Left & Bottom Right"
   (draw-rect fill

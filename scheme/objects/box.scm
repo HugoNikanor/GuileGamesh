@@ -28,8 +28,4 @@
                (apply set-color (slot-ref box 'color))
                (let ((pos (pos box))
                      (size (size box)))
-               (draw-rect #t
-                          (x pos)
-                          (y pos)
-                          (x size)
-                          (y size))))
+                 (draw-rect! #t pos size)))

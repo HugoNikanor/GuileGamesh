@@ -31,7 +31,7 @@
                 (y0 (y (shift (slot-ref line 'start))))
                 (x1 (x (shift (slot-ref line 'stop))))
                 (y1 (y (shift (slot-ref line 'stop)))))
-            (draw-line x0 y0 x1 y1))))
+            (draw-line! (v2 x0 y0) (v2 x1 y1)))))
       (slot-ref obj 'lines)))
   (next-method))
 

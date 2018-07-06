@@ -44,13 +44,13 @@ other implementations are free to do how they please."
 
 (define-method (draw-func (this <multi-sprite>))
   (next-method)
-  (render-texture (access-sprite this)
-                  (size this)
-                  '(0 0)
-                  ;; TODO this is a hack since the render_texture
-                  ;; primitive takes a list representing position
-                  ;; on board, in number of tiles
-                  (v2->list (m/ (pos this)
-                                (v2 (size this)
-                                    (size this))))
-                  ))
+  (render-texture! (access-sprite this)
+                   (v2 (size this) 0)
+                   (v2 0 0)
+                   ;; TODO this is a hack since the render_texture
+                   ;; primitive takes a list representing position
+                   ;; on board, in number of tiles
+                   (m/ (pos this)
+                       (v2 (size this)
+                           (size this)))
+                   ))

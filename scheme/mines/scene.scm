@@ -23,6 +23,10 @@
     (apply set-window-size! (v2->list board-size))))
 
 (define-method (event-do (this <mine-scene>)
+                         (event <scene-changed-out-event>))
+  (set-window-size! 512 512))
+
+(define-method (event-do (this <mine-scene>)
                          (event <game-end-event>))
   (format #t "The game ended due to ~a~%" (reason event)))
 
@@ -30,6 +34,7 @@
 (with-new-scene
  mine-scene "Minesweeper Scene"
  (define-once board (make <mine-board>
+                      #:size (v2 5 5)
                       #:parent mine-scene))
 
  ;; This is here for debugging
@@ -48,6 +53,7 @@
 
   (add-event-listener! <game-end-event> mine-scene)
 
-  (add-event-listener! <scene-changed-in-event> mine-scene)))
+  (add-event-listener! <scene-changed-in-event> mine-scene)
+  (add-event-listener! <scene-changed-out-event> mine-scene)))
 
 

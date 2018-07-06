@@ -9,10 +9,6 @@
   #:use-module (objects)
   #:use-module (objects spritesheet)
 
-  ;; #:use-module (pos)
-
-  #:use-module (draw-help)
-
   #:export (<tileworld> <tileworld-chooser>))
 
 (define x-index-array (make-array #f 16 16))
@@ -60,11 +56,11 @@
 (define-method (draw-func (this <tileworld>))
   (array-for-each
     (lambda (tile x y)
-      (render-texture (slot-ref this 'sprite)
-                      (car (v2->list (slot-ref this 'single-size)))
-                      (v2->list tile)
-                      (v2->list (+ (pos this)
-                                   (v2 x y)))))
+      (render-texture! (slot-ref this 'sprite)
+                       (slot-ref this 'single-size)
+                       tile
+                       (+ (pos this)
+                          (v2 x y))))
     (slot-ref this 'world-def)
     x-index-array
     y-index-array))
@@ -75,11 +71,11 @@
 
 (define-method (draw-func (this <tileworld-chooser>))
   (next-method)
-  (set-color #xFF #x7F #x7F #xA0)
+  (set-color! #xFF #x7F #x7F #xA0)
 
   ;; This should really have a safeguard
   ;; ensuring that it's inside the sprite
-  (draw-rect* #t 
+  (draw-rect! #t 
 	      (+ (pos this)
 		 (m* (ctile this)
 		     (slot-ref this 'single-size)))

@@ -17,9 +17,9 @@
         describe
         draw-func tick-func collide-func
             set-window-size!
-            draw-rect set-color draw-text draw-line
-            draw-ellipse load-image render-texture
-            render-sprite texture-size
+            draw-rect! set-color! draw-text! draw-line!
+            draw-ellipse! load-image render-texture!
+            render-sprite! texture-size
         <game-object> name counter parent
             <geo-object> pos in-object?
         <v2> x y v2 m* m/ v2->list
