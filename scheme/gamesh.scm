@@ -27,22 +27,34 @@
   #:use-module (mines board)
   #:use-module (mines helpers)
   #:use-module (mines utils)
+
+  #:use-module (objects camera-panner)
   )
 
 ;; (define c (create-character (@@ (scene scene2) f)))
 
+(define scenelist
+  (list
+   scene2
+   scene3
+   scene4
+   scene5
+   mine-scene
+   )
+  )
+
 (define scene-changer
   (make <scene-changer>
-    #:list (list
-	    scene2
-	    scene3
-	    scene4
-	    scene5
-            mine-scene
-            )))
+    #:list scenelist))
 
 ;; imported from scene2
 (set-current-scene! mine-scene)
+(for-each (lambda (scene)
+            (add-event-listener!
+             <keyboard-event>
+             (make-camera-panner (current-camera scene))
+             scene))
+          scenelist)
 
 #|
 (define-method (event-do (box <box>)
