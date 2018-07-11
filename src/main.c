@@ -249,7 +249,7 @@ void init_functions () {
 		("load-image", 1, 0, 0, scm_init_img);
 
 	scm_c_define_gsubr
-		("primitive-render-texture!", 4, 0, 0, scm_primitive_render_texture);
+		("primitive-render-texture!", 7, 0, 0, scm_primitive_render_texture);
 
 	scm_c_define_gsubr
 		("primitive-render-sprite!", 2, 0, 0, scm_primitive_render_single_sprite);

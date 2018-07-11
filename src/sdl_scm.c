@@ -66,46 +66,37 @@ SCM scm_texture_size (SCM img_ptr) {
 }
 
 /*
- * img_ptr :: pointer to an SDL_Texture. Returned from init_img
- * _tile_size :: size in pixels, assumes square tile
- * sprite_pos :: position within tilesheet (in tiles). Pass as list of len 2
- * board_pos :: position on board, in tiles
- *
- * TODO this really should take <v2> instead of list
- * TODO board_pos should maybe take in pixels and not in tiles!
+ * img_ptr   - pointer to an SDL_Texture. Returned from init_img
+ * _p_{x,y}  - Position in world to paint
+ * _t_{w,h}  - size of the tile
+ * _sp_{x,y} - position in spritesheet of tile, in tiles
+ * All measures are in pixels except _sp_{x,y}.
  */
-SCM scm_primitive_render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos) {
-	img = (SDL_Texture*) scm_to_long (img_ptr);
-	int sx = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(0)));
-	int sy = scm_to_int (scm_list_ref (sprite_pos, scm_from_int(1)));
-	int tile_size = scm_to_int (_tile_size);
+SCM scm_primitive_render_texture (SCM img_ptr, SCM _p_x, SCM _p_y,
+		SCM _t_w, SCM _t_h, SCM _sp_x, SCM _sp_y) {
 
-	int board_pos_x = scm_to_int (scm_list_ref (board_pos, scm_from_int (0)));
-	int board_pos_y = scm_to_int (scm_list_ref (board_pos, scm_from_int (1)));
+	img = (SDL_Texture*) scm_to_long (img_ptr);
+
+	int sx = scm_to_int (_sp_x);
+	int sy = scm_to_int (_sp_y);
+
+	int tw = scm_to_int (_t_w);
+	int th = scm_to_int (_t_h);
+
+	int px = scm_to_int (_p_x);
+	int py = scm_to_int (_p_y);
 
 	SDL_Rect sprite_tile = {
-		.x = sx * tile_size,
-		.y = sy * tile_size,
-		.w = tile_size,
-		.h = tile_size };
-	SDL_Rect board_space = {
-		.x = board_pos_x * tile_size,
-		.y = board_pos_y * tile_size,
-		.w = tile_size,
-		.h = tile_size };
+		.x = sx * tw,
+		.y = sy * th,
+		.w = tw,
+		.h = th };
 
-	/*
-	printf ("tile  : { x=%i y=%i w=%i h=%i }\n",
-			sprite_tile.x,
-			sprite_tile.y,
-			sprite_tile.w,
-			sprite_tile.h);
-	printf ("board : { x=%i y=%i w=%i h=%i }\n",
-			board_space.x,
-			board_space.y,
-			board_space.w,
-			board_space.h);
-	*/
+	SDL_Rect board_space = {
+		.x = px,
+		.y = py,
+		.w = tw,
+		.h = th };
 
 	SDL_RenderCopy (renderer, img, &sprite_tile, &board_space);
 

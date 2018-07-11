@@ -69,21 +69,19 @@ center is a v2"
 
 #; (define render-texture primitive-render-texture!)
 
-;;; TODO allow for non square sprites 
-(define* (render-texture! image tile-size sprite-pos position
+(define* (render-texture! image tile-size sheet-pos world-pos
                           #:optional (camera (current-camera)))
   "Procedure for drawing a tile from a spritesheet.
 - Image is an image ptr
-- tile-size is how large each tile is, taken as a v2, but
-  currently only the x component is used
-- sprite-pos is the position (in tiles) of the desired sprite
+- tile-size is how large each tile is, taken as a v2.
+- sheet-pos is the position (in tiles) of the desired sprite
 - board pos is the location in the world to draw the sprite"
-  (let ((p (- position (pos camera))))
+  (let ((p (- world-pos (pos camera))))
    (primitive-render-texture!
     image
-    (x tile-size)
-    (v2->list sprite-pos)
-    (v2->list p))))
+    (x p) (y p)
+    (x tile-size) (y tile-size)
+    (x sheet-pos) (y sheet-pos))))
 
 #; (define render-sprite primitive-render-sprite!)
 

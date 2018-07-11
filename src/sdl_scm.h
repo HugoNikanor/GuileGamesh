@@ -14,7 +14,8 @@ SCM scm_primitive_draw_text (SCM text, SCM _x, SCM _y);
 extern SDL_Renderer* renderer;
 
 SCM scm_init_img (SCM filepath);
-SCM scm_primitive_render_texture (SCM img_ptr, SCM _tile_size, SCM sprite_pos, SCM board_pos);
+SCM scm_primitive_render_texture (SCM img_ptr, SCM _p_x, SCM _p_y,
+		SCM _ts_x, SCM _ts_y, SCM _sp_x, SCM _sp_y);
 SCM scm_primitive_render_single_sprite (SCM img_ptr, SCM board_pos);
 SCM scm_texture_size (SCM img_ptr);
 
