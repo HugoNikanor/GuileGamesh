@@ -24,6 +24,7 @@
 ;; size of world can't currently be changed after its creation
 (define-class <tileworld> (<spritesheet> <geo-object>)
               ;; matrix of vectors pointing at tiles in spritesheet
+              ;; World def is logical position
               world-def)
 
 (define-method (initialize (this <tileworld>) args)
@@ -57,10 +58,11 @@
   (array-for-each
     (lambda (tile x y)
       (render-texture! (slot-ref this 'sprite)
-                       (slot-ref this 'single-size)
+                       (single-size this)
                        tile
                        (+ (pos this)
-                          (v2 x y))))
+                          (m* (single-size this)
+                              (v2 x y)))))
     (slot-ref this 'world-def)
     x-index-array
     y-index-array))

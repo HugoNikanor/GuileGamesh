@@ -3,7 +3,8 @@
   #:use-module (engine)
   #:use-module (util)
   #:use-module (vector)
-  #:export (<spritesheet>))
+  #:export (<spritesheet>
+            single-size))
 
 ;;; TODO where is <swap-sprite>?
 
@@ -16,8 +17,11 @@
 
 (define-class <spritesheet> ()
   sprite
+  ;; Shape of the sprite, requires that all sprites
+  ;; have the exact same size.
   (single-size #:init-form (v2 1 1)
-               #:init-keyword #:size)
+               #:init-keyword #:size
+               #:getter single-size)
   (amount #:init-form (v2 1 1)
           #:init-keyword #:amount)
   (file #:init-keyword #:file))
