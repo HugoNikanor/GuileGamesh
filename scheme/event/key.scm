@@ -1,28 +1,33 @@
 (define-module (event key)
   #:use-module (event)
   #:use-module (oop goops)
+  :use-module (ice-9 hash-table)
   #:re-export (<keyboard-event> make-keyboard-event)
-  #:export (scancodes)
+  #:export (scancodes
+            scan-symbol keyup? keydown?
+            )
   )
 
-;;; (assv-ref scancodes 'a)
-;(define scancodes
-;  '((a . 4)  (b . 5)  (c . 6)  (d . 7)  (e . 8)
-;    (f . 9)  (g . 10) (h . 11) (i . 12) (j . 13)
-;    (k . 14) (l . 15) (m . 16) (n . 17) (o . 18)
-;    (p . 19) (q . 20) (r . 21) (s . 22) (t . 23)
-;    (u . 24) (v . 25) (w . 26) (x . 27) (y . 28)
-;    (z . 29)))
+;;; TODO stop exporting scancodes, currently used for scene changed
 
 (define scancodes
   '((n . 15)))
 
-;; (define-class <key-event> (<event>) state repeat scancode sym mod)
-;; (define-method (fix-event-args (ev <key-event>) state repeat keysym)
-;;                (apply (lambda (scancode sym mod)
-;;                         (slot-set! ev 'state state)
-;;                         (slot-set! ev 'repeat repeat)
-;;                         (slot-set! ev 'scancode (list-ref keysym 0))
-;;                         (slot-set! ev 'sym (list-ref keysym 1))
-;;                         (slot-set! ev 'mod (list-ref keysym 2)))
-;;                       keysym))
+(define scancodes-hash
+  (alist->hash-table
+   '((79 . right)
+     (80 . left)
+     (81 . down)
+     (82 . up)
+     )))
+
+(define (scan-symbol ev)
+  (hash-ref scancodes-hash
+            (slot-ref ev 'scancode)
+            #f))
+
+(define (keyup? ev)
+  (eq? 'SDL_KEYUP (slot-ref ev 'type)))
+
+(define (keydown? ev)
+  (eq? 'SDL_KEYDOWN (slot-ref ev 'type)))
